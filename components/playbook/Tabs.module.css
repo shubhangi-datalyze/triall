@@ -1,0 +1,98 @@
+/* CSS-only tabs, driven by a radio group. Tokens only - see app/globals.css.
+
+   `display: contents` on each tab flattens the radio, its label and its panel
+   into the same flex row, which is what lets a checked radio address its own
+   panel as a sibling. Labels take order 1 and panels order 2, so every label
+   sits above every panel whatever the markup nesting says. */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-6) 0;
+  padding: var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.tab {
+  display: contents;
+}
+
+/* Kept in the layout and focusable, just not painted: a visually hidden input
+   that is display:none cannot be tabbed to or operated with arrow keys. */
+.radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.label {
+  order: 1;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.03em;
+  transition: color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.label:hover {
+  color: var(--text-secondary);
+  background: var(--bg-surface-2);
+}
+
+.radio:checked + .label {
+  color: var(--text-primary);
+  background: var(--accent-muted);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.radio:focus-visible + .label {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.panel {
+  order: 2;
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* With CSS applied, only the checked panel shows. */
+.tabs .panel {
+  display: none;
+}
+
+.radio:checked ~ .panel {
+  display: block;
+}
+
+/* If a chapter forgets to mark a tab as selected, show the first panel rather
+   than an empty box. */
+.tabs:not(:has(.radio:checked)) .tab:first-child .panel {
+  display: block;
+}
+
+.panel > :last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label {
+    transition: none;
+  }
+}

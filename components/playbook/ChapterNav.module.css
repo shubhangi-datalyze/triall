@@ -1,0 +1,274 @@
+/* The chapter list: sidebar on desktop, sheet on small screens.
+   Tokens only - see app/globals.css. */
+
+.sidebar {
+  display: none;
+}
+
+.nav {
+  font-size: var(--text-body-sm);
+}
+
+.part + .part {
+  margin-top: var(--space-5);
+}
+
+.partLabel {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.partLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.partLink:hover {
+  color: var(--text-secondary);
+}
+
+.chapters {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapter,
+.chapterCurrent {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  line-height: 1.45;
+  /* 44px tap target on touch, without forcing the desktop list open. */
+  min-height: 24px;
+  transition: color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.chapter {
+  color: var(--text-muted);
+}
+
+.chapter:hover {
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+}
+
+.chapterCurrent {
+  color: var(--text-primary);
+  background: var(--accent-muted);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.number {
+  flex: none;
+  min-width: 1.4em;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+
+.chapterCurrent .number {
+  color: var(--accent);
+}
+
+/* The current chapter's H2s: the table of contents, in place. */
+.headings {
+  margin: var(--space-1) 0 var(--space-3) var(--space-6);
+  padding: 0 0 0 var(--space-3);
+  list-style: none;
+  border-left: 1px solid var(--border-default);
+}
+
+.heading,
+.headingActive {
+  display: block;
+  padding: var(--space-2) var(--space-2);
+  text-decoration: none;
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.heading {
+  color: var(--text-muted);
+}
+
+.heading:hover {
+  color: var(--text-secondary);
+}
+
+.headingActive {
+  color: var(--accent);
+}
+
+/* The hamburger that shows and hides the desktop list. */
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+@media (pointer: coarse) {
+  .menuButton {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.menuButton:hover,
+.menuButton[aria-expanded='true'] {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.menuButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The button that opens the sheet, and the sheet itself. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: var(--space-3) 0;
+  background: color-mix(in srgb, var(--bg-base) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  border-color: var(--border-strong);
+}
+
+/* Above the site header, which is fixed at z-index 100. A modal sheet with the
+   header floating over its top edge hides the filter and reads as broken. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(8, 7, 12, 0.72);
+}
+
+.sheet {
+  position: absolute;
+  inset: 0 20% 0 0;
+  min-width: 300px;
+  max-width: 420px;
+  padding: var(--space-5);
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+}
+
+.sheetHead {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-3);
+}
+
+.sheetClose {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sheetClose:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.sheetClose:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sheet .chapter,
+.sheet .chapterCurrent {
+  min-height: 44px;
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter,
+  .chapterCurrent,
+  .heading,
+  .headingActive {
+    transition: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: block;
+    position: sticky;
+    /* Clears the fixed site nav, so the button is always reachable. */
+    top: var(--space-10);
+    max-height: calc(100vh - var(--space-10) - var(--space-4));
+    overflow-y: auto;
+  }
+
+  .sidebar[data-nav='open'] {
+    padding-right: var(--space-4);
+  }
+
+  /* Collapsed: only the button shows. The list stays in the HTML. */
+  .sidebarList {
+    display: none;
+    margin-top: var(--space-4);
+  }
+
+  .sidebar[data-nav='open'] .sidebarList {
+    display: block;
+  }
+
+  .bar,
+  .overlay {
+    display: none;
+  }
+}

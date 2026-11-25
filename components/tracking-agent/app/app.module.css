@@ -1,0 +1,504 @@
+/* The paid app: action bar, rows and pills. Card, button and
+   badge styles come from components/account/account.module.css. */
+
+.actionNote {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.section {
+  margin-top: 36px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 14px 16px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--border-default);
+}
+
+.rowMain {
+  min-width: 0;
+}
+
+.rowTitle {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 14px;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.rowTitle:hover {
+  text-decoration: underline;
+}
+
+.rowMeta {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowSide {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.pill {
+  padding: 3px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pillNeedsApproval {
+  border-color: rgba(var(--accent-rgb), 0.55);
+  color: var(--text-primary);
+}
+
+.pillBlocked {
+  border-color: rgba(225, 96, 122, 0.6);
+  color: #f2a3b3;
+}
+
+.pillPassed,
+.pillLive {
+  border-color: rgba(92, 196, 142, 0.5);
+  color: #9fe0bd;
+}
+
+.pillMerged {
+  border-color: rgba(160, 130, 230, 0.5);
+  color: #c9b6f2;
+}
+
+.empty {
+  padding: 18px 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.secretOnce {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.checkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inline {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.input {
+  width: 100%;
+  max-width: 460px;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.pickList {
+  max-height: 240px;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+}
+
+.pick {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pick:hover,
+.pickOn {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rowSide {
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- tables and status chips (dashboard, inbox, audit, runs) ----------
+   One fact per cell; the row's one action on the right. Setup's rows are the model. */
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.table th {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-default);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table .groupRow th {
+  padding-top: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.right {
+  text-align: right !important;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right !important;
+}
+
+.main {
+  color: var(--text-primary);
+}
+
+.faint {
+  color: var(--text-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.cellActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* A smaller button for table rows. */
+.small {
+  height: 32px !important;
+  padding: 0 12px !important;
+}
+
+/* A text link that looks like one. */
+.link {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  text-decoration-color: currentColor;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.chip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.tone-run { color: #95b4ff; background: rgba(122, 162, 255, 0.13); }
+.tone-ok { color: #84d6a9; background: rgba(92, 196, 142, 0.13); }
+.tone-bad { color: #ff8e9c; background: rgba(255, 107, 129, 0.14); }
+.tone-warn { color: #ecba6c; background: rgba(224, 164, 88, 0.14); }
+.tone-idle { color: var(--text-secondary); background: rgba(255, 255, 255, 0.07); }
+
+/* A row's severity: a stripe on its first cell. */
+.stripe {
+  width: 3px;
+  padding: 0 !important;
+}
+
+.stripe-bad { background: #ff6b81; }
+.stripe-warn { background: #e0a458; }
+.stripe-run { background: #7aa2ff; }
+
+/* A page's facts in one line: Health 76% · 11 findings · … */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin: 0 0 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+}
+
+.stat dt {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.stat dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.statBig {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.crumb {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.crumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.crumb a:hover {
+  color: var(--text-primary);
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.titleOwner {
+  margin-left: 8px;
+  color: var(--text-muted);
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
+}
+
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* A failure at the top of a page: what failed, why in one line, and the way out. */
+.failBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 107, 129, 0.35);
+  border-radius: 12px;
+  background: rgba(255, 107, 129, 0.06);
+}
+
+.failBox p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.emptyState {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.tabCount {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* One line of secondary text in a table cell, cut with an ellipsis (descriptions). */
+.clamp1 {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 2px;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+/* Verification's "Only some properties" under a picked event. */
+.propPicker {
+  margin-top: 8px;
+}
+
+.propPicker summary {
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.propList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 8px;
+}
+
+.propItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* A command to copy: a bordered mono box that stands out on the page background. */
+.command {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

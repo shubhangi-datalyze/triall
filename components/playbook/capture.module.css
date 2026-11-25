@@ -1,0 +1,233 @@
+/* The email capture form and its placements. Tokens only - see app/globals.css. */
+
+.form,
+.formCompact {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 560px) {
+  .form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .form .privacy,
+  .form .error {
+    grid-column: 1 / -1;
+  }
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: transparent;
+}
+
+.submit {
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--text-inverse);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.privacy,
+.error,
+.success {
+  margin: 0;
+  font-size: var(--text-caption);
+  line-height: 1.5;
+}
+
+.privacy {
+  color: var(--text-muted);
+}
+
+.error {
+  color: var(--negative);
+}
+
+.success {
+  margin: var(--space-4) 0 0;
+  color: var(--text-primary);
+  font-size: var(--text-body-sm);
+  line-height: 1.6;
+}
+
+/* Off-screen rather than display:none: a hidden input that cannot be focused
+   is also one a bot can spot by its styles. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- The hub's access gate ------------------------------------------------- */
+
+/* Reserves the form's height before hydration, so nothing jumps when it
+   appears. */
+.accessSlot {
+  width: 100%;
+  max-width: 460px;
+  min-height: 56px;
+  margin-top: var(--space-5);
+}
+
+.accessForm {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 480px) {
+  .accessForm {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .accessForm .error {
+    grid-column: 1 / -1;
+  }
+}
+
+.accessSlot a.submit {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.gateNotice {
+  margin: 0 0 var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+}
+
+.gateNotice strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* --- The sticky bar ------------------------------------------------------ */
+
+/* Fixed, so it never pushes the article and never causes layout shift. */
+.sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-surface) 94%, transparent);
+  backdrop-filter: blur(14px);
+  animation: rise var(--duration-base) var(--ease-out);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky {
+    animation: none;
+  }
+}
+
+.stickyLabel {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-body-sm);
+}
+
+.stickyForm {
+  flex: 1 1 320px;
+  max-width: 460px;
+}
+
+.stickyForm .privacy {
+  display: none;
+}
+
+.dismiss {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  color: var(--text-primary);
+}
+
+.dismiss:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

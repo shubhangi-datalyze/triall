@@ -1,0 +1,41 @@
+/* Links, bold and inline code inside the prose. The copy comes through rich(),
+   which renders plain <a>, <strong> and <code>, so they pick up the chapter's
+   styles here (as the A/B test guide does). */
+.prose p a,
+.prose li a,
+.prose td a {
+  color: var(--accent-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.prose p a:hover,
+.prose li a:hover,
+.prose td a:hover {
+  color: var(--accent-hover);
+}
+
+.prose p strong,
+.prose li strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.prose p code,
+.prose li code,
+.prose td code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.9em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 0;
+}

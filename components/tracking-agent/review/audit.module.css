@@ -1,0 +1,269 @@
+/* The audit screen (/tracking-agent/audits/[owner]/[repo]). Builds on review.module.css,
+   account.module.css and the app's tables (components/tracking-agent/app/app.module.css). */
+
+.check {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  accent-color: var(--accent-link);
+}
+
+.findingFix {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ---------- the redesigned audit screen: findings table, choices, Your fix ---------- */
+
+.sevHigh { color: #ff8e9c; font-size: 13px; font-weight: 600; }
+.sevMedium { color: #ecba6c; font-size: 13px; font-weight: 600; }
+.sevLow { color: var(--text-muted); font-size: 13px; font-weight: 500; }
+
+/* "Why ▸" / "Details ▸": a quiet text button that opens a row's drawer. */
+.why {
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.why:hover {
+  color: var(--text-primary);
+}
+
+.drawer td {
+  padding-top: 0 !important;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.drawer .findingFix {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Leave it | Look into it, Keep | Stop | Fold | Decide later: one control, one choice lit. */
+.segmented {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-base);
+}
+
+.segmented button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.segmented button:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.segmented button:disabled {
+  cursor: default;
+}
+
+.segmented .segOn {
+  background: var(--bg-surface-2);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* The audit's recommendation, as a dot beside its choice (its name is the dot's label). */
+.recDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-link);
+}
+
+.warnText {
+  color: #ecba6c;
+}
+
+.fixList {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface);
+}
+
+.fixItem {
+  padding: 12px 16px;
+}
+
+.fixItem + .fixItem {
+  border-top: 1px solid var(--border-default);
+}
+
+.fixHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fixTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.fixId {
+  margin-right: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.fixSummary {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.fixFull {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* The event check (events-table.tsx): one row per event, one cell per check. */
+.checkCol { width: 34px; text-align: center; padding-left: 4px !important; padding-right: 4px !important; }
+.markOk { color: #84d6a9; }
+.markBad { color: #ff8e9c; font-weight: 600; }
+.markSuggest { color: #95b4ff; }
+.markNone { color: var(--text-muted); }
+.eventRow { cursor: pointer; }
+.eventRow:hover td { background: rgba(255, 255, 255, 0.03); }
+.eventName { all: unset; cursor: pointer; }
+.eventName:focus-visible { outline: 2px solid var(--accent-link); outline-offset: 2px; }
+.eventsBar { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 10px; font-size: 13px; }
+/* What C1–C10 mean, above the grid: two columns of five, one column on a phone. */
+.checkKey { margin: 0 0 14px; }
+.checkKeyTitle { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); font-weight: 600; }
+.checkKeyList { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(5, auto); gap: 4px 24px; font-size: 13px; color: var(--text-secondary); }
+.checkKeyList li { display: flex; gap: 10px; }
+.checkKeyCode { flex: 0 0 32px; color: var(--text-primary); font-weight: 600; }
+@media (max-width: 640px) { .checkKeyList { grid-template-columns: 1fr; grid-auto-flow: row; grid-template-rows: none; } }
+.eventsFilter { display: inline-flex; gap: 6px; align-items: center; color: var(--text-secondary); }
+.cardDetail { padding: 6px 4px 12px; white-space: normal; }
+.cardHeading { margin: 12px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); font-weight: 600; }
+.cardChecks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 13px; }
+.cardWhy { display: block; margin-top: 2px; color: var(--text-secondary); }
+.suggestRow td { vertical-align: top; }
+
+/* match's warnings on an event, at the top of its card (gap 14); the row shows only a count. */
+.warningBox {
+  margin: 4px 0 8px;
+  padding: 8px 12px;
+  border-left: 2px solid rgba(242, 194, 107, 0.6);
+  border-radius: 0 8px 8px 0;
+  background: rgba(242, 194, 107, 0.08);
+  font-size: 13px;
+}
+.warningTitle {
+  font-weight: 600;
+}
+.warningHint {
+  color: var(--text-muted);
+}
+.warningList {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.warningNote {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+}
+.markWarn { color: #f2c26b; }
+.warnCount {
+  margin-left: 8px;
+  color: #f2c26b;
+  font-family: var(--font-sans, inherit);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* The event grid: one line per event, every column in view. */
+.eventsGrid { table-layout: fixed; }
+.eventsGrid th:first-child { width: 34%; }
+.eventsGrid .checkCol { width: auto; }
+.eventsGrid th.checkCol { text-align: center; }
+.eventsGrid td:first-child { overflow-wrap: anywhere; }
+.eventsNote {
+  margin: 0 0 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.legendItem {
+  display: inline-flex;
+  gap: 4px;
+  align-items: baseline;
+  color: var(--text-secondary);
+}
+.legendItem > span:first-child { font-size: 15px; }
+
+/* Text that must wrap even where a shared style keeps it on one line (app .faint). */
+.wrap { white-space: normal; }
+
+/* A finding's events, stacked, with +N more. */
+.findingEventsCell { min-width: 180px; max-width: 280px; }
+.findingEvents { display: flex; flex-direction: column; gap: 2px; }
+.moreEvents {
+  all: unset;
+  cursor: pointer;
+  color: var(--accent-link);
+  font-size: 12px;
+}
+.moreEvents:focus-visible { outline: 2px solid var(--accent-link); outline-offset: 2px; }
+
+/* Findings the verifier disproved, folded under the findings. */
+.dismissed {
+  margin-top: 16px;
+}
+.dismissed summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.dismissed ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}

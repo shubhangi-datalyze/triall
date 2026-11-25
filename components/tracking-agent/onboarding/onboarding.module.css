@@ -1,0 +1,378 @@
+/* Onboarding (/tracking-agent/start): one centred card per
+   screen that fits a 1280×720 laptop with no page scroll; long lists scroll
+   inside the card. Builds on components/account/account.module.css. */
+
+.frame {
+  --ok: #5fc48a;
+  --ok-rgb: 95, 196, 138;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  /* Cancel most of the account shell's own padding, so the card has the height. */
+  margin: -32px 0 -96px;
+}
+
+/* ---------- the 7-segment progress line ---------- */
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(560px, 100%);
+}
+
+.progressMeta {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.segment {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-default);
+}
+
+.segmentDone {
+  background: rgba(var(--accent-rgb), 0.55);
+}
+
+.segmentCurrent {
+  background: var(--accent);
+}
+
+/* ---------- the card ---------- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(560px, 100%);
+  max-height: max(420px, calc(100vh - 176px));
+  min-height: 0;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* What a step does, as a short list under its body. */
+.points {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* The middle of the card: takes the room left and scrolls on its own. */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Changing a refused key on the Setup PR screen: sits inside .content, so it must not shrink or scroll itself. */
+.fixPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.footRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.select {
+  appearance: auto;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.mono {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+}
+
+/* ---------- chips (regions) ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chipOn {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+  color: var(--text-primary);
+}
+
+/* ---------- GitHub ---------- */
+
+.connected {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(var(--ok-rgb), 0.45);
+  border-radius: 10px;
+  background: rgba(var(--ok-rgb), 0.08);
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+/* ---------- the repo list ---------- */
+
+.list {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  list-style: none;
+}
+
+.repo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.repo:first-child {
+  border-top: 0;
+}
+
+.repoOff {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.repoName {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  /* The whole owner/name, wrapped if it must: two repos can differ only at the end (web, web-e2e). */
+  overflow-wrap: anywhere;
+}
+
+/* ---------- status lines (install, setup PR) ---------- */
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.line:first-child {
+  border-top: 0;
+}
+
+.lineHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.lineActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.pill {
+  flex: none;
+  padding: 2px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.pillDone {
+  border-color: rgba(var(--ok-rgb), 0.5);
+  color: var(--ok);
+}
+
+.pillWorking {
+  border-color: rgba(var(--accent-rgb), 0.5);
+  color: var(--text-primary);
+}
+
+.pillFailed {
+  border-color: rgba(var(--negative-rgb), 0.6);
+  color: var(--negative);
+}
+
+.lineError {
+  margin: 0;
+  color: var(--negative);
+  font-size: 13px;
+}
+
+/* ---------- pay ---------- */
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.priceAmount {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 44px;
+}
+
+.priceUnit {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* ---------- preview (/admin): every screen, one under another ---------- */
+
+.previewStack {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 40px 16px;
+}
+
+/* No account shell around the preview, so no padding to cancel. */
+.previewStack .frame {
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .frame {
+    margin: -24px 0 -64px;
+  }
+
+  .card {
+    max-height: none;
+  }
+
+  .fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Google Sheet (one column: the email, then a line per repo) ---------- */
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sheet input {
+  width: 100%;
+}
+
+.sheetEmail {
+  word-break: break-all;
+}

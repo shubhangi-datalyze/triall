@@ -1,0 +1,79 @@
+/* Chapter tables. Tokens only - see app/globals.css. */
+
+.scroller {
+  overflow-x: auto;
+  margin: var(--space-6) 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  /* The scroller is focusable so a keyboard user can reach a wide table. */
+  outline-offset: 2px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+}
+
+.caption {
+  padding: var(--space-4) var(--space-5) 0;
+  text-align: left;
+  color: var(--text-muted);
+  font-size: var(--text-caption);
+}
+
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-5);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+  /* Cells wrap so the whole table fits the column: a reader sees every
+     column at once instead of scrolling sideways to find the last one. */
+  vertical-align: top;
+  overflow-wrap: break-word;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom-color: var(--border-default);
+}
+
+.table tbody tr:last-child th,
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table td {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.rowHeader {
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.highlight {
+  background: var(--accent-muted);
+  color: var(--text-primary);
+}
+
+@media (max-width: 640px) {
+  .table th,
+  .table td {
+    padding: var(--space-3) var(--space-4);
+    /* On a phone, let a long word break too, so its width can't force a
+       scroll either. */
+    overflow-wrap: anywhere;
+  }
+}

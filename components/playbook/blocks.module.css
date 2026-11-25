@@ -1,0 +1,687 @@
+/* The chapter component set. Tokens only - see app/globals.css. */
+
+/* --- Callout ------------------------------------------------------------- */
+
+.callout {
+  margin: var(--space-6) 0;
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+.calloutLabel {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.calloutBody > :last-child {
+  margin-bottom: 0;
+}
+
+.note {
+  border-left-color: var(--accent-sapphire);
+}
+.note .calloutLabel {
+  color: var(--accent-sapphire);
+}
+
+.warning {
+  border-left-color: var(--accent-amber);
+}
+.warning .calloutLabel {
+  color: var(--accent-amber);
+}
+
+.mistake {
+  border-left-color: var(--negative);
+}
+.mistake .calloutLabel {
+  color: var(--negative);
+}
+
+.example {
+  border-left-color: var(--accent-gold);
+}
+.example .calloutLabel {
+  color: var(--accent-gold);
+}
+
+/* --- StatRow ------------------------------------------------------------- */
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
+}
+
+.stat {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.statValue {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  line-height: 1.05;
+  color: var(--accent-amber);
+}
+
+.statLabel {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--text-primary);
+  font-size: var(--text-body-sm);
+  line-height: 1.4;
+}
+
+.statNote {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-caption);
+  line-height: 1.45;
+}
+
+/* --- Steps --------------------------------------------------------------- */
+
+/* The numbers come from the counter on .step, not from list-style. */
+.steps {
+  counter-reset: step;
+  margin: var(--space-6) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  padding: 0 0 var(--space-5) var(--space-7);
+}
+
+/* The connecting rule. It stops at the last step rather than trailing off. */
+.step::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  bottom: 0;
+  left: 15px;
+  width: 1px;
+  background: var(--border-default);
+}
+
+.step:last-child::before {
+  display: none;
+}
+
+.step::after {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+}
+
+.stepTitle {
+  margin: var(--space-1) 0 var(--space-2);
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.stepBody > :last-child {
+  margin-bottom: 0;
+}
+
+/* --- Compare ------------------------------------------------------------- */
+
+.compare {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
+}
+
+.compareBad,
+.compareGood {
+  padding: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-top-width: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+.compareBad {
+  border-top-color: var(--negative);
+}
+
+.compareGood {
+  border-top-color: var(--positive);
+}
+
+.compareLabel {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.compareBad > div > :last-child,
+.compareGood > div > :last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 720px) {
+  .compare {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- Formula ------------------------------------------------------------- */
+
+.formula {
+  margin: var(--space-6) 0;
+  padding: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  font-family: var(--font-mono);
+}
+
+.formulaName {
+  margin: 0 0 var(--space-3);
+  color: var(--accent);
+  font-size: var(--text-caption);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.formulaList {
+  margin: 0;
+}
+
+.formulaRow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.formulaRow:first-child {
+  border-top: none;
+}
+
+.formulaTerm {
+  color: var(--text-muted);
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.formulaValue {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .formulaRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
+/* --- MetricTree ---------------------------------------------------------- */
+
+.tree {
+  margin: var(--space-6) 0;
+  padding: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.treeSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.treeRootBox {
+  fill: var(--accent-muted);
+  stroke: var(--accent);
+}
+
+.treeLeafBox {
+  fill: var(--bg-surface-2);
+  stroke: var(--border-strong);
+}
+
+.treeLine {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.treeRootText,
+.treeLeafText {
+  fill: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 15px;
+}
+
+.treeLeafText {
+  fill: var(--text-secondary);
+  font-size: 13px;
+}
+
+.treeCaption {
+  margin: var(--space-3) 0 0;
+  color: var(--text-muted);
+  font-size: var(--text-caption);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Checklist ----------------------------------------------------------- */
+
+.checklist {
+  margin: var(--space-6) 0;
+  padding: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.checklistHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.checklistTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-body);
+}
+
+.checklistCount {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+}
+
+.checklistItems {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklistItem {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.checklistLabel {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  min-height: 44px;
+  padding: var(--space-3) 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+}
+
+.checkbox {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+
+.checkedText {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+/* --- Term ---------------------------------------------------------------- */
+
+.termWrap {
+  position: relative;
+}
+
+.term {
+  all: unset;
+  cursor: help;
+  color: var(--text-primary);
+  border-bottom: 1px dotted var(--accent);
+}
+
+.term:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* A floating card in the bottom-right corner, clear of the screen edges, rather
+   than next to the term: next to it, it covers the line being read. The
+   UA's centring margin is reset site-wide, so the position is set here. */
+.termPopover {
+  position: fixed;
+  inset: auto var(--space-5) var(--space-5) auto;
+  margin: 0;
+  width: min(360px, calc(100vw - 2 * var(--space-5)));
+  max-width: none;
+  padding: var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-2);
+  box-shadow: 0 18px 40px rgba(8, 7, 12, 0.6);
+}
+
+.termPopover:popover-open {
+  display: block;
+}
+
+.termName {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.termDefinition {
+  display: block;
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm);
+  line-height: 1.55;
+}
+
+.termLink {
+  display: inline-block;
+  margin-top: var(--space-3);
+  color: var(--accent);
+  font-size: var(--text-caption);
+}
+
+/* --- CodeBlock ----------------------------------------------------------- */
+
+.codeWrap {
+  margin: var(--space-6) 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.codeBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+}
+
+.codeLang {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.codePre {
+  margin: 0;
+  padding: var(--space-5);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.copyButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+/* Fingers need 44px; 32px is fine for a pointer. */
+@media (pointer: coarse) {
+  .copyButton {
+    min-height: 44px;
+  }
+}
+
+.copyButton:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Chapter CTA --------------------------------------------------------- */
+
+.ctaPdf,
+.ctaEnd,
+.ctaContact {
+  margin: var(--space-7) 0;
+  padding: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.ctaEnd {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+/* The book-a-call box: the chapter's own question beside one button. Stacks on
+   narrow screens. */
+.ctaContact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin: var(--space-8) 0;
+  padding: var(--space-6);
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.ctaContact > div {
+  flex: 1 1 280px;
+}
+
+.ctaTitle {
+  margin: 0 0 var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+}
+
+.ctaIntro {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm);
+  line-height: 1.6;
+}
+
+/* --- Reading progress ---------------------------------------------------- */
+
+/* Fixed and out of the flow, so it can never shift the page. */
+.progressTrack {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  height: 2px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressTrack {
+    display: none;
+  }
+}
+
+/* --- Heading copy link --------------------------------------------------- */
+
+/* Revealed on hover or keyboard focus, never on the printed page. */
+/* An H2 and its copy-link. The rule under it separates the heading from the
+   paragraph that starts the section. */
+.headingRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: var(--space-8) 0 var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.headingRow .copyButton {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .headingRow {
+    margin-top: var(--space-7);
+  }
+}
+
+/* Where there is a margin beside the column, the copy-link sits in it, so the
+   heading gets the column's full width. */
+@media (min-width: 1100px) {
+  .headingRow {
+    position: relative;
+  }
+
+  .headingRow .copyButton {
+    position: absolute;
+    top: 4px;
+    left: calc(100% + var(--space-4));
+  }
+}
+
+.headingRow .copyButton {
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.headingRow:hover .copyButton,
+.headingRow .copyButton:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .headingRow .copyButton {
+    opacity: 1;
+  }
+}
+
+/* --- FAQs ---------------------------------------------------------------- */
+
+.faqs {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.faqsTitle {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.faq {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-4) 0;
+}
+
+.faqQuestion {
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  list-style: none;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqAnswer {
+  margin: var(--space-3) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-body);
+  line-height: 1.7;
+}
+
