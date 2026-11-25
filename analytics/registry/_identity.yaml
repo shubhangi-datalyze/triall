@@ -1,0 +1,35 @@
+# How people are identified, from the code (first audit, 2026-11-19). One Mixpanel project
+# (2317312) receives the Datalyze site and Pravix, so both sets of rules are here.
+identify:
+  when: >-
+    Site (lib/mixpanel.ts): rememberVisitor, after a lead form's API route accepts an email (contact form,
+    tool download, maturity grader, blog newsletter, playbook access and sign-up, Ask AI email gate),
+    identifies an anonymous browser with the visitor id the route returned; a browser already identified
+    keeps its id. identifyAccount, after sign-in (lib/account/mixpanel-identity.ts, called from the account
+    auth form), identifies with the account's users.mixpanel_id from POST /api/account/mixpanel-id. The
+    site's server events (lib/mixpanel-server.ts) are sent on the same users.mixpanel_id, else the email's
+    visitor id. Pravix (pravix/client/src/lib/analytics.ts identify): after sign-up, after every
+    sign-in, and on every page load with a signed-in session (AuthContext's onAuthStateChanged, which
+    covers a session restored through the shared sign-in), with the Firebase uid, waiting for GTM's
+    Mixpanel if it hasn't loaded; Pravix's server sends on the same Firebase uid (trackWithUser).
+  id_source: >-
+    Site: users.mixpanel_id, or before an account exists the 64-character salted hash of the email
+    (lib/api/visitor-id.ts). Pravix: the Firebase Auth uid (users.firebase_uid).
+reset:
+  when: >-
+    Site: sign-out (signOutHere in lib/account/sign-out.ts: the account menu, /account/signout, the welcome
+    page's "Not you?", the MCP consent screen and the auth form). Pravix: logout (AuthContext logout), which
+    on the app host then sends the browser to the site's /account/signout.
+alias: null
+server:
+  id_source: >-
+    Site (lib/mixpanel-server.ts:72): the Mixpanel id the form's browser says it already has (account.browserId,
+    read by readBrowserId), else users.mixpanel_id, else the email's visitor id (:57, :64); sent as distinct_id at
+    :77. Pravix: the Firebase uid (pravix/server/services/mixpanelTracking.ts:124, trackWithUser; trackForAccount
+    looks up the account owner's firebaseUid at :151).
+  same_as_client: true
+  why: >-
+    Site: each is the id the browser sends as at that point. The browser's own id before identify, users.mixpanel_id
+    that identifyAccount identifies with after sign-in, and the visitor id rememberVisitor identifies with after a
+    lead form (lib/api/visitor-id.ts). Pravix: identify(user.uid) in AuthContext uses the same Firebase uid.
+  code_refs: [lib/mixpanel-server.ts:72, pravix/server/services/mixpanelTracking.ts:124]

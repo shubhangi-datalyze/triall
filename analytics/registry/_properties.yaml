@@ -1,0 +1,802 @@
+# Shared event-property vocabulary. A property used on any event must exist here.
+# Adding a name is a deliberate vocabulary change, visible in the PR diff. Prefer reusing one.
+synonyms:
+  accountId: account_id
+  activeRunId: active_run_id
+  ageInDays: age_in_days
+  aggregatedStatus: aggregated_status
+  alerts: alert_count
+  attemptCount: attempt_count
+  batchSubmittedAt: batch_submitted_at
+  billingStatus: billing_status
+  cancelAtPeriodEnd: cancel_at_period_end
+  changedFields: fields_changed
+  channelId: channel_id
+  checkoutSessionId: checkout_session_id
+  chunkCount: chunk_count
+  chunkDate: chunk_date
+  completedRuns: completed_runs
+  connectionId: connection_id
+  currentPeriodEnd: current_period_end
+  datasetId: dataset_id
+  detectorCount: detector_count
+  detectorsChanged: detectors_changed
+  durationMs: duration_ms
+  errorCode: error_code
+  eventName: event_name
+  eventPropsChanged: event_properties_changed
+  eventsChanged: events_changed
+  eventsDiscovered: events_discovered
+  executionTimeMs: execution_time_ms
+  expectedDetectors: expected_detectors
+  failed: failed_count
+  failedDetectors: failed_detectors
+  failurePhase: failure_reason
+  hadSchedule: had_schedule
+  hasEmailNotifications: has_email_notifications
+  hasPaymentMethod: has_payment_method
+  hasSchedule: has_schedule
+  isEditMode: is_edit_mode
+  isOnboarding: is_onboarding
+  jobId: job_id
+  landingPath: landing_path
+  limitType: limit_type
+  lookbackDays: lookback_days
+  maxLookbackDays: max_lookback_days
+  minSeverity: min_severity
+  minutesStuck: minutes_stuck
+  missingDetectors: missing_detectors
+  passed: passed_count
+  periodEnd: period_end
+  periodStart: period_start
+  processedEvents: processed_events
+  profileChunkCount: profile_chunk_count
+  projectId: project_id
+  propertyName: property_name
+  question_length: char_count
+  reportedDetectors: reported_detectors
+  rowsAnalyzed: rows_analyzed
+  runId: run_id
+  scheduleChanged: schedule_changed
+  scheduleFrequency: schedule_frequency
+  scheduledAt: scheduled_at
+  scopedToSetup: scoped_to_setup
+  setupId: setup_id
+  sharedSignIn: shared_sign_in
+  signupIntent: signup_intent
+  skipped: skipped_count
+  stepName: step
+  stepNumber: step_number
+  stripeCustomerId: stripe_customer_id
+  stripeInvoiceId: stripe_invoice_id
+  stripeSubscriptionId: stripe_subscription_id
+  stuckPhase: stuck_phase
+  totalEventsLoaded: total_events_loaded
+  totalExcluded: total_excluded
+  totalProfilesLoaded: total_profiles_loaded
+  totalUsage: total_usage
+  triggerType: trigger_type
+  useCaseCount: use_case_count
+  useCaseKey: use_case_key
+  userId: user_id
+  userPropertiesDiscovered: user_properties_discovered
+  userPropsChanged: user_properties_changed
+properties:
+  account_id:
+    type: string
+    example: 7c0e1f52-3a4b-4d7e-9a10-2b6c8d9e0f11
+    used_by: 26
+  active_run_id:
+    type: string
+    example: 5b48c62e-5484-4225-95d5-570d4cb45992
+    used_by: 1
+  after_refusal:
+    type: boolean
+    example: true | false
+    used_by: 2
+  age_in_days:
+    type: numeric
+    example: 12 | 0
+    used_by: 1
+  aggregated_status:
+    type: string
+    example: alert | ok | skipped
+    used_by: 1
+  alert:
+    type: boolean
+    example: false | true
+    used_by: 2
+  alert_count:
+    type: numeric
+    example: "2"
+    used_by: 1
+  amount:
+    type: numeric
+    example: 250 | 49
+    used_by: 3
+  answer:
+    type: string
+    example: done | skip | replied | timeout
+    used_by: 1
+  attempt_count:
+    type: numeric
+    example: 1 | 2
+    used_by: 1
+  auth_method:
+    type: string
+    example: google | email
+    used_by: 2
+  batch_submitted_at:
+    type: datetime
+    example: 2026-11-18T06:02:11.000Z
+    used_by: 1
+  billing_reason:
+    type: string
+    example: subscription_create | subscription_cycle
+    used_by: 1
+  billing_status:
+    type: string
+    example: free_quota_exhausted | balance_exhausted | payment_failed
+    used_by: 2
+  browser_minutes:
+    type: numeric
+    example: "0.95"
+    used_by: 1
+  cancel_at_period_end:
+    type: boolean
+    example: true | false
+    used_by: 2
+  channel:
+    type: string
+    example: email | slack | discord
+    used_by: 3
+  channel_id:
+    type: string
+    example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44
+    used_by: 5
+  chapter_slug:
+    type: string
+    example: creating-a-tracking-plan | analytics-strategy
+    used_by: 13
+  chapters_read:
+    type: numeric
+    example: 0 | 3 | 12
+    used_by: 1
+  char_count:
+    type: numeric
+    example: "24"
+    used_by: 2
+  checkout_session_id:
+    type: string
+    example: cs_live_a1B2c3D4e5F6g7H8
+    used_by: 1
+  chunk_count:
+    type: numeric
+    example: "31"
+    used_by: 1
+  chunk_date:
+    type: string
+    example: 2026-11-15
+    used_by: 2
+  completed_count:
+    type: numeric
+    example: "3"
+    used_by: 6
+  completed_fields:
+    type: array
+    example: "[name, email, goal]"
+    used_by: 6
+  completed_optional:
+    type: boolean
+    example: true | false
+    used_by: 4
+  completed_runs:
+    type: numeric
+    example: "1"
+    used_by: 1
+  confidence:
+    type: string
+    example: 95 | 90 | 99
+    used_by: 2
+  connection_id:
+    type: string
+    example: 5b48c62e-5484-4225-95d5-570d4cb45992
+    used_by: 7
+  connection_source:
+    type: string
+    example: mixpanel | posthog
+    used_by: 3
+  cta_text:
+    type: string
+    example: Book a call | Book a Call | Get started | Get your first run free | Request a custom tool
+    used_by: 2
+  currency:
+    type: string
+    example: usd
+    used_by: 3
+  current_domain:
+    type: string
+    example: www.joindatalyze.com | app.joindatalyze.com
+    used_by: 1
+  current_page_title:
+    type: string
+    example: Datalyze - Analytics & Growth Partner for Startups
+    used_by: 1
+  current_period_end:
+    type: datetime
+    example: 2026-12-19T08:30:00.000Z
+    used_by: 1
+  current_url_path:
+    type: string
+    example: / | /tracking-agent | /blog/mixpanel-vs-amplitude/
+    used_by: 1
+  current_url_protocol:
+    type: string
+    example: "https: | http: (localhost verification only)"
+    used_by: 1
+  current_url_search:
+    type: string
+    example: ?utm_source=linkedin&utm_medium=social
+    used_by: 1
+  dataset_id:
+    type: string
+    example: dataguard_runs
+    used_by: 1
+  depth:
+    type: numeric
+    example: 25 | 50 | 75 | 100
+    used_by: 1
+  destination:
+    type: string
+    example: /contact | /account/signup | mailto:ansh@joindatalyze.com | /services/analytics-audit
+    used_by: 1
+  detail:
+    type: string
+    example: Another run is already running for this account. Cancel the existing run to start a new one.
+    used_by: 1
+  detector_count:
+    type: numeric
+    example: "5"
+    used_by: 5
+  detectors_changed:
+    type: boolean
+    example: true | false
+    used_by: 1
+  displayName:
+    type: string
+    example: Ansh Agrawal | owner (the email's local part when no name was given)
+    used_by: 2
+  download_id:
+    type: string
+    example: playbook-pdf
+    used_by: 2
+  duration_ms:
+    type: numeric
+    example: "184000"
+    used_by: 1
+  email:
+    type: string
+    example: name@company.com
+    used_by: 31
+  enabled:
+    type: boolean
+    example: true | false
+    used_by: 4
+  entry_page:
+    type: string
+    example: /playbook/creating-a-tracking-plan
+    used_by: 13
+  entry_point:
+    type: string
+    example: onboarding | billing
+    used_by: 2
+  error_code:
+    type: numeric
+    example: 401 | 403 | 429 | 502
+    used_by: 1
+  errorMessage:
+    type: string
+    example: We could not verify your analytics connection. Please review your credentials and try again.
+    used_by: 7
+  errorName:
+    type: string
+    example: Error | TypeError
+    used_by: 1
+  event_count:
+    type: numeric
+    example: "3"
+    used_by: 2
+  event_name:
+    type: string
+    example: Signup Completed
+    used_by: 1
+  event_properties_changed:
+    type: numeric
+    example: 5 | 0
+    used_by: 1
+  events_changed:
+    type: numeric
+    example: 3 | 0
+    used_by: 1
+  events_discovered:
+    type: numeric
+    example: 42 | 0
+    used_by: 1
+  example:
+    type: boolean
+    example: false | true
+    used_by: 2
+  excluded:
+    type: boolean
+    example: true | false
+    used_by: 2
+  execution_time_ms:
+    type: numeric
+    example: "4210"
+    used_by: 1
+  expected_detectors:
+    type: array
+    example: "[event_count_spike, event_property_stopped_flowing]"
+    used_by: 2
+  failed_checks:
+    type: array
+    example: "[] | [planned] | [split, duration]"
+    used_by: 2
+  failed_count:
+    type: numeric
+    example: "0"
+    used_by: 1
+  failed_detectors:
+    type: array
+    example: "[event_count_spike]"
+    used_by: 1
+  failure_reason:
+    type: string
+    example: unknown_price | wrong_amount | invoice_payment_failed
+    used_by: 9
+  field:
+    type: string
+    example: name | email | website | goal
+    used_by: 4
+  fields_changed:
+    type: array
+    example: "[enabled] | [minSeverity]"
+    used_by: 2
+  furthest_field:
+    type: string
+    example: name | email | website | goal
+    used_by: 2
+  github_repo:
+    type: string
+    example: acme/web | aagrawal17091999/joindatalyze
+    used_by: 1
+  had_held_question:
+    type: boolean
+    example: true | false
+    used_by: 2
+  had_schedule:
+    type: boolean
+    example: true | false
+    used_by: 1
+  has_email_notifications:
+    type: boolean
+    example: true | false
+    used_by: 1
+  has_payment_method:
+    type: boolean
+    example: false | true
+    used_by: 1
+  has_plan:
+    type: boolean
+    example: false | true
+    used_by: 2
+  has_schedule:
+    type: boolean
+    example: true | false
+    used_by: 2
+  industry:
+    type: string
+    example: saas | fintech | consumer
+    used_by: 2
+  is_edit_mode:
+    type: boolean
+    example: false | true
+    used_by: 2
+  is_first_question:
+    type: boolean
+    example: true | false
+    used_by: 2
+  is_onboarding:
+    type: boolean
+    example: true | false
+    used_by: 1
+  job_id:
+    type: string
+    example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3-5b48c62e-5484-4225-95d5-570d4cb45992-1763445731000
+    used_by: 1
+  landing_path:
+    type: string
+    example: /pravix | /pravix/setups
+    used_by: 1
+  limit_type:
+    type: string
+    example: free_quota
+    used_by: 1
+  location:
+    type: string
+    example: contact_page
+    used_by: 18
+  lookback_days:
+    type: numeric
+    example: "3"
+    used_by: 2
+  max_lookback_days:
+    type: numeric
+    example: "30"
+    used_by: 1
+  mcp_client:
+    type: string
+    example: An MCP client | Claude (UNCONFIRMED)
+    used_by: 1
+  method:
+    type: string
+    example: access | magic_link
+    used_by: 1
+  min_severity:
+    type: string
+    example: alert | all
+    used_by: 2
+  minutes_stuck:
+    type: numeric
+    example: "15"
+    used_by: 2
+  missing_detectors:
+    type: array
+    example: "[event_count_spike, event_property_stopped_flowing]"
+    used_by: 1
+  mode:
+    type: string
+    example: chunked | inline
+    used_by: 7
+  model_cost_usd:
+    type: numeric
+    example: "0.12"
+    used_by: 1
+  overall_grade:
+    type: string
+    example: B | C+ | A+
+    used_by: 4
+  overall_score:
+    type: numeric
+    example: 143 | 250 | 20
+    used_by: 4
+  page:
+    type: string
+    example: / | /tracking-agent | /services/analytics-audit | /contact?utm_source=linkedin
+    used_by: 1
+  part:
+    type: string
+    example: foundations | what-to-measure | trustworthy-data
+    used_by: 13
+  passed_count:
+    type: numeric
+    example: "3"
+    used_by: 1
+  pasted:
+    type: boolean
+    example: true | false
+    used_by: 2
+  per_version:
+    type: numeric
+    example: "31234"
+    used_by: 2
+  percent:
+    type: numeric
+    example: 0 | 11 | 43
+    used_by: 1
+  period_end:
+    type: numeric
+    example: "1766102400"
+    used_by: 1
+  period_start:
+    type: numeric
+    example: "1763510400"
+    used_by: 1
+  placement:
+    type: string
+    example: inline | post_end | listing
+    used_by: 6
+  plan_id:
+    type: string
+    example: tracking-monthly | mcp-monthly
+    used_by: 3
+  position:
+    type: numeric
+    example: 2 | 3 | 1
+    used_by: 4
+  post_slug:
+    type: string
+    example: mixpanel-vs-amplitude | /blog/ | /blog/tag/<slug>/ (the listing page's path)
+    used_by: 2
+  problem:
+    type: string
+    example: Revenue doesn't add up | We don't trust our data | GA4 and Mixpanel don't match
+    used_by: 4
+  processed_events:
+    type: numeric
+    example: "184220"
+    used_by: 1
+  product:
+    type: string
+    example: tracking_agent | mcp | pravix
+    used_by: 2
+  profile_chunk_count:
+    type: numeric
+    example: "1"
+    used_by: 1
+  project_id:
+    type: string
+    example: "2317312"
+    used_by: 4
+  property_name:
+    type: string
+    example: utm_source
+    used_by: 1
+  provider:
+    type: string
+    example: slack | discord
+    used_by: 8
+  questions_asked:
+    type: numeric
+    example: 0 | 2
+    used_by: 2
+  reason:
+    type: string
+    example: missing | invalid_email
+    used_by: 8
+  referrer:
+    type: string
+    example: https://www.linkedin.com/
+    used_by: 2
+  refusal_reason:
+    type: string
+    example: below_threshold | insufficient_context | bad_citation
+    used_by: 2
+  region:
+    type: string
+    example: us | eu | india
+    used_by: 2
+  repo_count:
+    type: numeric
+    example: 1 | 3
+    used_by: 2
+  reported_detectors:
+    type: array
+    example: "[event_property_null_percentage_increased]"
+    used_by: 1
+  rows_analyzed:
+    type: numeric
+    example: 4820 | 0
+    used_by: 1
+  run_id:
+    type: string
+    example: 9b1e4c7a-2d3f-4e5a-8b6c-0d1e2f3a4b5c
+    used_by: 8
+  schedule_changed:
+    type: boolean
+    example: true | false
+    used_by: 1
+  schedule_frequency:
+    type: string
+    example: manual | daily
+    used_by: 1
+  scheduled_at:
+    type: datetime
+    example: 2026-11-18T06:00:00.000Z
+    used_by: 1
+  scope:
+    type: string
+    example: property_on_event | event
+    used_by: 2
+  scoped_to_setup:
+    type: boolean
+    example: false | true
+    used_by: 1
+  setup_id:
+    type: string
+    example: 9612d3cd-5c3d-4e1b-8a5b-b5428916160a
+    used_by: 11
+  setupName:
+    type: string
+    example: Events & Property Validation | Daily Audit | Posthog Alerts
+    used_by: 13
+  severity:
+    type: string
+    example: alert | skipped | ok
+    used_by: 5
+  shared_sign_in:
+    type: boolean
+    example: true | false
+    used_by: 1
+  sided:
+    type: string
+    example: two | one
+    used_by: 2
+  signed_in:
+    type: boolean
+    example: true | false
+    used_by: 13
+  significant:
+    type: boolean
+    example: true | false
+    used_by: 2
+  signup_intent:
+    type: string
+    example: app
+    used_by: 1
+  signup_source:
+    type: string
+    example: account_signup | tracking_agent_signup | mcp_signup | pravix_signup
+    used_by: 1
+  skipped_count:
+    type: numeric
+    example: "1"
+    used_by: 1
+  source:
+    type: string
+    example: welcome
+    used_by: 5
+  source_type:
+    type: string
+    example: ghost | playbook | linkedin
+    used_by: 2
+  source_url:
+    type: string
+    example: https://www.joindatalyze.com/playbook/<slug> | https://www.joindatalyze.com/blog/<slug>/ |
+      https://www.linkedin.com/posts/<id>
+    used_by: 2
+  status:
+    type: string
+    example: success | failed
+    used_by: 13
+  step:
+    type: string
+    example: basic_info | select_checks
+    used_by: 1
+  step_number:
+    type: numeric
+    example: 1 | 2
+    used_by: 1
+  stripe_customer_id:
+    type: string
+    example: cus_RkT2m9XbQ4vLpa
+    used_by: 1
+  stripe_invoice_id:
+    type: string
+    example: in_1QxY2zAbCdEfGhIj
+    used_by: 1
+  stripe_subscription_id:
+    type: string
+    example: sub_1QxY2zAbCdEfGhIj
+    used_by: 1
+  stuck_phase:
+    type: string
+    example: after_batch_submitted | before_batch_submitted
+    used_by: 1
+  subscription_status:
+    type: string
+    example: active | canceled | past_due
+    used_by: 1
+  success:
+    type: boolean
+    example: "true"
+    used_by: 1
+  tab:
+    type: string
+    example: plan | check
+    used_by: 2
+  target_chapter:
+    type: string
+    example: what-is-product-analytics | data-loss
+    used_by: 1
+  time_on_form_ms:
+    type: numeric
+    example: "61200"
+    used_by: 2
+  time_to_first_input_ms:
+    type: numeric
+    example: "4210"
+    used_by: 4
+  time_to_submit_ms:
+    type: numeric
+    example: "38250"
+    used_by: 4
+  tool:
+    type: string
+    example: start_any_analytics_question_metrics_retention_funnels_tracking | next_step | search_knowledge
+    used_by: 1
+  tool_id:
+    type: string
+    example: mixpanel-exporter | mixpanel-users-exporter | event-tracking-plan-generator | analytics-strategy-creator |
+      analytics-maturity-grader
+    used_by: 2
+  total_events_loaded:
+    type: numeric
+    example: "184220"
+    used_by: 1
+  total_excluded:
+    type: numeric
+    example: 4 | 0
+    used_by: 1
+  total_profiles_loaded:
+    type: numeric
+    example: "5120"
+    used_by: 1
+  total_usage:
+    type: numeric
+    example: 4820 | 0
+    used_by: 1
+  trigger_type:
+    type: string
+    example: verification | manual
+    used_by: 6
+  use_case_count:
+    type: numeric
+    example: "5"
+    used_by: 1
+  use_case_key:
+    type: string
+    example: event_count_spike | event_property_stopped_flowing | user_property_null_percentage_increased
+    used_by: 1
+  user_id:
+    type: string
+    example: 7Yb2kQmZ1hS3pXr9TnV4cLw8eF02
+    used_by: 1
+  user_properties_changed:
+    type: numeric
+    example: 1 | 0
+    used_by: 1
+  user_properties_discovered:
+    type: numeric
+    example: 18 | 0
+    used_by: 1
+  utm_campaign:
+    type: string
+    example: pravix_launch
+    used_by: 2
+  utm_content:
+    type: string
+    example: hero_cta
+    used_by: 2
+  utm_medium:
+    type: string
+    example: social | cpc
+    used_by: 2
+  utm_source:
+    type: string
+    example: linkedin | google
+    used_by: 2
+  utm_term:
+    type: string
+    example: data quality alerts
+    used_by: 2
+  verdict:
+    type: string
+    example: ship | keepRunning | noDifference | keepA | dontTrust
+    used_by: 8
+  verify_environment:
+    type: string
+    example: staging | production
+    used_by: 2
+  via:
+    type: string
+    example: scroll
+    used_by: 1
+  weeks:
+    type: numeric
+    example: 7 | 1
+    used_by: 2
+  workflow:
+    type: string
+    example: answer-question | explain-change | audit | plan
+    used_by: 1

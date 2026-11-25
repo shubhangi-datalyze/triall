@@ -1,0 +1,397 @@
+events:
+  - name: contact_form_viewed
+    section: Contact and booking
+    description: >-
+      The contact form on /contact mounts. Sent once per mount from a useEffect, so a reload or a return visit
+      sends it again. It also mounts, and sends, inside the /admin editor's preview of the page
+      (/admin/preview/live/contact) on the production host, and on localhost when
+      NEXT_PUBLIC_MIXPANEL_SEND_LOCAL=1. entry_point carries the page URL's ?source (the /ask links set one)
+      when it is a plain key of lower-case letters, digits and underscores; most visits have none.
+    question: How many people open the contact page each week, and what share of them go on to send the form and book a call?
+    track_via: client
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: entry_point, type: string, example: ask | ask_answer, only_when: "the /contact URL carries a ?source of lower-case letters, digits and underscores (the /ask chat's and /ask/[slug]'s links to /contact)", description: "The /contact URL's ?source" }
+    fires_at:
+      - page: /contact
+        element: the contact form (the page loads)
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F4)", change: "Added entry_point, from the /contact URL's ?source" }
+  - name: Contact Form Viewed
+    section: Contact and booking
+    description: >-
+      The Title Case name of contact_form_viewed: sent from the line next to it, at the same moment and with
+      the same properties (see contact_form_viewed). Both are sent until 2026-12-18.
+    question: How many people open the contact page each week, and what share of them go on to send the form and book a call?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_form_viewed replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_form_viewed
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: the contact form (the page loads)
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: contact_form_started
+    section: Contact and booking
+    description: >-
+      The first focus or edit of any contact form field, once per page view (startedRef). Not sent again for
+      later fields, and not sent when the visitor never touches the form.
+    question: What share of contact page visitors start the form, and how many of those finish it?
+    track_via: client
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: textbox "Name", "Work email", "Company website" or "How can I help you? Please share some context so that I can come prepared." (the first one focused or typed in)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Contact Form Started
+    section: Contact and booking
+    description: >-
+      The Title Case name of contact_form_started: sent from the line next to it, at the same moment and with
+      the same properties (see contact_form_started). Both are sent until 2026-12-18.
+    question: What share of contact page visitors start the form, and how many of those finish it?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_form_started replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_form_started
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: textbox "Name", "Work email", "Company website" or "How can I help you? Please share some context so that I can come prepared." (the first one focused or typed in)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: contact_field_completed
+    section: Contact and booking
+    description: >-
+      A contact form field loses focus with a non-empty trimmed value, once per field per page view. Not sent
+      for a field left empty, and not again when the visitor later changes a field that already sent it. A
+      field the visitor submits from with Enter, without leaving it, never sends it. pasted is true when
+      anything was pasted into the field before it completed; autofill isn't a paste.
+    question: Which contact form fields do visitors fill in, and where do they stop before submitting?
+    track_via: client
+    properties:
+      - { name: field, type: string, example: name | email | website | goal, values: [name, email, website, goal] }
+      - { name: char_count, type: numeric, example: "24", description: "Length of the trimmed value; never the text" }
+      - { name: pasted, type: boolean, example: true | false }
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: textbox "Name", "Work email", "Company website" or "How can I help you? Please share some context so that I can come prepared." (leaving it with text in it, once per field)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Contact Field Completed
+    section: Contact and booking
+    description: >-
+      The Title Case name of contact_field_completed: sent from the line next to it, at the same moment and
+      with the same properties (see contact_field_completed). Both are sent until 2026-12-18.
+    question: Which contact form fields do visitors fill in, and where do they stop before submitting?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_field_completed replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_field_completed
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: field, type: string, example: name | email | website | goal, values: [name, email, website, goal] }
+      - { name: char_count, type: numeric, example: "24", description: "Length of the trimmed value; never the text" }
+      - { name: pasted, type: boolean, example: true | false }
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: textbox "Name", "Work email", "Company website" or "How can I help you? Please share some context so that I can come prepared." (leaving it with text in it, once per field)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: contact_form_submit_blocked
+    section: Contact and booking
+    description: >-
+      The visitor presses Pick a time and the browser refuses the submit before any request: Name is empty, or
+      Work email is empty or not an email. One event per refused press, for the first failing field only (name
+      is checked before email). Errors from /api/contact after a valid submit don't send it.
+    question: How often does the browser refuse the contact form, on which field and why?
+    track_via: client
+    properties:
+      - { name: field, type: string, example: name | email, values: [name, email] }
+      - { name: reason, type: string, example: missing | invalid_email, values: [missing, invalid_email] }
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: submit
+        needs: [Name empty]
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: submit
+        needs: [Name filled, Work email empty or not an email]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Contact Form Validation Error
+    section: Contact and booking
+    description: >-
+      The Title Case name of contact_form_submit_blocked: sent from the line next to it, at the same moment
+      and with the same properties (see contact_form_submit_blocked). Both are sent until 2026-12-18.
+    question: How often does the browser refuse the contact form, on which field and why?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_form_submit_blocked replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_form_submit_blocked
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: field, type: string, example: name | email, values: [name, email] }
+      - { name: reason, type: string, example: missing | invalid_email, values: [missing, invalid_email] }
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: submit
+        needs: [Name empty]
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: submit
+        needs: [Name filled, Work email empty or not an email]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: contact_form_submitted
+    section: Contact and booking
+    description: >-
+      The visitor presses Pick a time and the form passes the browser's checks (a name and a valid email).
+      Sent in the browser before the request to /api/contact, so it counts every attempt, including ones the
+      route rejects or that fail on the network; a retry after an error sends it again.
+    question: How many contact form submits do we get, how long do they take, and how many become leads?
+    track_via: client
+    pair: contact_lead_captured
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: completed_fields, type: array, example: "[name, email, goal]", description: "The fields the person left filled (blurred with a non-empty value) before submitting, in the order they were completed; a field submitted with Enter or autofilled without leaving it is not in it" }
+      - { name: completed_count, type: numeric, example: "3", description: "How many fields are in completed_fields" }
+      - { name: completed_optional, type: boolean, example: true | false, description: "The optional Company website field was filled at submit" }
+      - { name: time_to_first_input_ms, type: numeric, example: "4210", description: "Form mount to the first focus or edit of a field, in the browser (performance.now)" }
+      - { name: time_to_submit_ms, type: numeric, example: "38250", description: "Form mount to the submit, in the browser (performance.now)" }
+    fires_at:
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: submit
+        needs: [Name filled, a valid Work email]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Contact Form Submitted
+    section: Contact and booking
+    description: >-
+      The Title Case name of contact_form_submitted: sent from the line next to it, at the same moment and
+      with the same properties (see contact_form_submitted). Both are sent until 2026-12-18.
+    question: How many contact form submits do we get, how long do they take, and how many become leads?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_form_submitted replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_form_submitted
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: completed_fields, type: array, example: "[name, email, goal]", description: "The fields the person left filled (blurred with a non-empty value) before submitting, in the order they were completed; a field submitted with Enter or autofilled without leaving it is not in it" }
+      - { name: completed_count, type: numeric, example: "3", description: "How many fields are in completed_fields" }
+      - { name: completed_optional, type: boolean, example: true | false, description: "The optional Company website field was filled at submit" }
+      - { name: time_to_first_input_ms, type: numeric, example: "4210", description: "Form mount to the first focus or edit of a field, in the browser (performance.now)" }
+      - { name: time_to_submit_ms, type: numeric, example: "38250", description: "Form mount to the submit, in the browser (performance.now)" }
+    fires_at:
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: submit
+        needs: [Name filled, a valid Work email]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: contact_lead_captured
+    section: Contact and booking
+    description: >-
+      /api/contact's answer to a contact form submit, sent from the route through trackServer after the response,
+      on the lead's profile (the browser's own Mixpanel id when the form sent one, else users.mixpanel_id, else the email's visitor id). status=success when the route
+      accepted the lead, recorded it in email_submissions and answered 201 with the Calendly scheduling link.
+      status=failed when it refused the submit with a 400: no name (name_required) or a missing or malformed
+      email (invalid_email); the form's own checks refuse both before any request, so these come only from
+      requests sent to the route directly, and a refusal with no email at all has no profile, so nothing is sent. An invalid JSON
+      body and a request that never reaches the route send nothing. Only production sends, as for every
+      trackServer event, so the /admin preview never does.
+    question: How many leads did the contact form capture each week, and what share of them booked a call?
+    track_via: server
+    pair: contact_form_submitted
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: name_required | invalid_email, values: [name_required, invalid_email], only_when: status=failed }
+      - { name: entry_point, type: string, example: ask | ask_answer, only_when: "the /contact URL the form was on carried a ?source of lower-case letters, digits and underscores (the form posts it as entryPoint)", description: "The /contact URL's ?source, as on contact_form_viewed" }
+      - { name: email, type: string, example: you@company.com, description: "The lead's email, lower-cased; added by trackServer (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: server
+        api: POST /api/contact
+        needs: [Name filled, a valid Work email]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F2)", change: "SEMANTICS: sent from /api/contact (server) instead of the browser, with status and failure_reason, so refused submits are counted too (filter status=success for leads). The browser's funnel properties (completed_fields, completed_count, completed_optional, time_to_first_input_ms, time_to_submit_ms) stay on contact_form_submitted and Contact Lead Captured. Added entry_point (audit F4)" }
+  - name: Contact Lead Captured
+    section: Contact and booking
+    description: >-
+      The browser's lead event: /api/contact accepted the lead (201 with a Calendly scheduling link). Sent in the
+      browser after the response, after rememberVisitor identifies the browser and just before the redirect to
+      Calendly (the redirect waits for its callback), with the same funnel properties as the submit plus the
+      email. Not sent when the route answers with an error, the request fails, or the response has no
+      scheduling link. contact_lead_captured, which replaces it, is sent by the route itself since 20 Nov 2026
+      and counts refusals too; this one is sent until 2026-12-18.
+    question: How many leads did the contact form capture each week, and what share of them booked a call?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_lead_captured replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_lead_captured
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: completed_fields, type: array, example: "[name, email, goal]", description: "The fields the person left filled (blurred with a non-empty value) before submitting, in the order they were completed; a field submitted with Enter or autofilled without leaving it is not in it" }
+      - { name: completed_count, type: numeric, example: "3", description: "How many fields are in completed_fields" }
+      - { name: completed_optional, type: boolean, example: true | false, description: "The optional Company website field was filled at submit" }
+      - { name: time_to_first_input_ms, type: numeric, example: "4210", description: "Form mount to the first focus or edit of a field, in the browser (performance.now)" }
+      - { name: time_to_submit_ms, type: numeric, example: "38250", description: "Form mount to the submit, in the browser (performance.now)" }
+      - { name: email, type: string, example: you@company.com, description: "The lead's email, lower-cased (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /contact
+        element: button "Pick a time →"
+        trigger: after_api
+        api: POST /api/contact
+        needs: [Name filled, a valid Work email]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F2)", change: "Description rewritten: contact_lead_captured is now sent from /api/contact, so this is no longer its twin" }
+  - name: contact_form_abandoned
+    section: Contact and booking
+    description: >-
+      The visitor leaves /contact after starting the form and before a successful submit: tab close, reload or
+      a full-page navigation (the pagehide event), once per page view, sent with sendBeacon. Not sent after a
+      successful submit (the Calendly redirect), and not sent when the visitor leaves through an in-site link
+      handled by the Next.js router, which unmounts the form without a pagehide.
+    question: How many visitors start the contact form and leave without sending it, and how far do they get?
+    track_via: client
+    pair: contact_form_started
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: furthest_field, type: string, example: name | email | website | goal, values: [name, email, website, goal], description: "The furthest field down the form the visitor focused" }
+      - { name: completed_fields, type: array, example: "[name, email]" }
+      - { name: completed_count, type: numeric, example: "2" }
+      - { name: time_on_form_ms, type: numeric, example: "61200", description: "Form mount to leaving the page, in the browser" }
+    fires_at:
+      - page: /contact
+        element: leaving the page (closing the tab, reloading, or a full-page navigation) after focusing or typing in a field, before a successful submit
+        trigger: click
+        needs: [the form started]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Contact Form Abandoned
+    section: Contact and booking
+    description: >-
+      The Title Case name of contact_form_abandoned: sent from the line next to it, at the same moment and
+      with the same properties (see contact_form_abandoned). Both are sent until 2026-12-18.
+    question: How many visitors start the contact form and leave without sending it, and how far do they get?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; contact_form_abandoned replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: contact_form_abandoned
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+      - { name: furthest_field, type: string, example: name | email | website | goal, values: [name, email, website, goal], description: "The furthest field down the form the visitor focused" }
+      - { name: completed_fields, type: array, example: "[name, email]" }
+      - { name: completed_count, type: numeric, example: "2" }
+      - { name: time_on_form_ms, type: numeric, example: "61200", description: "Form mount to leaving the page, in the browser" }
+    fires_at:
+      - page: /contact
+        element: leaving the page (closing the tab, reloading, or a full-page navigation) after focusing or typing in a field, before a successful submit
+        trigger: click
+        needs: [the form started]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: calendly_event_scheduled
+    section: Contact and booking
+    description: >-
+      The /contact/booked page loads. Calendly redirects the invitee there after a booking on
+      calendly.com/ansh-datalyze/chat is confirmed, but the event is sent on every load of the page: a reload,
+      a revisit, a direct visit, and the /admin editor's preview of the page
+      (/admin/preview/live/contact/booked) all count. A booking whose redirect never loads is not counted.
+      location is always contact_page.
+    question: How many discovery calls were booked last week, and what share of contact-form leads went on to book?
+    track_via: client
+    pair: contact_lead_captured
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact/booked
+        trigger: page_load
+        from: "send the contact form at /contact, pick a time on calendly.com/ansh-datalyze/chat; Calendly redirects here"
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Calendly Event Scheduled
+    section: Contact and booking
+    description: >-
+      The Title Case name of calendly_event_scheduled: sent from the line next to it, at the same moment and
+      with the same properties (see calendly_event_scheduled). Both are sent until 2026-12-18.
+    question: How many discovery calls were booked last week, and what share of contact-form leads went on to book?
+    track_via: client
+    status: deprecated
+    deprecated_reason: The 18 Nov 2026 rename to snake_case; calendly_event_scheduled replaces it and both are sent side by side until dual_fire_until.
+    replaced_by: calendly_event_scheduled
+    dual_fire_until: 2026-12-18
+    properties:
+      - { name: location, type: string, example: contact_page, values: [contact_page] }
+    fires_at:
+      - page: /contact/booked
+        trigger: page_load
+        from: "send the contact form at /contact, pick a time on calendly.com/ansh-datalyze/chat; Calendly redirects here"
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: call_booked_from_playbook
+    section: Contact and booking
+    description: >-
+      Sent on the same load of /contact/booked as calendly_event_scheduled, only when this tab's session
+      storage holds the playbook call-intent marker. CallLink sets the marker when a reader clicks Book a call
+      in a chapter's ContactCTA box; this event reads and clears it, so it counts once per marked visit. Not
+      sent for bookings that started anywhere else, in another tab or in a later session.
+    question: How many booked calls started from a playbook chapter, and from which chapters?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: creating-a-tracking-plan | analytics-strategy }
+      - { name: part, type: string, example: foundations | what-to-measure | trustworthy-data }
+      - { name: signed_in, type: boolean, example: true | false, description: "The reader was signed in when they clicked Book a call" }
+      - { name: entry_page, type: string, example: /playbook/creating-a-tracking-plan, description: "The page this visit entered the playbook on" }
+    fires_at:
+      - page: /contact/booked
+        trigger: page_load
+        needs: [the playbook call-intent marker in this tab's session storage]
+        from: "click link \"Book a call\" in the box partway through a chapter (/playbook/[slug]), send the contact form and book on Calendly in the same tab; Calendly redirects here"
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

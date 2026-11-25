@@ -1,0 +1,122 @@
+events:
+  - name: checkout_started
+    section: Billing
+    description: >-
+      The site's checkout route created a Stripe Embedded Checkout session for one plan and is about to return
+      its client secret, so the Checkout popup opens. Sent from the server (POST /api/account/checkout) after
+      startCheckout succeeds, on the person's account. Not sent when the route refuses: an unknown plan, the
+      rate limit, a live subscription to that product (has_subscription), free access, or another billing change
+      in progress. Checkout itself happens at Stripe: a person who closes the popup or whose card fails has a
+      checkout_started with no payment_completed, which is how abandonment is measured.
+    question: How many people start checkout for each plan, from onboarding or the Billing page, and how many of them go on to pay?
+    track_via: server
+    properties:
+      - { name: plan_id, type: string, example: tracking-monthly | mcp-monthly, values: [mcp-monthly, tracking-monthly] }
+      - { name: entry_point, type: string, example: onboarding | billing, values: [onboarding, billing], description: "onboarding when the request's referer path starts with /tracking-agent/start (the Pay screen), else billing" }
+      - { name: email, type: string, example: founder@acme.com, description: "The account's email, added by trackServer (the team sends email on relevant events, .datalyze/context.md)" }
+    fires_at:
+      - page: /billing
+        element: button "Subscribe" (a plan's card under "Choose a plan")
+        trigger: server
+        api: POST /api/account/checkout
+        needs: [signed_in, no live subscription to that product, no free access]
+      - page: /tracking-agent/start/[step]
+        from: onboarding's Pay screen, /tracking-agent/start/pay
+        element: button "Pay with Stripe"
+        trigger: server
+        api: POST /api/account/checkout
+        needs: [signed_in, onboarding at the pay step, no live Tracking Agent subscription]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: payment_completed
+    section: Billing
+    description: >-
+      A Stripe invoice was paid, or a payment failed, as the server learns it from a Stripe webhook. Two senders.
+      The site (lib/account/stripe-events.ts, POST /api/account/webhook): status=success once per invoice when
+      applyInvoice first records it and grants the plan (from checkout.session.completed or invoice.paid,
+      whichever lands first; a redelivery sends nothing); status=failed when an invoice was paid but matched no
+      plan, so nothing was granted (a $0 trial invoice sends nothing). The site doesn't listen to
+      invoice.payment_failed, so a declined renewal card sends nothing from the site. Pravix
+      (pravix/server/routes/webhook.ts, POST /api/v1/webhooks/stripe): status=success on invoice.payment_succeeded
+      once the payment history is saved and the account owner is found, status=failed on invoice.payment_failed.
+      Sent beside Pravix's Payment Succeeded and Payment Failed until 2026-12-18.
+    question: How much revenue comes in each week, by product and plan, from first payments versus renewals, and how many payments fail and why?
+    track_via: server
+    pair: checkout_started
+    properties:
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: unknown_price | wrong_amount | invoice_payment_failed, values: [not_paid, wrong_currency, no_subscription, no_lines, unknown_price, total_mismatch, proration, multiple_lines, wrong_amount, invoice_payment_failed], only_when: status=failed, description: "The site: why a paid invoice was refused (RefusalCode in lib/account/billing.ts). Pravix: invoice_payment_failed, a failed charge" }
+      - { name: amount, type: numeric, example: "250 | 49", description: "In the invoice's currency's main unit (dollars): the amount paid, or due on a failed Pravix charge" }
+      - { name: currency, type: string, example: usd }
+      - { name: stripe_invoice_id, type: string, example: in_1QxY2zAbCdEfGhIj }
+      - { name: stripe_subscription_id, type: string, example: sub_1QxY2zAbCdEfGhIj }
+      - { name: plan_id, type: string, example: tracking-monthly | mcp-monthly, values: [mcp-monthly, tracking-monthly], only_when: "the invoice resolved to a plan (every success, and refusals such as wrong_amount or proration)", description: "The plan the invoice is for; an invoice whose lines match no plan has none" }
+      - { name: product, type: string, example: tracking_agent | mcp, values: [mcp, tracking_agent], only_when: "the invoice resolved to a plan", description: "The product the plan grants" }
+      - { name: billing_reason, type: string, example: subscription_create | subscription_cycle, description: "Stripe's invoice.billing_reason: the first payment or a renewal" }
+      - { name: account_id, type: string, example: 7c0e1f52-3a4b-4d7e-9a10-2b6c8d9e0f11, only_when: "sent by Pravix (pravix/server/routes/webhook.ts): a Pravix account" }
+      - { name: period_start, type: numeric, example: "1763510400", only_when: status=success, description: "Unix seconds" }
+      - { name: period_end, type: numeric, example: "1766102400", only_when: status=success, description: "Unix seconds" }
+      - { name: attempt_count, type: numeric, example: "1 | 2", only_when: failure_reason=invoice_payment_failed, description: "Stripe's charge attempts on the invoice so far" }
+      - { name: email, type: string, example: founder@acme.com, description: "The account's email, added by trackServer on the site's events" }
+    fires_at:
+      - page: /billing
+        element: Stripe's pay button in the "Checkout" popup, after button "Subscribe"
+        trigger: server
+        api: POST /api/account/webhook
+        needs: [signed_in, checkout_started, Stripe sends checkout.session.completed or invoice.paid]
+      - page: /tracking-agent/start/[step]
+        from: onboarding's Pay screen, /tracking-agent/start/pay, after button "Pay with Stripe"
+        element: Stripe's pay button in the checkout popup
+        trigger: server
+        api: POST /api/account/webhook
+        needs: [signed_in, checkout_started, Stripe sends checkout.session.completed or invoice.paid]
+      - page: /billing
+        from: no page; Stripe charges a monthly renewal and sends invoice.paid
+        element: none (Stripe renewal)
+        trigger: server
+        api: POST /api/account/webhook
+        needs: [a live subscription reaching its renewal date]
+      - page: /pravix/settings
+        from: Pravix's upgrade popup (button "Set up payment") or a Pravix renewal; Stripe sends invoice.payment_succeeded or invoice.payment_failed
+        element: testid "button-setup-payment"
+        trigger: server
+        api: POST /api/v1/webhooks/stripe
+        needs: [signed_in, a Pravix subscription]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: subscription_changed
+    section: Billing
+    description: >-
+      A subscription to one of the site's plans changed in a way a report counts: its status changed, a
+      cancellation was set or undone (cancel_at_period_end or cancel_at), its price changed, or it ended. Sent
+      from the server by the Stripe webhook (POST /api/account/webhook) on customer.subscription.updated when
+      subscriptionChanged says so, and on every customer.subscription.deleted, after the subscription is
+      re-read from Stripe and saved. Not sent on checkout completion, on a renewal, or on the first payment's
+      incomplete to active (that is payment_completed). Pravix's subscription events are separate.
+    question: How many subscriptions are cancelled, undone, go past due or end each week, for which plan?
+    track_via: server
+    properties:
+      - { name: subscription_status, type: string, example: active | canceled | past_due, values: [active, canceled, incomplete, incomplete_expired, past_due, paused, trialing, unpaid], description: "Stripe's subscription status after the change" }
+      - { name: cancel_at_period_end, type: boolean, example: "true | false", description: "A cancellation is set (at period end or for a date)" }
+      - { name: plan_id, type: string, example: tracking-monthly | mcp-monthly, values: [mcp-monthly, tracking-monthly], only_when: "the subscription's price is one of the plans (planFor knows it)" }
+      - { name: email, type: string, example: founder@acme.com, description: "The account's email, added by trackServer" }
+    fires_at:
+      - page: /billing
+        from: the Stripe billing portal, opened with button "Open the billing portal"; Stripe sends customer.subscription.updated or .deleted
+        element: Stripe portal's cancel or renew button
+        trigger: server
+        api: POST /api/account/webhook
+        needs: [signed_in, a live subscription]
+      - page: /billing
+        from: no page; a renewal that fails turns the subscription past_due or ends it, and Stripe sends the event
+        element: none (Stripe subscription change)
+        trigger: server
+        api: POST /api/account/webhook
+        needs: [a live subscription]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

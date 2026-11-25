@@ -1,0 +1,632 @@
+events:
+  - name: cta_button_clicked
+    section: Marketing site
+    description: >-
+      A visitor clicks a CtaButton (app/_components/cta-button.tsx): the "Book a call" buttons into /contact on the
+      home, service, industry, about, case-study, resources and tool pages and in the header, the "Get started" buttons
+      into /account/signup on /tracking-agent, /mcp, /pravix and /alerting, and the few CtaButtons that only move
+      inside the site (the home method steps, the home problem panels' links into service pages, "See how we did it"),
+      and the plain-looking links into /contact: the mobile menu's Contact link, the footer's Contact and Book a Call
+      links and its email link, the book-a-call box after blog posts that have no call to action of their own, and
+      the blog post body's buttons that link to a page on this site. Sent in the browser on the click, before the
+      navigation; it is intent, not a booking or a sign-up. Not sent by Sign in, the header's and menu's page links,
+      or links to other sites. Sent next to CTA Clicked until 2026-12-18.
+    question: Which calls to action bring visitors to /contact and to sign-up, from which page and placement?
+    track_via: client
+    properties:
+      - { name: cta_text, type: string, example: "Book a call | Book a Call | Get started | Get your first run free | Request a custom tool | Book a free analytics audit", description: "The button's label as the page shows it (from content/*.json): the text of the label, also when it is wrapped in an element (the blog box's span)" }
+      - { name: location, type: string, example: "nav_header | nav_mobile | nav_mobile_contact | home_hero | home_why_us | home_method_1 | tracking_agent_hero | service_mixpanel_final_cta | industry_saas_results | alerting_pricing_0 | ab_calculator_ship | footer_contact | footer_book_call | footer_email | blog_post_end | blog_post_body", description: "Which button: a fixed name per call site, or <page>_hero | <page>_results | <page>_final_cta | <page>_pricing_<n> where <page> is home | service_<tool> | service_audit | industry_<industry> | tracking_agent | mcp | pravix | alerting" }
+      - { name: destination, type: string, example: "/contact | /account/signup | mailto:ansh@joindatalyze.com | /services/analytics-audit", description: "Where the button goes: its href as the page gives it, without the query string or fragment" }
+    fires_at:
+      - page: /
+        element: "link \"Book a Call\" in the header (on every site page)"
+        trigger: click
+      - page: /
+        element: "link \"Book a Call\" in the mobile menu (on every site page)"
+        trigger: click
+        needs: [mobile width, menu open]
+      - page: /
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /
+        element: "link \"How an audit works\" (or the open problem's other link: \"How we fix tracking\", \"How we set tools up\", ...) in the open panel of \"What teams come to us with\""
+        trigger: click
+      - page: /
+        element: "link \"Book a call\" under \"What teams come to us with\""
+        trigger: click
+      - page: /
+        element: "link \"Learn more about audits\" (one per method step, up to \"Learn more about the AI layer\")"
+        trigger: click
+      - page: /
+        element: "link \"See how we did it\" under the case studies"
+        trigger: click
+      - page: /
+        element: "link \"Book a Call\" in the closing section"
+        trigger: click
+      - page: /services/mixpanel-implementation
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/mixpanel-implementation
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/mixpanel-implementation
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/amplitude-implementation
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/amplitude-implementation
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/amplitude-implementation
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/posthog-implementation
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/posthog-implementation
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/posthog-implementation
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/bigquery-consulting
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/bigquery-consulting
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/bigquery-consulting
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/analytics-audit
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/analytics-audit
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/analytics-audit
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/analytics-setup
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/analytics-setup
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/analytics-setup
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/data-unification
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/data-unification
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/data-unification
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/reporting-and-analysis
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/reporting-and-analysis
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/reporting-and-analysis
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/ai-layer
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/ai-layer
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/ai-layer
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/data-modelling
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/data-modelling
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/data-modelling
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /industries/saas
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /industries/saas
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /industries/saas
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /industries/fintech
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /industries/fintech
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /industries/fintech
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /about
+        element: "link \"Book a Call\" in the closing section"
+        trigger: click
+      - page: /case-studies
+        element: "link \"Book a free 30 min audit\""
+        trigger: click
+      - page: /resources
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/[toolId]
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/analytics-strategy-creator
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/event-tracking-plan-generator
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/analytics-maturity-grader/results
+        element: "link \"Book a free audit\" under the scorecard"
+        trigger: click
+        needs: [grader answers completed]
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" in the strip above the article"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" in the call boxes inside the article (after sections 3 and 5)"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" in the call box at the end of the article"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" beside the calculator's plan or verdict"
+        trigger: click
+        needs: [calculator inputs filled]
+      - page: /tracking-agent
+        element: "link \"Get started\" in the hero"
+        trigger: click
+      - page: /tracking-agent
+        element: "link \"Get started\" in the closing section"
+        trigger: click
+      - page: /mcp
+        element: "link \"Get started\" in the hero"
+        trigger: click
+      - page: /mcp
+        element: "link \"Get started\" in the closing section"
+        trigger: click
+      - page: /pravix
+        element: "link \"Get started\" in the hero"
+        trigger: click
+      - page: /pravix
+        element: "link \"Get started\" in the closing section"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get your first run free\" in the hero"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get your first run free\" on the first pricing card"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get started\" on the second pricing card"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get your first run free\" in the closing section"
+        trigger: click
+      - page: /
+        element: "link \"Contact\" in the mobile menu (on every site page)"
+        trigger: click
+        needs: [mobile width, menu open]
+      - page: /
+        element: "link \"Contact\" in the footer's Company column (on every site page)"
+        trigger: click
+      - page: /
+        element: "link \"Book a Call\" in the footer's Contact column (on every site page)"
+        trigger: click
+      - page: /
+        element: "link \"ansh@joindatalyze.com\" in the footer's Contact column (on every site page)"
+        trigger: click
+      - page: /blog/[slug]
+        element: "link \"Book a free analytics audit\" in the box after the post"
+        trigger: click
+        needs: [the post has no call to action of its own]
+      - page: /blog/[slug]
+        element: a button in the post body that links to a page on this site
+        trigger: click
+        needs: [the post has a button card linking to a site page]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F4)", change: "Added destination; sent from the mobile menu's Contact link, the footer's Contact, Book a Call and email links, the blog's book-a-call box and the blog body's site buttons (new location values nav_mobile_contact, footer_contact, footer_book_call, footer_email, blog_post_end, blog_post_body); cta_text now also read from a wrapped label" }
+  - name: CTA Clicked
+    section: Marketing site
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside cta_button_clicked from the same click until the dual-fire window ends.
+    replaced_by: cta_button_clicked
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of cta_button_clicked, sent by the same handleClick on every CtaButton click, just before it,
+      with the same properties except destination, which only cta_button_clicked carries.
+    question: Which calls to action bring visitors to /contact and to sign-up, from which page and placement?
+    track_via: client
+    properties:
+      - { name: cta_text, type: string, example: "Book a call | Book a Call | Get started | Get your first run free | Request a custom tool | Book a free analytics audit", description: "The button's label as the page shows it (from content/*.json): the text of the label, also when it is wrapped in an element (the blog box's span)" }
+      - { name: location, type: string, example: "nav_header | nav_mobile | nav_mobile_contact | footer_contact | footer_book_call | footer_email | blog_post_end | blog_post_body | home_hero | home_why_us | home_method_1 | tracking_agent_hero | service_mixpanel_final_cta | industry_saas_results | alerting_pricing_0 | ab_calculator_ship", description: "Which button: a fixed name per call site, or <page>_hero | <page>_results | <page>_final_cta | <page>_pricing_<n> where <page> is home | service_<tool> | service_audit | industry_<industry> | tracking_agent | mcp | pravix | alerting" }
+    fires_at:
+      - page: /
+        element: "link \"Book a Call\" in the header (on every site page)"
+        trigger: click
+      - page: /
+        element: "link \"Book a Call\" in the mobile menu (on every site page)"
+        trigger: click
+        needs: [mobile width, menu open]
+      - page: /
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /
+        element: "link \"How an audit works\" (or the open problem's other link: \"How we fix tracking\", \"How we set tools up\", ...) in the open panel of \"What teams come to us with\""
+        trigger: click
+      - page: /
+        element: "link \"Book a call\" under \"What teams come to us with\""
+        trigger: click
+      - page: /
+        element: "link \"Learn more about audits\" (one per method step, up to \"Learn more about the AI layer\")"
+        trigger: click
+      - page: /
+        element: "link \"See how we did it\" under the case studies"
+        trigger: click
+      - page: /
+        element: "link \"Book a Call\" in the closing section"
+        trigger: click
+      - page: /services/mixpanel-implementation
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/mixpanel-implementation
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/mixpanel-implementation
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/amplitude-implementation
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/amplitude-implementation
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/amplitude-implementation
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/posthog-implementation
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/posthog-implementation
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/posthog-implementation
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/bigquery-consulting
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/bigquery-consulting
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/bigquery-consulting
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/analytics-audit
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/analytics-audit
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/analytics-audit
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/analytics-setup
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/analytics-setup
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/analytics-setup
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/data-unification
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/data-unification
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/data-unification
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/reporting-and-analysis
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/reporting-and-analysis
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/reporting-and-analysis
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/ai-layer
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/ai-layer
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/ai-layer
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /services/data-modelling
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /services/data-modelling
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /services/data-modelling
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /industries/saas
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /industries/saas
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /industries/saas
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /industries/fintech
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /industries/fintech
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /industries/fintech
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "link \"Book a call\" in the hero"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "link \"Book a call\" under the case studies"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "link \"Book a call\" in the closing section"
+        trigger: click
+      - page: /about
+        element: "link \"Book a Call\" in the closing section"
+        trigger: click
+      - page: /case-studies
+        element: "link \"Book a free 30 min audit\""
+        trigger: click
+      - page: /resources
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/[toolId]
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/analytics-strategy-creator
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/event-tracking-plan-generator
+        element: "link \"Request a custom tool\""
+        trigger: click
+      - page: /tools/analytics-maturity-grader/results
+        element: "link \"Book a free audit\" under the scorecard"
+        trigger: click
+        needs: [grader answers completed]
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" in the strip above the article"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" in the call boxes inside the article (after sections 3 and 5)"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" in the call box at the end of the article"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: "link \"Book a call\" beside the calculator's plan or verdict"
+        trigger: click
+        needs: [calculator inputs filled]
+      - page: /tracking-agent
+        element: "link \"Get started\" in the hero"
+        trigger: click
+      - page: /tracking-agent
+        element: "link \"Get started\" in the closing section"
+        trigger: click
+      - page: /mcp
+        element: "link \"Get started\" in the hero"
+        trigger: click
+      - page: /mcp
+        element: "link \"Get started\" in the closing section"
+        trigger: click
+      - page: /pravix
+        element: "link \"Get started\" in the hero"
+        trigger: click
+      - page: /pravix
+        element: "link \"Get started\" in the closing section"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get your first run free\" in the hero"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get your first run free\" on the first pricing card"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get started\" on the second pricing card"
+        trigger: click
+      - page: /alerting
+        element: "link \"Get your first run free\" in the closing section"
+        trigger: click
+      - page: /
+        element: "link \"Contact\" in the mobile menu (on every site page)"
+        trigger: click
+        needs: [mobile width, menu open]
+      - page: /
+        element: "link \"Contact\" in the footer's Company column (on every site page)"
+        trigger: click
+      - page: /
+        element: "link \"Book a Call\" in the footer's Contact column (on every site page)"
+        trigger: click
+      - page: /
+        element: "link \"ansh@joindatalyze.com\" in the footer's Contact column (on every site page)"
+        trigger: click
+      - page: /blog/[slug]
+        element: "link \"Book a free analytics audit\" in the box after the post"
+        trigger: click
+        needs: [the post has no call to action of its own]
+      - page: /blog/[slug]
+        element: a button in the post body that links to a page on this site
+        trigger: click
+        needs: [the post has a button card linking to a site page]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F4)", change: "Sent from the new CtaButton call sites too (mobile Contact, footer, blog box and body buttons), from the same handleClick; cta_text now also read from a wrapped label" }
+  - name: home_problem_opened
+    section: Marketing site
+    description: >-
+      A visitor opens one of the problem bubbles in the homepage's "What teams come to us with" section (WhyUs). Sent in
+      the browser when the click opens an item. Not sent for the first item being open when the page loads, not on a
+      desktop click on the item already open (nothing changes), and not when a mobile tap closes the open item.
+      Sent next to Home Problem Opened until 2026-12-18.
+    question: Which problems do homepage visitors open before they book a call?
+    track_via: client
+    properties:
+      - { name: problem, type: string, example: "Revenue doesn't add up | We don't trust our data | GA4 and Mixpanel don't match", description: "The bubble's label, from content/home.json whyUs.items" }
+      - { name: position, type: numeric, example: "2 | 3 | 1", description: "The bubble's place in the list, counting from 1" }
+    fires_at:
+      - page: /
+        element: "button with the problem's label, e.g. \"Revenue doesn't add up\", under \"What teams come to us with\""
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Home Problem Opened
+    section: Marketing site
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside home_problem_opened from the same click until the dual-fire window ends.
+    replaced_by: home_problem_opened
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of home_problem_opened, sent by the same toggle just before it, with the same properties.
+    question: Which problems do homepage visitors open before they book a call?
+    track_via: client
+    properties:
+      - { name: problem, type: string, example: "Revenue doesn't add up | We don't trust our data | GA4 and Mixpanel don't match", description: "The bubble's label, from content/home.json whyUs.items" }
+      - { name: position, type: numeric, example: "2 | 3 | 1", description: "The bubble's place in the list, counting from 1" }
+    fires_at:
+      - page: /
+        element: "button with the problem's label, e.g. \"Revenue doesn't add up\", under \"What teams come to us with\""
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: industry_problem_opened
+    section: Marketing site
+    description: >-
+      A visitor opens one of the problem bubbles on an industry page (/industries/saas, /fintech, /consumer-apps;
+      IndustryProblems). Sent in the browser when the click opens an item. Not sent for the first item being open when
+      the page loads, not on a desktop click on the item already open, and not when a mobile tap closes the open item.
+      Sent next to Industry Problem Opened until 2026-12-18.
+    question: Which problems do visitors open on each industry page before they book a call?
+    track_via: client
+    properties:
+      - { name: industry, type: string, example: saas | fintech | consumer, values: [saas, fintech, consumer], description: "The industry page's id; /industries/consumer-apps sends consumer" }
+      - { name: problem, type: string, example: "Trials not converting | KYC drop-off | Onboarding drop-off", description: "The bubble's label, from content/industry-<industry>.json problems.items" }
+      - { name: position, type: numeric, example: "2 | 4 | 1", description: "The bubble's place in the list, counting from 1" }
+    fires_at:
+      - page: /industries/saas
+        element: "button with the problem's label, e.g. \"Trials not converting\", under the industry page's problems section"
+        trigger: click
+      - page: /industries/fintech
+        element: "button with the problem's label, e.g. \"KYC drop-off\", under the industry page's problems section"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "button with the problem's label, e.g. \"Onboarding drop-off\", under the industry page's problems section"
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Industry Problem Opened
+    section: Marketing site
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside industry_problem_opened from the same click until the dual-fire window ends.
+    replaced_by: industry_problem_opened
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of industry_problem_opened, sent by the same toggle just before it, with the same properties.
+    question: Which problems do visitors open on each industry page before they book a call?
+    track_via: client
+    properties:
+      - { name: industry, type: string, example: saas | fintech | consumer, values: [saas, fintech, consumer], description: "The industry page's id; /industries/consumer-apps sends consumer" }
+      - { name: problem, type: string, example: "Trials not converting | KYC drop-off | Onboarding drop-off", description: "The bubble's label, from content/industry-<industry>.json problems.items" }
+      - { name: position, type: numeric, example: "2 | 4 | 1", description: "The bubble's place in the list, counting from 1" }
+    fires_at:
+      - page: /industries/saas
+        element: "button with the problem's label, e.g. \"Trials not converting\", under the industry page's problems section"
+        trigger: click
+      - page: /industries/fintech
+        element: "button with the problem's label, e.g. \"KYC drop-off\", under the industry page's problems section"
+        trigger: click
+      - page: /industries/consumer-apps
+        element: "button with the problem's label, e.g. \"Onboarding drop-off\", under the industry page's problems section"
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: $mp_web_page_view
+    section: Marketing site
+    description: >-
+      Every page load and every client-side route change on www and app.joindatalyze.com, sent by PageviewTracker
+      (app/_components/mixpanel-provider.tsx, in the root layout) through trackPageview (lib/mixpanel.ts) when the path
+      or the query string changes. Mixpanel's own autocapture page view is off, so this is the only one. Not sent on the
+      secret-handling routes (/tracking-agent/start, /setup, /review, /dashboard, /github, /plan, /verify, /mcp/dashboard),
+      in a tab holding a GitHub sign-in, or from hosts other than production (localhost only with
+      NEXT_PUBLIC_MIXPANEL_SEND_LOCAL=1). One-time codes and tokens (?code=, ?state=, ?installation_id=, ?token=) are
+      dropped from the URL; UTMs are kept. On the app host, Pravix (/pravix/*) sends it itself, with the same properties,
+      from PageviewTracker (pravix/client/src/App.tsx) through trackPageview (pravix/client/src/lib/pageview.ts, sent by
+      mixpanelDirect.ts) on load and on every route or query change; the SDK's own page view is off there too.
+    question: How many visitors reach each page, from which source, and how many of them go on to /contact or sign-up?
+    track_via: client
+    properties:
+      - { name: page, type: string, example: "/ | /tracking-agent | /services/analytics-audit | /contact?utm_source=linkedin", description: "The path plus the scrubbed query string" }
+      - { name: current_domain, type: string, example: www.joindatalyze.com | app.joindatalyze.com }
+      - { name: current_url_path, type: string, example: "/ | /tracking-agent | /blog/mixpanel-vs-amplitude/" }
+      - { name: current_url_protocol, type: string, example: "https: | http: (localhost verification only)" }
+      - { name: current_url_search, type: string, example: "?utm_source=linkedin&utm_medium=social", only_when: the URL has a query string, description: "The scrubbed query string with its leading ?; an empty string when the URL has none" }
+      - { name: current_page_title, type: string, example: "Datalyze - Analytics & Growth Partner for Startups", description: "document.title when the page view is sent; pages with their own title use the template <page title> | Datalyze" }
+    fires_at:
+      - page: /
+        element: "the page itself (any route of the site and app host)"
+        trigger: page_load
+      - page: /contact
+        element: "the page itself"
+        trigger: page_load
+      - page: /tracking-agent
+        element: "the page itself"
+        trigger: page_load
+      - page: /account/signup
+        element: "the page itself"
+        trigger: page_load
+      - page: /pravix
+        element: "the page itself (any Pravix route on the app host)"
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-25, ref: datalyze/fix-verify-20261125-1338-ef158a1, change: "Verification V1: Pravix on the app host sends it through trackPageview with page, current_url_search and the other site properties, instead of the SDK's own page view; fires_at /pravix added" }

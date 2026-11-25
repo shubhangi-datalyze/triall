@@ -1,0 +1,368 @@
+events:
+  - name: notification_channel_added
+    section: Pravix notifications
+    description: >-
+      A Slack or Discord channel was saved for the account. Sent from POST /api/v1/integrations after
+      storage.createNotificationChannel writes the row (Discord webhooks are verified first), on the person
+      in Settings. Not sent when the request is refused (unknown provider, missing or invalid webhook URL,
+      Discord webhook that can't be verified, setup outside the account, encryption not configured) or the
+      write fails.
+    question: How many accounts connect a Slack or Discord channel, which provider, and for every setup or one?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channel_id, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+      - { name: min_severity, type: string, example: alert | all, values: [alert, all] }
+      - { name: scoped_to_setup, type: boolean, example: "false | true" }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Add channel" (in the "Add a notification channel" dialog)
+        trigger: server
+        api: POST /api/v1/integrations
+        needs: [signed_in, a valid Slack or Discord webhook URL]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Channel Added
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Renamed to snake_case notification_channel_added on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_channel_added
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of notification_channel_added, sent beside it after the channel row is written.
+    question: How many accounts connect a Slack or Discord channel?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+      - { name: minSeverity, type: string, example: alert | all, values: [alert, all] }
+      - { name: scopedToSetup, type: boolean, example: "false | true" }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Add channel" (in the "Add a notification channel" dialog)
+        trigger: server
+        api: POST /api/v1/integrations
+        needs: [signed_in, a valid Slack or Discord webhook URL]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: notification_channel_updated
+    section: Pravix notifications
+    description: >-
+      A channel's settings were changed. Sent from PATCH /api/v1/integrations/:id after the row is updated,
+      with the fields the request changed and the channel's enabled and min_severity after the change. Not
+      sent for a channel outside the account, a request with no valid field, or a failed write.
+    question: How often do people mute channels or change how noisy they are, and in which direction?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channel_id, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+      - { name: fields_changed, type: array, example: "[enabled] | [minSeverity]", description: "The request's field names as the API spells them: enabled, minSeverity, setupId, label" }
+      - { name: enabled, type: boolean, example: "true | false" }
+      - { name: min_severity, type: string, example: alert | all, values: [alert, all] }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: switch "Enabled" (on a channel's row)
+        trigger: server
+        api: PATCH /api/v1/integrations/[id]
+        needs: [signed_in, a channel exists]
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: combobox "Minimum severity" (on a channel's row)
+        trigger: server
+        api: PATCH /api/v1/integrations/[id]
+        needs: [signed_in, a channel exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Channel Updated
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Renamed to snake_case notification_channel_updated on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_channel_updated
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of notification_channel_updated, sent beside it after the channel row is updated.
+    question: How often do people mute channels or change how noisy they are?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+      - { name: changedFields, type: array, example: "[enabled] | [minSeverity]" }
+      - { name: enabled, type: boolean, example: "true | false" }
+      - { name: minSeverity, type: string, example: alert | all, values: [alert, all] }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: switch "Enabled" (on a channel's row)
+        trigger: server
+        api: PATCH /api/v1/integrations/[id]
+        needs: [signed_in, a channel exists]
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: combobox "Minimum severity" (on a channel's row)
+        trigger: server
+        api: PATCH /api/v1/integrations/[id]
+        needs: [signed_in, a channel exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: notification_channel_deleted
+    section: Pravix notifications
+    description: >-
+      A channel was removed. Sent from DELETE /api/v1/integrations/:id after the row is deleted. Not sent for
+      a channel outside the account or a failed delete.
+    question: How many channels get removed, which provider, and how long after they were added?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channel_id, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Remove channel" (on a channel's row)
+        trigger: server
+        api: DELETE /api/v1/integrations/[id]
+        needs: [signed_in, a channel exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Channel Deleted
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Renamed to snake_case notification_channel_deleted on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_channel_deleted
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of notification_channel_deleted, sent beside it after the row is deleted.
+    question: How many channels get removed?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Remove channel" (on a channel's row)
+        trigger: server
+        api: DELETE /api/v1/integrations/[id]
+        needs: [signed_in, a channel exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: notification_channel_tested
+    section: Pravix notifications
+    description: >-
+      The outcome of "Send test message" on a channel. Sent from POST /api/v1/integrations/:id/test after the
+      sample alert is posted (status=success) or when anything in the handler throws (status=failed,
+      failure_reason=send_error), before the 502. Not sent for a channel outside the account (404).
+    question: Do channels work when people first test them, and which providers fail?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channel_id, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: send_error, values: [send_error], only_when: status=failed }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Send test message" (on a channel's row)
+        trigger: server
+        api: POST /api/v1/integrations/[id]/test
+        needs: [signed_in, a channel exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Channel Tested
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Folded into notification_channel_tested with status=success on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_channel_tested
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of notification_channel_tested status=success, sent beside it after the sample alert is posted.
+    question: Do channels work when people test them?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: provider, type: string, example: slack | discord, values: [slack, discord] }
+      - { name: success, type: boolean, example: "true", values: [true] }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Send test message" (on a channel's row)
+        trigger: server
+        api: POST /api/v1/integrations/[id]/test
+        needs: [signed_in, a channel exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Channel Test Failed
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Folded into notification_channel_tested with status=failed on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_channel_tested
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of notification_channel_tested status=failed, sent beside it when the test handler throws, with the error text.
+    question: Which channels fail their test, and why?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44 }
+      - { name: errorMessage, type: string, example: "Slack webhook responded 404: no_service" }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Send test message" (on a channel's row)
+        trigger: server
+        api: POST /api/v1/integrations/[id]/test
+        needs: [signed_in, a channel exists, the post fails]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: notification_sent
+    section: Pravix notifications
+    description: >-
+      The outcome of delivering a completed run's alert to one destination, sent by the notification
+      dispatcher on the account owner: once for email (only when the run's aggregated status isn't ok) and
+      once per enabled Slack or Discord channel whose minimum severity the run clears. status=success after
+      the send resolves, status=failed with failure_reason=send_error when it throws. Not sent when the
+      notification content can't be built, when a channel's provider has no registered sender, or when no
+      destination qualifies. The email success is also sent when the notifier finds no eligible admin and
+      sends nothing.
+    question: How many run alerts reach people each day, by email or which chat provider, and how many fail?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: 9612d3cd-5c3d-4e1b-8a5b-b5428916160a }
+      - { name: channel, type: string, example: email | slack | discord, values: [email, slack, discord] }
+      - { name: channel_id, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44, only_when: channel=slack|discord }
+      - { name: severity, type: string, example: alert | skipped | ok, values: [ok, alert, skipped], description: "The run's aggregated status; email only goes out on alert or skipped" }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: send_error, values: [send_error], only_when: status=failed }
+    fires_at:
+      - element: the run's completion message (email to the account's admins)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run completed or failed with aggregated status alert or skipped]
+      - element: the run's completion message (one per matching Slack or Discord channel)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run completed or failed, an enabled channel whose minimum severity the run clears]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Sent
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Folded into notification_sent with status=success on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_sent
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of notification_sent status=success, sent beside it for the email and each channel
+      that was delivered, on the account owner, with accountId from trackForAccount.
+    question: How many run alerts reach people each day, by email or chat?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: 9612d3cd-5c3d-4e1b-8a5b-b5428916160a }
+      - { name: channel, type: string, example: email | slack, values: [email, slack, discord] }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44, only_when: channel=slack|discord }
+      - { name: severity, type: string, example: alert | skipped, values: [ok, alert, skipped] }
+    fires_at:
+      - element: the run's completion message (email to the account's admins)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run completed or failed with aggregated status alert or skipped]
+      - element: the run's completion message (one per matching Slack or Discord channel)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run completed or failed, an enabled channel whose minimum severity the run clears]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Notification Failed
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Folded into notification_sent with status=failed on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: notification_sent
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of notification_sent status=failed, sent beside it when the email or a channel's post throws, with the error text.
+    question: Which alert deliveries fail, by channel, and why?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: 9612d3cd-5c3d-4e1b-8a5b-b5428916160a }
+      - { name: channel, type: string, example: email | slack, values: [email, slack, discord] }
+      - { name: channelId, type: string, example: 3f0c2a7e-9b1d-4e8a-a6c2-5d7f1e9b0c44, only_when: channel=slack|discord }
+      - { name: severity, type: string, example: alert | skipped, values: [ok, alert, skipped] }
+      - { name: errorMessage, type: string, example: "Slack webhook responded 404: no_service" }
+    fires_at:
+      - element: the run's completion message (email to the account's admins)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run completed or failed with aggregated status alert or skipped, the send fails]
+      - element: the run's completion message (one per matching Slack or Discord channel)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [an enabled channel whose minimum severity the run clears, the post fails]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: email_notifications_toggled
+    section: Pravix notifications
+    description: >-
+      A person turned their own alert emails on or off. Sent from PATCH /api/v1/users/preferences after the
+      preference is saved, on that person, with the new value. Not sent when the body isn't a boolean or the
+      write fails. The setting only matters for account admins: only admins with it on get run alert emails.
+    question: How many people turn alert emails off, and does it follow a run of noisy alerts?
+    track_via: server
+    properties:
+      - { name: enabled, type: boolean, example: "false | true" }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: switch "Email Notifications" (Notifications card)
+        trigger: server
+        api: PATCH /api/v1/users/preferences
+        needs: [signed_in]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Email Notifications Toggled
+    section: Pravix notifications
+    status: deprecated
+    deprecated_reason: Renamed to snake_case email_notifications_toggled on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: email_notifications_toggled
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of email_notifications_toggled, sent beside it after the preference is saved.
+    question: How many people turn alert emails off?
+    track_via: server
+    properties:
+      - { name: enabled, type: boolean, example: "false | true" }
+    fires_at:
+      - page: /settings
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: switch "Email Notifications" (Notifications card)
+        trigger: server
+        api: PATCH /api/v1/users/preferences
+        needs: [signed_in]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

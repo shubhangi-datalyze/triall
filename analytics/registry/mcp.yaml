@@ -1,0 +1,65 @@
+events:
+  - name: mcp_tool_called
+    section: Datalyze MCP
+    description: >-
+      The Datalyze MCP server (/api/datalyze/mcp) answered one tool call from a person's AI client. Sent on the server,
+      after the response, once the tool's answer is built: status=success for a normal answer, status=failed when the
+      answer is an MCP error (no live MCP access, an expired or unreadable task token, a report the step's checks
+      refused, a missing chapter, or an exception). Not sent for requests refused before a tool runs: a missing or
+      invalid bearer (the 401 sign-in challenge) or arguments the MCP SDK rejects on its input schema.
+      Sent only from Vercel production.
+    question: How many tool calls do people's AIs make each week, on which tools and workflows, and how many fail, for lack of access or otherwise?
+    track_via: server
+    properties:
+      - { name: tool, type: string, example: start_any_analytics_question_metrics_retention_funnels_tracking | next_step | search_knowledge, values: [start_any_analytics_question_metrics_retention_funnels_tracking, start_task, next_step, search_knowledge, get_chapter] }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: no_access | tool_error, values: [no_access, tool_error], only_when: status=failed }
+      - { name: workflow, type: string, example: answer-question | explain-change | audit | plan, only_when: "tool is a start tool, or next_step with a task token that reads", description: "The workflow id from analytics-agent/workflows; start tools always send it, next_step when the task token decodes, search_knowledge and get_chapter never" }
+      - { name: email, type: string, example: reader@example.com, description: "The account's email, added by trackServer (.datalyze/context.md: email on relevant events)" }
+    fires_at:
+      - page: /api/datalyze/mcp
+        element: tool "start_any_analytics_question_metrics_retention_funnels_tracking" (or its alias "start_task"), called by the person's AI client
+        trigger: server
+        api: POST /api/datalyze/mcp
+        needs: [mcp_oauth_token_or_api_key]
+      - page: /api/datalyze/mcp
+        element: tool "next_step", called by the person's AI client
+        trigger: server
+        api: POST /api/datalyze/mcp
+        needs: [mcp_oauth_token_or_api_key, task_token]
+      - page: /api/datalyze/mcp
+        element: tool "search_knowledge", called by the person's AI client
+        trigger: server
+        api: POST /api/datalyze/mcp
+        needs: [mcp_oauth_token_or_api_key]
+      - page: /api/datalyze/mcp
+        element: tool "get_chapter", called by the person's AI client
+        trigger: server
+        api: POST /api/datalyze/mcp
+        needs: [mcp_oauth_token_or_api_key]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: mcp_connected
+    section: Datalyze MCP
+    description: >-
+      A signed-in person clicked Allow on the MCP consent page (/mcp/authorize) and the server issued an OAuth
+      authorization code for their AI client (Claude, ChatGPT, Gemini, Cursor...). Sent on the server from
+      POST /api/oauth/authorize after issueCode resolves, before the client trades the code for tokens. Not sent on
+      Cancel, on a request that fails the OAuth checks, or when the session has ended (401). Not sent when a coding
+      agent connects with the dashboard API key. Abandonment of the consent page is not a status value: it shows as a
+      consent visit with no mcp_connected. Sent only from Vercel production.
+    question: How many people connect the MCP to an AI client each week, and from which clients?
+    track_via: server
+    properties:
+      - { name: mcp_client, type: string, example: "An MCP client | Claude (UNCONFIRMED)", description: "The client's registered client_name, its metadata document's name or hostname, else 'An MCP client'" }
+      - { name: email, type: string, example: reader@example.com, description: "The account's email, added by trackServer (.datalyze/context.md: email on relevant events)" }
+    fires_at:
+      - page: /mcp/authorize
+        element: button "Allow"
+        trigger: server
+        api: POST /api/oauth/authorize
+        needs: [signed_in, oauth_request_from_mcp_client]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

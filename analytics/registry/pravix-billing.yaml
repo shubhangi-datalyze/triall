@@ -1,0 +1,282 @@
+events:
+  - name: Payment Succeeded
+    section: Pravix billing
+    status: deprecated
+    deprecated_reason: >-
+      Folded into payment_completed with status=success on 18 Nov 2026 (one outcome event with status, not a
+      success and a failure event); sent beside it until 2026-12-18.
+    replaced_by: payment_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      Sent by the Pravix server from the Stripe invoice.payment_succeeded webhook, after the payment history row is
+      written, for the account's owner. Fires for the first invoice of a subscription and for every renewal, and
+      for a $0 invoice too. Not sent for an invoice with no subscription, a subscription Pravix has no row for, or
+      an account with no owner.
+    question: How much revenue does Pravix collect each month, from how many paying accounts?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 3f6c1d2e-8a4b-4c3f-9d1e-2b7a5c9e0f14 }
+      - { name: amount, type: numeric, example: "49", description: "invoice.amount_paid in major units of currency (dollars)" }
+      - { name: currency, type: string, example: usd }
+      - { name: stripeInvoiceId, type: string, example: in_1QbX7aKZ2s9fT4hJ }
+      - { name: stripeSubscriptionId, type: string, example: sub_1QbX6zKZ2s9fT4hJ }
+      - { name: periodStart, type: numeric, example: "1763510400", description: "The invoice period's start, unix seconds" }
+      - { name: periodEnd, type: numeric, example: "1766102400", description: "The invoice period's end, unix seconds" }
+    fires_at:
+      - page: /pravix
+        element: Stripe Checkout "Subscribe" (Stripe hosted page), then each monthly renewal with no page; Stripe webhook invoice.payment_succeeded
+        trigger: server
+        api: POST /api/v1/webhooks/stripe
+        needs: [signed_in, a Stripe subscription for the account]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Payment Failed
+    section: Pravix billing
+    status: deprecated
+    deprecated_reason: >-
+      Folded into payment_completed with status=failed on 18 Nov 2026; sent beside it until 2026-12-18.
+    replaced_by: payment_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      Sent by the Pravix server from the Stripe invoice.payment_failed webhook, after the billing session is set to
+      payment_failed, attributed to the account's owner (anonymous when the owner can't be found). Fires once per
+      failed attempt, so Stripe's retries each send one. Not sent for an invoice with no subscription or a
+      subscription Pravix has no row for.
+    question: How many Pravix renewals fail, and how many recover on a later attempt?
+    track_via: server
+    properties:
+      - { name: amount, type: numeric, example: "49", description: "invoice.amount_due in major units of currency (dollars)" }
+      - { name: currency, type: string, example: usd }
+      - { name: stripeInvoiceId, type: string, example: in_1QbX7aKZ2s9fT4hJ }
+      - { name: stripeSubscriptionId, type: string, example: sub_1QbX6zKZ2s9fT4hJ }
+      - { name: attemptCount, type: numeric, example: "1 | 2 | 3" }
+    fires_at:
+      - page: /pravix
+        element: a Stripe renewal charge that fails (no page); Stripe webhook invoice.payment_failed
+        trigger: server
+        api: POST /api/v1/webhooks/stripe
+        needs: [a Stripe subscription for the account]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: payment_initiated
+    section: Pravix billing
+    description: >-
+      Sent by the Pravix server when POST /api/v1/billing/setup-intent has created the Stripe customer (if needed)
+      and a Stripe Checkout session for the $49/month plan, just before it answers with the Checkout URL. The intent
+      of the paid funnel: the outcome is payment_completed from the invoice webhook, and an abandoned Checkout is an
+      intent with no outcome. Not sent when creating the session fails. Sent from the paywall's Set Up Payment
+      Method and from Settings' Upgrade and Reactivate buttons alike.
+    question: How many accounts start Pravix checkout each week, and how many of them go on to pay?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 3f6c1d2e-8a4b-4c3f-9d1e-2b7a5c9e0f14 }
+      - { name: stripe_customer_id, type: string, example: cus_RkT2m9XbQ4vLpa }
+      - { name: checkout_session_id, type: string, example: cs_live_a1B2c3D4e5F6g7H8 }
+    fires_at:
+      - page: /pravix
+        element: button "Set Up Payment Method" (the upgrade dialog)
+        trigger: server
+        api: POST /api/v1/billing/setup-intent
+        needs: [signed_in, stripe available]
+      - page: /pravix/settings
+        element: button "Upgrade to $49/month Plan"
+        trigger: server
+        api: POST /api/v1/billing/setup-intent
+        needs: [signed_in, no active subscription]
+      - page: /pravix/settings
+        element: button "Reactivate Subscription"
+        trigger: server
+        api: POST /api/v1/billing/setup-intent
+        needs: [signed_in, subscription set to cancel at period end]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Payment Initiated
+    section: Pravix billing
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside payment_initiated until 2026-12-18.
+    replaced_by: payment_initiated
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of payment_initiated, sent from the same setup-intent handler on the line before it.
+    question: How many accounts start Pravix checkout each week, and how many of them go on to pay?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 3f6c1d2e-8a4b-4c3f-9d1e-2b7a5c9e0f14 }
+      - { name: stripeCustomerId, type: string, example: cus_RkT2m9XbQ4vLpa }
+      - { name: checkoutSessionId, type: string, example: cs_live_a1B2c3D4e5F6g7H8 }
+    fires_at:
+      - page: /pravix
+        element: button "Set Up Payment Method" (the upgrade dialog)
+        trigger: server
+        api: POST /api/v1/billing/setup-intent
+        needs: [signed_in, stripe available]
+      - page: /pravix/settings
+        element: button "Upgrade to $49/month Plan"
+        trigger: server
+        api: POST /api/v1/billing/setup-intent
+        needs: [signed_in, no active subscription]
+      - page: /pravix/settings
+        element: button "Reactivate Subscription"
+        trigger: server
+        api: POST /api/v1/billing/setup-intent
+        needs: [signed_in, subscription set to cancel at period end]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: subscription_canceled
+    section: Pravix billing
+    description: >-
+      Sent by the Pravix server when a person cancels from Settings: after POST /api/v1/billing/cancel has asked
+      Stripe to cancel the subscription at the end of the period and the local subscription and billing session are
+      marked cancelled. The subscription keeps working until current_period_end. Not sent when the subscription was
+      already cancelled (the handler answers early), when the Stripe call fails, or when Stripe itself ends the
+      subscription (customer.subscription.deleted sends nothing).
+    question: How many paying accounts cancel Pravix each month, and how long before their period ends?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 3f6c1d2e-8a4b-4c3f-9d1e-2b7a5c9e0f14 }
+      - { name: cancel_at_period_end, type: boolean, example: "true" }
+      - { name: current_period_end, type: datetime, example: "2026-12-19T08:30:00.000Z" }
+    fires_at:
+      - page: /pravix/settings
+        element: button "Cancel $49/month Subscription", then OK in the browser's confirm dialog
+        trigger: server
+        api: POST /api/v1/billing/cancel
+        needs: [signed_in, active Stripe subscription]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Subscription Canceled
+    section: Pravix billing
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside subscription_canceled until 2026-12-18.
+    replaced_by: subscription_canceled
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of subscription_canceled, sent from the same cancel handler on the line before it.
+    question: How many paying accounts cancel Pravix each month, and how long before their period ends?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 3f6c1d2e-8a4b-4c3f-9d1e-2b7a5c9e0f14 }
+      - { name: cancelAtPeriodEnd, type: boolean, example: "true" }
+      - { name: currentPeriodEnd, type: datetime, example: "2026-12-19T08:30:00.000Z" }
+    fires_at:
+      - page: /pravix/settings
+        element: button "Cancel $49/month Subscription", then OK in the browser's confirm dialog
+        trigger: server
+        api: POST /api/v1/billing/cancel
+        needs: [signed_in, active Stripe subscription]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: upgrade_modal_viewed
+    section: Pravix billing
+    description: >-
+      Sent in the browser each time the Pravix paywall dialog opens. It opens by itself once per app load when the
+      billing status is free_quota_exhausted or balance_exhausted with no payment method, and when the person clicks
+      Run or Run Now on a setup while an upgrade is required (instead of starting the run). The top of the paid
+      funnel; payment_initiated is the next step. Not sent again while the dialog stays open.
+    question: How many accounts hit the Pravix paywall, and how many of them go on to start checkout?
+    track_via: client
+    properties:
+      - { name: reason, type: string, example: run_paywall, values: [run_paywall] }
+      - { name: billing_status, type: string, example: free_quota_exhausted | balance_exhausted | payment_failed }
+      - { name: has_payment_method, type: boolean, example: "false | true" }
+      - { name: rows_analyzed, type: numeric, example: "4820 | 0", description: "Rows in the account's latest usage record, else the total usage" }
+      - { name: total_usage, type: numeric, example: "4820 | 0", description: "Rows analysed across the account's usage records" }
+    fires_at:
+      - page: /pravix
+        element: dialog "Upgrade to Continue Processing Data" opening by itself (any signed-in page)
+        trigger: page_load
+        needs: [signed_in, billing status free_quota_exhausted or balance_exhausted, no payment method]
+      - page: /pravix/setups
+        element: button "Run" (a setup row)
+        trigger: click
+        needs: [signed_in, upgrade required]
+      - page: /pravix/setups/[setupId]
+        element: button "Run Now"
+        trigger: click
+        needs: [signed_in, upgrade required]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Upgrade Modal Viewed
+    section: Pravix billing
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside upgrade_modal_viewed until 2026-12-18.
+    replaced_by: upgrade_modal_viewed
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of upgrade_modal_viewed, sent from the same effect on the line before it.
+    question: How many accounts hit the Pravix paywall, and how many of them go on to start checkout?
+    track_via: client
+    properties:
+      - { name: reason, type: string, example: run_paywall, values: [run_paywall] }
+      - { name: billingStatus, type: string, example: free_quota_exhausted | balance_exhausted | payment_failed }
+      - { name: hasPaymentMethod, type: boolean, example: "false | true" }
+      - { name: rowsAnalyzed, type: numeric, example: "4820 | 0" }
+      - { name: totalUsage, type: numeric, example: "4820 | 0" }
+    fires_at:
+      - page: /pravix
+        element: dialog "Upgrade to Continue Processing Data" opening by itself (any signed-in page)
+        trigger: page_load
+        needs: [signed_in, billing status free_quota_exhausted or balance_exhausted, no payment method]
+      - page: /pravix/setups
+        element: button "Run" (a setup row)
+        trigger: click
+        needs: [signed_in, upgrade required]
+      - page: /pravix/setups/[setupId]
+        element: button "Run Now"
+        trigger: click
+        needs: [signed_in, upgrade required]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: usage_limit_reached
+    section: Pravix billing
+    description: >-
+      Sent by the Pravix server after an account's first run completes (the free quota is one run), when the billing
+      service creates the account's billing session as free_quota_exhausted or moves an existing one to it. Sent at
+      most once per account in practice. Not sent on later runs, and not when a paid record balance runs out: that
+      state (balance_exhausted) is worked out when billing status is read, with no event.
+    question: How many accounts use up the free run each week, and how many of them then pay?
+    track_via: server
+    properties:
+      - { name: run_id, type: string, example: 9b1e4c7a-2d3f-4e5a-8b6c-0d1e2f3a4b5c }
+      - { name: limit_type, type: string, example: free_quota, values: [free_quota] }
+      - { name: completed_runs, type: numeric, example: "1" }
+    fires_at:
+      - page: /pravix/setups/[setupId]
+        element: the account first run finishing (no person present; the run worker posts its completion)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [first completed run for the account]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Usage Limit Reached
+    section: Pravix billing
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside usage_limit_reached until 2026-12-18.
+    replaced_by: usage_limit_reached
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of usage_limit_reached, sent from the same two branches of checkPostRun on the line before it.
+    question: How many accounts use up the free run each week, and how many of them then pay?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 9b1e4c7a-2d3f-4e5a-8b6c-0d1e2f3a4b5c }
+      - { name: limitType, type: string, example: free_quota, values: [free_quota] }
+      - { name: completedRuns, type: numeric, example: "1" }
+    fires_at:
+      - page: /pravix/setups/[setupId]
+        element: the account first run finishing (no person present; the run worker posts its completion)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [first completed run for the account]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

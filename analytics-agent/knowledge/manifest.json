@@ -1,0 +1,24 @@
+{
+  "builtAt": "2026-10-14T14:17:49.494Z",
+  "documents": {
+    "playbook": 28,
+    "ghost": 69
+  },
+  "chunks": {
+    "total": 814,
+    "playbook": 165,
+    "playbookFaq": 123,
+    "blog": 215,
+    "caseStudy": 125,
+    "tutorial": 186
+  },
+  "longestChunkChars": 3197,
+  "embeddings": {
+    "model": "voyage-context-4",
+    "dimension": 1024,
+    "dtype": "int8",
+    "count": 814,
+    "builtAt": "2026-10-20T03:58:31.130Z",
+    "bytes": 833536
+  }
+}

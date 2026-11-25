@@ -1,0 +1,129 @@
+events:
+  - name: blog_subscribe_submitted
+    section: Blog
+    description: >-
+      A reader submits the blog's newsletter form (SubscribeForm). Sent in the browser on submit, before the
+      request to /api/blog/subscribe, so it counts every attempt, including ones the route then rejects.
+      Not sent again while a submit is already in flight.
+    question: How many readers try to subscribe to the newsletter, from which post and placement?
+    track_via: client
+    pair: blog_subscribe_completed
+    properties:
+      - { name: post_slug, type: string, example: "mixpanel-vs-amplitude | /blog/ | /blog/tag/<slug>/ (the listing page's path)", description: "The post's slug; on the listing placement, the listing page's path (the blog home, a tag or an author)" }
+      - { name: placement, type: string, example: inline | post_end | listing, values: [inline, post_end, listing] }
+    fires_at:
+      - page: /blog/[slug]
+        element: button "Subscribe" (the newsletter box at the end of the post)
+        trigger: submit
+      - page: /blog/[slug]
+        element: button "Subscribe" (the newsletter box inside the post body)
+        trigger: submit
+        needs: [the post has a signup card in its Ghost body]
+      - page: /blog
+        element: button "Subscribe" (the newsletter box on the first listing page)
+        trigger: submit
+      - page: /blog/tag/[slug]
+        element: button "Subscribe" (the newsletter box on the first page of a tag's listing)
+        trigger: submit
+      - page: /blog/author/[slug]
+        element: button "Subscribe" (the newsletter box on the first page of an author's listing)
+        trigger: submit
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, corrected: the listing box also shows on tag and author listings" }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, corrected: the in-body box needs a signup card in the post" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "pair is now blog_subscribe_completed, the route's outcome" }
+  - name: blog_subscribe_sent
+    section: Blog
+    status: deprecated
+    deprecated_reason: "Sent from the browser, so bot submits counted and failures sent nothing (audit F3); blog_subscribe_completed, sent by /api/blog/subscribe with status, replaces it"
+    replaced_by: blog_subscribe_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      /api/blog/subscribe answered OK. Sent in the browser once the response is OK, after rememberVisitor
+      (which identifies the browser when it isn't identified yet). That OK normally means Ghost accepted the
+      signup and sends its confirmation email, but the route gives the same OK, without calling Ghost, to a
+      submit with the hidden honeypot filled or sent under 1.5 seconds after the form rendered, so those
+      fire it too. Not sent when the route answers 400 (an invalid email) or 502 (Ghost refused or was
+      unreachable), or the request fails; those failures send nothing. It is not a confirmed subscriber:
+      Ghost adds the member only when the reader clicks the confirmation link.
+    question: How many newsletter sign-ups do we get each week, from which post and placement?
+    track_via: client
+    pair: blog_subscribe_submitted
+    properties:
+      - { name: post_slug, type: string, example: "mixpanel-vs-amplitude | /blog/ | /blog/tag/<slug>/ (the listing page's path)", description: "The post's slug; on the listing placement, the listing page's path (the blog home, a tag or an author)" }
+      - { name: placement, type: string, example: inline | post_end | listing, values: [inline, post_end, listing] }
+      - { name: email, type: string, example: reader@example.com, description: "The subscriber's email, lower-cased (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /blog/[slug]
+        element: button "Subscribe" (the newsletter box at the end of the post)
+        trigger: after_api
+        api: POST /api/blog/subscribe
+      - page: /blog/[slug]
+        element: button "Subscribe" (the newsletter box inside the post body)
+        trigger: after_api
+        api: POST /api/blog/subscribe
+        needs: [the post has a signup card in its Ghost body]
+      - page: /blog
+        element: button "Subscribe" (the newsletter box on the first listing page)
+        trigger: after_api
+        api: POST /api/blog/subscribe
+      - page: /blog/tag/[slug]
+        element: button "Subscribe" (the newsletter box on the first page of a tag's listing)
+        trigger: after_api
+        api: POST /api/blog/subscribe
+      - page: /blog/author/[slug]
+        element: button "Subscribe" (the newsletter box on the first page of an author's listing)
+        trigger: after_api
+        api: POST /api/blog/subscribe
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, corrected: the listing box also shows on tag and author listings" }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, corrected: the in-body box needs a signup card in the post" }
+      - { date: 2026-11-19, ref: audit, change: "Description corrected: the route's bot answer (honeypot or under 1.5 s) is also OK and fires it without calling Ghost" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Deprecated: replaced by blog_subscribe_completed from /api/blog/subscribe; both sent until 2026-12-18" }
+  - name: blog_subscribe_completed
+    section: Blog
+    description: >-
+      /api/blog/subscribe's answer to a newsletter signup, sent from the route through trackServer after the
+      response, on the subscriber's profile (the browser's own Mixpanel id when the form sent one, else users.mixpanel_id, else the email's visitor id). status=success when
+      Ghost accepted the signup (it then sends its confirmation email) and the row went to email_submissions; it
+      is not a confirmed subscriber, since Ghost adds the member only when the reader clicks that link.
+      status=failed when the email is missing or malformed (invalid_email, 400; a blank email has no profile, so
+      nothing is sent) or Ghost refused or couldn't be reached (provider_error, 502). Nothing is sent for the
+      route's bot answer (the hidden honeypot filled, or a submit under 1.5 seconds after the form rendered).
+    question: How many newsletter sign-ups do we get each week, from which post and placement, and how many fail?
+    track_via: server
+    pair: blog_subscribe_submitted
+    properties:
+      - { name: post_slug, type: string, example: "mixpanel-vs-amplitude | /blog/ | /blog/tag/<slug>/ (the listing page's path)", description: "The post's slug; on the listing placement, the listing page's path (the blog home, a tag or an author), as SubscribeForm posts it" }
+      - { name: placement, type: string, example: inline | post_end | listing, values: [inline, post_end, listing] }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: invalid_email | provider_error, values: [invalid_email, provider_error], only_when: status=failed }
+      - { name: email, type: string, example: reader@example.com, description: "The subscriber's email, lower-cased; added by trackServer (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /blog/[slug]
+        element: button "Subscribe" (the newsletter box at the end of the post)
+        trigger: server
+        api: POST /api/blog/subscribe
+      - page: /blog/[slug]
+        element: button "Subscribe" (the newsletter box inside the post body)
+        trigger: server
+        api: POST /api/blog/subscribe
+        needs: [the post has a signup card in its Ghost body]
+      - page: /blog
+        element: button "Subscribe" (the newsletter box on the first listing page)
+        trigger: server
+        api: POST /api/blog/subscribe
+      - page: /blog/tag/[slug]
+        element: button "Subscribe" (the newsletter box on the first page of a tag's listing)
+        trigger: server
+        api: POST /api/blog/subscribe
+      - page: /blog/author/[slug]
+        element: button "Subscribe" (the newsletter box on the first page of an author's listing)
+        trigger: server
+        api: POST /api/blog/subscribe
+    changelog:
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Added: the newsletter signup's outcome from /api/blog/subscribe, replacing blog_subscribe_sent" }

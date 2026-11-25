@@ -1,0 +1,393 @@
+Job,Problem ID,Problem,Question,Evidence,Sources,Core set
+Diagnose,D1,Retention is low or dropping,My retention has gone down. Where do I start?,Content,"Drive, Notion",yes
+Diagnose,D1,Retention is low or dropping,Is my retention drop coming from new users or existing users leaving?,Content,Notion,yes
+Diagnose,D1,Retention is low or dropping,Day 1 retention has dropped every day for 60 days. Is it real or a tracking change?,Asked,Slack,yes
+Diagnose,D1,Retention is low or dropping,Week 2 retention suddenly dropped. How do I check if it's a channel or behaviour change?,Content,Website,yes
+Diagnose,D1,Retention is low or dropping,Which user segments already retain better than average?,Content,"Drive, Website",yes
+Diagnose,D1,Retention is low or dropping,How do I write and prioritise retention hypotheses before I touch the data?,Content,Website,extra trigger
+Diagnose,D1,Retention is low or dropping,Why didn't streaks and badges fix my retention problem?,Content,Website,extra trigger
+Diagnose,D2,Activation is low or dropping,"Why is my activation rate low, and how do I find out?",Content,Notion,yes
+Diagnose,D2,Activation is low or dropping,Signup to activation is 26% in the last 7 days. Why aren't users activating?,Asked,Slack,yes
+Diagnose,D2,Activation is low or dropping,Why did signup-to-activation conversion suddenly drop?,Asked,"Drive, Slack",yes
+Diagnose,D2,Activation is low or dropping,Why would users who pick one option in onboarding activate at twice the rate of others?,Asked,Slack,yes
+Diagnose,D2,Activation is low or dropping,Which onboarding answers and segments predict activation?,Content,Drive,yes
+Diagnose,D2,Activation is low or dropping,Which landing pages lead to the highest activation?,Content,Drive,extra trigger
+Diagnose,D2,Activation is low or dropping,What do users who don't activate do instead?,Content,Drive,extra trigger
+Diagnose,D2,Activation is low or dropping,Do users understand the product quickly after opening the app?,Asked,"Drive, Slack",extra trigger
+Diagnose,D3,A funnel step is leaking,How do I find the biggest drop-off in my product?,Asked,"Drive, Notion",yes
+Diagnose,D3,A funnel step is leaking,Our onboarding conversion halved month over month. How do I find the cause?,Content,Drive,yes
+Diagnose,D3,A funnel step is leaking,Is there a big drop between landing on the signup page and completing the first form step? Why?,Asked,Slack,yes
+Diagnose,D3,A funnel step is leaking,Why do mobile users convert so much worse than desktop?,Asked,"Drive, Notion",yes
+Diagnose,D3,A funnel step is leaking,Why do users drop off in onboarding on one platform but not the other?,Content,Drive,yes
+Diagnose,D3,A funnel step is leaking,"How many applicants do we lose at an eligibility question, and what do they do next?",Asked,"Drive, Slack",yes
+Diagnose,D3,A funnel step is leaking,Spend went up but performance dipped. Where exactly in the lead-to-customer funnel is the drop?,Asked,Slack,extra trigger
+Diagnose,D3,A funnel step is leaking,Should returning users who reinstall be excluded from the new-user onboarding funnel?,Content,Drive,extra trigger
+Diagnose,D3,A funnel step is leaking,Nothing we change moves our conversion rate. Is it the product or the tracking?,Content,Notion,extra trigger
+Diagnose,D4,Free or trial users don't convert to paid,How do I improve signup-to-paid conversion?,Content,Notion,yes
+Diagnose,D4,Free or trial users don't convert to paid,"How many free users do we have, where are they stuck, and how do we convert them?",Asked,Drive,yes
+Diagnose,D4,Free or trial users don't convert to paid,"Why are users upgrading to paid, and what gets them there?",Asked,Drive,yes
+Diagnose,D4,Free or trial users don't convert to paid,How do free and paid users behave differently?,Asked,Drive,yes
+Diagnose,D4,Free or trial users don't convert to paid,Which screen sends users to the paywall most often?,Asked,Drive,yes
+Diagnose,D4,Free or trial users don't convert to paid,Do users upgrade when they run low on credits?,Asked,Drive,yes
+Diagnose,D4,Free or trial users don't convert to paid,"What should we learn from cohort conversion by channel, month and time to pay?",Asked,Slack,extra trigger
+Diagnose,D5,Customers are churning,"What drives our churn, and is it voluntary or failed payments?",Content,Drive,yes
+Diagnose,D5,Customers are churning,Do monthly plans churn more than yearly plans?,Content,Drive,yes
+Diagnose,D5,Customers are churning,Why is churn higher in some countries?,Content,Drive,yes
+Diagnose,D5,Customers are churning,Can I predict which users are about to churn before they cancel?,FAQ,"Drive, Website",yes
+Diagnose,D5,Customers are churning,Did users churn because they ran out of credits or because they lost interest?,Content,Drive,yes
+Diagnose,D5,Customers are churning,"After someone pays, do they actually use the product?",Asked,"Drive, Slack",yes
+Diagnose,D5,Customers are churning,Our cancel reason is always empty. How do we capture why subscribers cancel?,Content,Drive,extra trigger
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,"A number looks wrong. Is it the data, or did something really break?",Content,Notion,yes
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,I saw a metric drop. How do I figure out why before pinging my data person?,Content,Notion,yes
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,First app open to onboarding dropped from 75% to 40% from one date. Real or broken tracking?,Asked,Slack,yes
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,Our paid conversion went to zero for several weeks. Is it real or broken tracking?,Content,Drive,yes
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,Bounce rate dropped to a suspiciously low level. Is that real?,Asked,Slack,yes
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,Paid traffic dropped sharply but we didn't change anything. Is this a tracking problem?,Asked,Slack,yes
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,We got an alert about a spike in events and in account deletions. What happened?,Asked,Slack,extra trigger
+Diagnose,D6,A metric suddenly spiked or crashed: real or broken?,My signup rate shows 1%. How do I know if that number is even right?,Asked,Notion,extra trigger
+Diagnose,D7,"Overall rate moved, but segments disagree (mix shift)",My conversion rate dropped but most segments improved. How is that possible?,Content,Notion,yes
+Diagnose,D7,"Overall rate moved, but segments disagree (mix shift)",How do I split a drop into 'rate changed' versus 'mix changed'?,Content,Notion,yes
+Diagnose,D7,"Overall rate moved, but segments disagree (mix shift)",Our signup conversion is falling. Is it a product problem or a change in traffic mix?,Asked,"Drive, Slack",yes
+Diagnose,D7,"Overall rate moved, but segments disagree (mix shift)",Why did my churn rate drop right after a spike in new paying users?,Content,Notion,yes
+Diagnose,D7,"Overall rate moved, but segments disagree (mix shift)",Our payment success rate fell. Was it one provider or the routing shift?,Content,Notion,yes
+Diagnose,D8,Revenue or payments dipped,"Revenue dipped. Is renewal falling, and do discounted users retain worse than full-price users?",Asked,Slack,yes
+Diagnose,D8,Revenue or payments dipped,How do I track payment failures across gateways and UPI?,FAQ,Website,yes
+Diagnose,D8,Revenue or payments dipped,How do I detect a payment provider outage and reroute automatically?,Content,Website,yes
+Diagnose,D8,Revenue or payments dipped,How do I balance payment routing for success rate versus cost?,Content,Website,yes
+Diagnose,D8,Revenue or payments dipped,Should users retry a failed payment with a different card?,Content,Website,yes
+Diagnose,D9,"I know where users drop, but not why",Funnels tell me where users drop off but not why. What do I do?,Asked,"Drive, Notion, Website",yes
+Diagnose,D9,"I know where users drop, but not why",How do I use session replays to find why users abandon a step?,Content,Drive,yes
+Diagnose,D9,"I know where users drop, but not why",How do I see what users do right before or after a key event?,Content,Website,yes
+Diagnose,D9,"I know where users drop, but not why",Dead clicks are mostly scrolls. How do I find the buttons that are actually broken?,Asked,"Notion, Slack",yes
+Diagnose,D9,"I know where users drop, but not why",How do I reduce friction and close the expectation gap in my product?,Content,Website,yes
+Diagnose,D10,What do my best users do differently?,How do I find the aha moment for my product?,Content,Website,yes
+Diagnose,D10,What do my best users do differently?,Which behaviours in the first week predict whether a user pays or comes back?,Asked,"Drive, Notion",yes
+Diagnose,D10,What do my best users do differently?,How do I find out what users who convert do differently from those who don't?,Content,"Notion, Website",yes
+Diagnose,D10,What do my best users do differently?,Which feature do returning users use more than churned users?,Content,Website,yes
+Diagnose,D10,What do my best users do differently?,I have 50 user attributes. How do I find which combinations predict purchase?,Content,"Notion, Website",yes
+Diagnose,D10,What do my best users do differently?,How do I validate an aha moment hypothesis with user interviews?,Content,Website,extra trigger
+Diagnose,D11,Is this feature or launch working?,"For a new streak feature: how many streaks start, how long do they last, and is there a magic number?",Asked,Slack,yes
+Diagnose,D11,Is this feature or launch working?,Are users coming back to drafts they abandoned?,Asked,Drive,yes
+Diagnose,D11,Is this feature or launch working?,Does showing a preview before generating improve conversion?,Asked,Drive,yes
+Diagnose,D11,Is this feature or launch working?,Which early KPIs should we track for a referral program launch?,Asked,Slack,yes
+Diagnose,D11,Is this feature or launch working?,Did our renewal reminders bring users back?,Content,Drive,yes
+Diagnose,D11,Is this feature or launch working?,"Can we see notification sends, timing, read rate and click rate?",Asked,Slack,yes
+Diagnose,D11,Is this feature or launch working?,"Which menu items do people tap most, so we can simplify the menu?",Asked,Slack,extra trigger
+Diagnose,D11,Is this feature or launch working?,When should I add gamification?,FAQ,Website,extra trigger
+Measure,M1,"North star, metric tree, and cutting the noise",How do I pick a north star metric?,Content,Notion,yes
+Measure,M1,"North star, metric tree, and cutting the noise","Should my north star be signups, revenue or paying subscribers?",Content,Notion,yes
+Measure,M1,"North star, metric tree, and cutting the noise",What is a metric tree and how do I build one for revenue?,Content,Notion,yes
+Measure,M1,"North star, metric tree, and cutting the noise",How do I know if a metric is a vanity metric?,Content,"Notion, Website",yes
+Measure,M1,"North star, metric tree, and cutting the noise",Why do I have 100 metrics and still no clarity?,Asked,"Notion, Website",yes
+Measure,M1,"North star, metric tree, and cutting the noise",What's a good counter-metric for revenue?,FAQ,"Notion, Website",extra trigger
+Measure,M1,"North star, metric tree, and cutting the noise",What data questions will investors ask us at seed?,Asked,Notion,extra trigger
+Measure,M1,"North star, metric tree, and cutting the noise",Which KPIs on our executive dashboard can we actually calculate from our current data?,Content,Drive,extra trigger
+Measure,M2,Which metrics to track for my business model,What metrics should I track for my SaaS product?,Asked,"Notion, Public forums",yes
+Measure,M2,Which metrics to track for my business model,What are the three most important metrics to track?,Asked,Public forums,yes
+Measure,M2,Which metrics to track for my business model,What is the AAARRR (pirate) funnel and how do I use it to pick metrics?,Content,"Notion, Website",yes
+Measure,M2,Which metrics to track for my business model,Can I just ask ChatGPT what metrics to track and build a dashboard from that?,Content,Notion,yes
+Measure,M2,Which metrics to track for my business model,How do you measure user engagement for a SaaS product?,Asked,Public forums,yes
+Measure,M2,Which metrics to track for my business model,"What is stickiness (DAU/WAU, WAU/MAU) and which one should I use?",Content,Notion,extra trigger
+Measure,M2,Which metrics to track for my business model,What share of our base are power users?,Asked,Notion,extra trigger
+Measure,M2,Which metrics to track for my business model,How do I track a two-sided marketplace funnel for both supply and demand?,Content,Drive,extra trigger
+Measure,M2,Which metrics to track for my business model,How do I calculate a viral K-factor from referral events?,Asked,Drive,extra trigger
+Measure,M2,Which metrics to track for my business model,Which metrics should we track for a new portal before its data even flows?,Asked,Slack,extra trigger
+Measure,M3,Defining activation,What should our activation metric be?,FAQ,"Drive, Website",yes
+Measure,M3,Defining activation,How do I define 'tried it' versus 'got value' versus 'engaged' for each feature?,Content,Drive,yes
+Measure,M3,Defining activation,How do I set the right engaged-user threshold for each feature?,Content,Drive,yes
+Measure,M3,Defining activation,Some accounts can't use the main feature yet. Should activation start later? Should PLG and enterprise differ?,Asked,Slack,yes
+Measure,M3,Defining activation,How should I define 'active' for an API product where machines make the calls?,Content,Notion,yes
+Measure,M3,Defining activation,Does activation count old signups who come back and do the core action?,Asked,Slack,yes
+Measure,M3,Defining activation,Can you list activation events for every product we sell?,Asked,Slack,extra trigger
+Measure,M4,Defining and measuring retention,How do I measure retention properly?,Content,Website,yes
+Measure,M4,Defining and measuring retention,What's the difference between bounded and unbounded retention?,Content,Notion,yes
+Measure,M4,Defining and measuring retention,Should our retention window be D30 or D90?,Asked,Notion,yes
+Measure,M4,Defining and measuring retention,What retention rate is good for a consumer app?,FAQ,Website,yes
+Measure,M4,Defining and measuring retention,Why should behavioural retention cohorts be time-boxed ('did X within 7 days')?,Content,"Drive, Website",yes
+Measure,M4,Defining and measuring retention,Our backend retention numbers are very different from the analytics tool. Which is right?,Asked,Slack,yes
+Measure,M4,Defining and measuring retention,"Can we build retention on recurring payments, like paying users retained per month?",Asked,Slack,extra trigger
+Measure,M4,Defining and measuring retention,How does weighted average retention work?,Content,Website,extra trigger
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer","I need the real LTV, not an ARPU-like number. How do I calculate true LTV by plan and market?",Asked,Slack,yes
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer",Should LTV be split by price point when one user pays different prices in different months?,Asked,Slack,yes
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer","What is our refund rate by country, and how did it change after a pricing change?",Asked,Slack,yes
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer",Does the paid amount include the discount or not?,Asked,Slack,yes
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer",Should revenue be reported in local currency or USD?,Asked,Notion,yes
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer","Is our usage cost before or after tax, and is the amount in the smallest currency unit?",Asked,Slack,yes
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer",74% of our paying users never used the product in week one. How do I measure value per subscriber?,Content,Notion,extra trigger
+Measure,M5,"Revenue metrics: LTV, ARPU, refunds, value per customer","How do I write SQL for KPIs like net flows, CAC and conversion rate?",Asked,Drive,extra trigger
+Measure,M6,Credits and usage-based products,"How do AI startups track usage, credits and usage-based billing?",Asked,Drive,yes
+Measure,M6,Credits and usage-based products,How should we track a virtual currency like tokens or credits?,Content,Drive,yes
+Measure,M6,Credits and usage-based products,Credits are bought at the org level. How do we attribute revenue to individual users?,Asked,"Drive, Notion",yes
+Measure,M6,Credits and usage-based products,What do our users actually spend their credits on?,Asked,Notion,yes
+Measure,M6,Credits and usage-based products,How do I track a credit purchase funnel and credit exhaustion?,Content,Drive,yes
+Measure,M6,Credits and usage-based products,How do we tell usage via API key apart from usage via the dashboard?,Asked,Slack,yes
+Measure,M6,Credits and usage-based products,"28% of metered usage has no price. Are those products free on purpose, or was a price never set?",Asked,Slack,extra trigger
+Measure,M7,B2B account-level analytics,How do I analyse B2B usage at the company level?,Content,Website,yes
+Measure,M7,B2B account-level analytics,"Should we set org, workspace and user as three group levels? How do we do it right?",Asked,Slack,yes
+Measure,M7,B2B account-level analytics,How do I build an account health score to catch churn early?,Content,Website,yes
+Measure,M7,B2B account-level analytics,How do I analyse trial-to-paid conversion at the account level?,Content,Website,yes
+Measure,M7,B2B account-level analytics,We want group-level insights broken down by user properties. Is there a workaround?,Asked,Slack,yes
+Measure,M7,B2B account-level analytics,How do we capture which partner organization a user is linked to?,Asked,Slack,yes
+Measure,M8,Pull a specific number,What's our D30 retention for users who signed up in August?,Added,Agent spec,yes
+Measure,M8,Pull a specific number,How many paid users did we have last month?,Added,Agent spec,yes
+Measure,M8,Pull a specific number,What's our signup to activation rate for the last 7 days?,Added,Agent spec,yes
+Measure,M8,Pull a specific number,What has weekly active users looked like over the last 12 weeks?,Added,Agent spec,yes
+Measure,M8,Pull a specific number,"How many trials started last week, and how many converted to paid?",Added,Agent spec,yes
+Measure,M8,Pull a specific number,What's our average revenue per paying user this month?,Added,Agent spec,yes
+Measure,M8,Pull a specific number,What share of last month's signups came from paid channels?,Added,Agent spec,yes
+Measure,M8,Pull a specific number,How many users completed onboarding yesterday?,Added,Agent spec,yes
+Fix,F1,Two tools show different numbers,Why are my analytics signups lower than my database signups?,Content,Notion,yes
+Fix,F1,Two tools show different numbers,Why does my analytics tool show more users than my database or billing system?,Content,Notion,yes
+Fix,F1,Two tools show different numbers,How far apart should my analytics numbers and my database numbers be?,Content,Notion,yes
+Fix,F1,Two tools show different numbers,"Backend and analytics give different counts for the same thing, 10 to 15% apart. Which is right?",Asked,Notion,yes
+Fix,F1,Two tools show different numbers,The analytics tool is missing about 15% of payments vs the database. How much is tax and timezone?,Asked,Slack,yes
+Fix,F1,Two tools show different numbers,Why do analytics paying users and subscription tool subscribers not match?,Asked,"Notion, Slack",yes
+Fix,F1,Two tools show different numbers,"The ads platform reports 2,200 signups but analytics shows 1,266 for the same day. Which is right?",Asked,Slack,extra trigger
+Fix,F1,Two tools show different numbers,Funnel numbers don't match the CRM deal and lead counts. How do we reconcile them?,Asked,Slack,extra trigger
+Fix,F1,Two tools show different numbers,Why does pageview-by-channel not match GA4 and Google Ads clicks?,Asked,"Notion, Slack",extra trigger
+Fix,F1,Two tools show different numbers,Organic search traffic doesn't match Search Console. Why?,Asked,Slack,extra trigger
+Fix,F1,Two tools show different numbers,Why is GA4 showing fewer users than Mixpanel?,Content,Website,extra trigger
+Fix,F2,The same person shows up as two users,About 14% of our paying customers show up as two people. What's causing it?,Asked,"Notion, Slack",yes
+Fix,F2,The same person shows up as two users,Users show up twice when they move from our marketing site to the app. Why?,Content,Notion,yes
+Fix,F2,The same person shows up as two users,Why do I see the same user as two profiles after adding server-side tracking?,Content,Notion,yes
+Fix,F2,The same person shows up as two users,The analytics library loads twice and creates new identities at checkout. How do we fix it?,Asked,Slack,yes
+Fix,F2,The same person shows up as two users,How do I stop duplicate users when people switch devices?,Asked,"Public forums, Website",yes
+Fix,F2,The same person shows up as two users,Why are profile properties set before login lost after identity merge?,Content,Drive,extra trigger
+Fix,F2,The same person shows up as two users,"A few users have 200,000 events attached to them. Is our user ID or group ID wrong?",Asked,Slack,extra trigger
+Fix,F2,The same person shows up as two users,How do I manually merge two persons?,Asked,Public forums,extra trigger
+Fix,F2,The same person shows up as two users,About 350 users a month have payment events but no signup event. Why?,Asked,Slack,extra trigger
+Fix,F3,Events fire twice or too often,Our paywall view event fires several times per view. Why?,Content,Drive,yes
+Fix,F3,Events fire twice or too often,Our signup event fires multiple times on one submit. How do we measure real signups?,Content,Drive,yes
+Fix,F3,Events fire twice or too often,"Why does the login event fire on every app open, and not when someone signs up?",Asked,Slack,yes
+Fix,F3,Events fire twice or too often,How do I find events that fire twice for one user action?,Asked,"Drive, Website",yes
+Fix,F3,Events fire twice or too often,A form field event fires on every letter typed. How do we fire it once?,Asked,Slack,yes
+Fix,F3,Events fire twice or too often,How do I stop duplicate events when our server retries a request?,Content,Drive,extra trigger
+Fix,F3,Events fire twice or too often,Why are we getting duplicate install events from our attribution SDK?,Content,Drive,extra trigger
+Fix,F3,Events fire twice or too often,Why do some events fire on page load before the user clicked anything?,Content,Drive,extra trigger
+Fix,F4,"An event is missing, zero, or never fires",Our tracking plan says 'implemented' but the dashboard is empty. Why?,Asked,"Notion, Slack",yes
+Fix,F4,"An event is missing, zero, or never fires","An event shows zero, but the steps before and after it fire. Broken or unused?",Content,"Drive, Notion",yes
+Fix,F4,"An event is missing, zero, or never fires","The cancel-subscription event is 0 for several days. Is no one cancelling, or is it broken?",Asked,Slack,yes
+Fix,F4,"An event is missing, zero, or never fires","After the website relaunch, no events are firing at all. What broke?",Asked,Slack,yes
+Fix,F4,"An event is missing, zero, or never fires",The API returns 200 but the imported event never shows up. Why?,Asked,Slack,yes
+Fix,F4,"An event is missing, zero, or never fires","Our step events fire when a step is left, not opened, so the last step never counts. When should screen events fire?",Content,Drive,extra trigger
+Fix,F4,"An event is missing, zero, or never fires","Onboarding completed is 75% lower than onboarding started, but every step between converts near 100%. Which event is wrong?",Asked,Slack,extra trigger
+Fix,F4,"An event is missing, zero, or never fires",This chart stopped updating after one date even though we have new signups. Why?,Asked,Slack,extra trigger
+Fix,F4,"An event is missing, zero, or never fires",Signup isn't firing for SSO users. Is login firing instead?,Asked,Slack,extra trigger
+Fix,F5,"Property values are wrong, empty or inconsistent",How do I measure what share of an event's properties are null or 'unknown'?,Content,Drive,yes
+Fix,F5,"Property values are wrong, empty or inconsistent",We see a lot of 'not set' for signup UTM and device. How do we fix it?,Asked,Slack,yes
+Fix,F5,"Property values are wrong, empty or inconsistent",The same plan shows up as 'annual' and 'yearly'. How do inconsistent values break analysis?,Content,Drive,yes
+Fix,F5,"Property values are wrong, empty or inconsistent",Why do wrong property types silently corrupt my data?,Asked,"Slack, Website",yes
+Fix,F5,"Property values are wrong, empty or inconsistent",Our 'is first time' flags reset each session. How do we measure first-ever actions?,Asked,"Drive, Slack",yes
+Fix,F5,"Property values are wrong, empty or inconsistent",Why do all our server-side events show users in the same city?,Asked,"Drive, Notion",yes
+Fix,F5,"Property values are wrong, empty or inconsistent",One conversion recorded a value of 381 million. Where did it come from?,Asked,Slack,extra trigger
+Fix,F5,"Property values are wrong, empty or inconsistent",Almost all our auto-renew flags say true. How do I spot a property that doesn't reflect reality?,Content,Drive,extra trigger
+Fix,F6,"Internal, test and bot traffic pollute the data",How do we remove internal test accounts from our reports?,Asked,Slack,yes
+Fix,F6,"Internal, test and bot traffic pollute the data","How do we exclude office traffic by IP for every report, not just with a cohort?",Asked,Slack,yes
+Fix,F6,"Internal, test and bot traffic pollute the data",How do we filter out spam or bot referral traffic?,Asked,Slack,yes
+Fix,F6,"Internal, test and bot traffic pollute the data",The IP filter we added is now blocking most of our real traffic. What went wrong?,Asked,Slack,yes
+Fix,F6,"Internal, test and bot traffic pollute the data",Invited users fire signup and inflate our organic signups. How do we separate them?,Asked,"Notion, Slack",yes
+Fix,F6,"Internal, test and bot traffic pollute the data",Is our app-open-to-onboarding drop caused by reinstalls or automated tests?,Asked,Slack,yes
+Fix,F6,"Internal, test and bot traffic pollute the data","How many genuine signups did we get, excluding internal, personal email and existing customers?",Asked,Slack,extra trigger
+Fix,F7,Data lost to ad blockers and browser limits,How much data do ad blockers make me lose?,Content,Notion,yes
+Fix,F7,Data lost to ad blockers and browser limits,How do I set up a proxy for Mixpanel or PostHog?,Content,"Notion, Website",yes
+Fix,F7,Data lost to ad blockers and browser limits,Our proxy host name starts with 'mp'. Will ad blockers block it?,Asked,Slack,yes
+Fix,F7,Data lost to ad blockers and browser limits,How do I recover events lost to ad blockers and Safari cookie limits?,Content,Website,yes
+Fix,F7,Data lost to ad blockers and browser limits,Do I need a first-party proxy?,Asked,"Drive, Website",yes
+Fix,F8,Traffic sources and UTMs are a mess,Why do nearly all my sessions show as Direct?,Content,Website,yes
+Fix,F8,Traffic sources and UTMs are a mess,We already have a UTM builder. Why is our source data still a mess?,Asked,Notion,yes
+Fix,F8,Traffic sources and UTMs are a mess,"Our ad platform, analytics and CRM report different sources. Where exactly do they disagree?",Asked,Drive,yes
+Fix,F8,Traffic sources and UTMs are a mess,A redirect strips our UTM parameters. How do we keep them?,Asked,Slack,yes
+Fix,F8,Traffic sources and UTMs are a mess,UTMs show in analytics but are blank in our CRM. Where are we losing them?,Asked,Drive,yes
+Fix,F8,Traffic sources and UTMs are a mess,How can the payment provider show up as the referrer for a signup?,Asked,"Drive, Slack",yes
+Fix,F8,Traffic sources and UTMs are a mess,We don't know where trials come from. How do we fix trial source tracking?,Asked,Slack,extra trigger
+Fix,F8,Traffic sources and UTMs are a mess,Google Ads has readable campaign names but the UTMs are numbers. How do we connect marketing to revenue?,Asked,"Drive, Slack",extra trigger
+Fix,F8,Traffic sources and UTMs are a mess,A plus sign in a campaign name becomes a space in one tool. How do encoding bugs split campaigns?,Content,Drive,extra trigger
+Fix,F9,Everyone gets a different number for the same metric,Three people gave me three different signup rates. Which one is right?,Content,"Notion, Website",yes
+Fix,F9,Everyone gets a different number for the same metric,How do I make sure everyone calculates a metric the same way?,Content,"Notion, Website",yes
+Fix,F9,Everyone gets a different number for the same metric,Our retention and activation numbers don't reconcile across the team. What do we do?,Asked,"Drive, Notion",yes
+Fix,F9,Everyone gets a different number for the same metric,What should I write down for every metric on my dashboard?,Content,Notion,yes
+Fix,F9,Everyone gets a different number for the same metric,Some dashboard outputs don't look right. Are we aligned on metric definitions?,Asked,Slack,yes
+Fix,F10,I don't trust my data at all,We have product analytics set up but don't trust the data. What do we do?,Asked,"Drive, Website",yes
+Fix,F10,I don't trust my data at all,Our devs 'added some tracking' and now nobody trusts the data. How do we fix it?,Content,Notion,yes
+Fix,F10,I don't trust my data at all,The numbers are still not correct. How do we audit everything and build confidence?,Asked,Slack,yes
+Fix,F10,I don't trust my data at all,What does an analytics audit check?,Content,Website,yes
+Fix,F10,I don't trust my data at all,How mature is my startup's analytics?,Content,Website,yes
+Fix,F11,Too many events: analytics debt,We have 300 to 500 distinct events. How do we prune them?,Asked,"Drive, Notion",yes
+Fix,F11,Too many events: analytics debt,What is analytics debt and how do I know if I have it?,Content,Website,yes
+Fix,F11,Too many events: analytics debt,Why are 20 to 40 percent of my events broken or unused?,Content,Website,yes
+Fix,F11,Too many events: analytics debt,How do I audit my event list for unused events and naming inconsistencies?,Content,"Drive, Website",yes
+Fix,F11,Too many events: analytics debt,A developer used AI to add events. Do we adapt reports or redo events to match the plan?,Asked,Slack,yes
+Fix,F11,Too many events: analytics debt,Why does fixing tracking cost so much more at Series B than earlier?,Content,Website,extra trigger
+Fix,F12,Catching data problems before users do,"How do I keep analytics data accurate over time, not just at launch?",Content,Notion,yes
+Fix,F12,Catching data problems before users do,What alerts should I set up on my events and properties?,Content,"Drive, Notion",yes
+Fix,F12,Catching data problems before users do,How do I get alerted when a property stops coming through or its mix shifts?,Content,"Drive, Notion",yes
+Fix,F12,Catching data problems before users do,How do I set funnel alerts that don't fire every other day on small steps?,Asked,"Notion, Slack",yes
+Fix,F12,Catching data problems before users do,"We have silent failures (jobs stuck, no error). How do we catch them?",Asked,"Notion, Slack",yes
+Fix,F12,Catching data problems before users do,Error tracking logged nothing since one date while traffic is normal. Did capture break?,Asked,Slack,yes
+Fix,F12,Catching data problems before users do,Our error alerts created 200+ issues. How do we cut the noise?,Asked,Slack,extra trigger
+Fix,F12,Catching data problems before users do,We can't set alerts on every event on our plan. Should we alert from the warehouse instead?,Asked,Slack,extra trigger
+Fix,F12,Catching data problems before users do,A synced table stopped at an old date. How do we know when a sync breaks?,Asked,Slack,extra trigger
+Fix,F13,"Fixing history: backfill, ID changes, numbers that move",We fixed the tracking bug. Can we backfill the events we missed?,Asked,Slack,yes
+Fix,F13,"Fixing history: backfill, ID changes, numbers that move","Can I fix broken identity stitching after the fact, or is my history ruined?",Content,Notion,yes
+Fix,F13,"Fixing history: backfill, ID changes, numbers that move",We want to change our user ID from email or phone to customer ID. How do we migrate history?,Asked,"Drive, Notion",yes
+Fix,F13,"Fixing history: backfill, ID changes, numbers that move",Why do last month's signup numbers change every time I look?,Asked,Slack,yes
+Fix,F13,"Fixing history: backfill, ID changes, numbers that move",Has anything changed in how we identify successful payments in the warehouse?,Asked,Slack,yes
+Fix,F14,GA4 ecommerce and conversion tracking,Why don't my GA4 order numbers match Shopify? 10 to 20% of orders are missing.,Asked,Public forums,yes
+Fix,F14,GA4 ecommerce and conversion tracking,Why is only some of my revenue showing in GA4?,Asked,Public forums,yes
+Fix,F14,GA4 ecommerce and conversion tracking,We've reported 0 purchases in GA4 since a certain date. What happened?,Asked,Slack,yes
+Fix,F14,GA4 ecommerce and conversion tracking,Transaction ID isn't showing in GA4. Why?,Asked,Public forums,yes
+Fix,F14,GA4 ecommerce and conversion tracking,Is my Google Ads conversion tracking broken?,Asked,Public forums,yes
+Fix,F14,GA4 ecommerce and conversion tracking,GA4 monetization totals don't match ecommerce purchase totals. Why?,Asked,Public forums,yes
+Set up,S1,What analytics stack do I need at my stage?,What analytics stack do I need at my stage?,Asked,"Notion, Public forums",yes
+Set up,S1,What analytics stack do I need at my stage?,What analytics setup do I need at 500 signups a month?,Content,Notion,yes
+Set up,S1,What analytics stack do I need at my stage?,Can't I just query my production database instead of buying an analytics tool?,Asked,"Notion, Public forums",yes
+Set up,S1,What analytics stack do I need at my stage?,Our marketing site has several analytics and recording tools. Do we need all of them?,Asked,Notion,yes
+Set up,S1,What analytics stack do I need at my stage?,What does a small brand's analytics stack cost per month?,Content,Website,yes
+Set up,S1,What analytics stack do I need at my stage?,Why use a product analytics tool rather than tracking straight into the warehouse?,Asked,Slack,yes
+Set up,S1,What analytics stack do I need at my stage?,"What does a proper product analytics setup include, from tracking plan to dashboards?",Content,Website,extra trigger
+Set up,S2,"Which analytics tool to pick, and switching tools",Which analytics tool should I pick for my startup?,Asked,"Notion, Website",yes
+Set up,S2,"Which analytics tool to pick, and switching tools",PostHog vs Mixpanel vs Amplitude: which should I pick?,FAQ,Website,yes
+Set up,S2,"Which analytics tool to pick, and switching tools",Is GA4 enough to understand what users do inside my product?,Content,Website,yes
+Set up,S2,"Which analytics tool to pick, and switching tools",Is the free plan enough for us? What limit will we hit first?,Content,Notion,yes
+Set up,S2,"Which analytics tool to pick, and switching tools",When should you move off PostHog?,FAQ,Website,yes
+Set up,S2,"Which analytics tool to pick, and switching tools",How do we migrate from GA4 or Amplitude to Mixpanel without losing history or identity?,Asked,"Notion, Slack",yes
+Set up,S2,"Which analytics tool to pick, and switching tools",Can I run two product analytics tools at once?,FAQ,Website,extra trigger
+Set up,S3,What events to track (the tracking plan),What is a tracking plan and what goes in it?,FAQ,"Notion, Website",yes
+Set up,S3,What events to track (the tracking plan),How many events should I track as an early-stage startup?,FAQ,"Notion, Website",yes
+Set up,S3,What events to track (the tracking plan),What events should every D2C store track from product view to order?,Content,Website,yes
+Set up,S3,What events to track (the tracking plan),Which events should we track on a new web version of our app?,Asked,Slack,yes
+Set up,S3,What events to track (the tracking plan),"Should we track manually, use autocapture, or both?",Asked,"Drive, Slack",yes
+Set up,S3,What events to track (the tracking plan),How do you decide whether to track something?,FAQ,Website,extra trigger
+Set up,S3,What events to track (the tracking plan),"How should we structure lifecycle stages, user states and events so we don't rebuild as we grow?",Asked,Slack,extra trigger
+Set up,S3,What events to track (the tracking plan),Can AI generate a tracking plan by crawling my product?,Content,Website,extra trigger
+Set up,S4,Designing events and properties,How should I name events?,Content,"Notion, Website",yes
+Set up,S4,Designing events and properties,Should I use one event with a property or separate events for each action?,FAQ,"Notion, Website",yes
+Set up,S4,Designing events and properties,"What's the difference between event, user and super properties?",FAQ,"Notion, Website",yes
+Set up,S4,Designing events and properties,Should success and failure be one event with a status property or two events?,Content,"Drive, Notion",yes
+Set up,S4,Designing events and properties,Which property should every key action carry to know where in the app the user came from?,Asked,"Drive, Slack",yes
+Set up,S4,Designing events and properties,The same step event fires from onboarding and from settings. How do we tell them apart?,Asked,Slack,yes
+Set up,S4,Designing events and properties,Should the subscribe event fire on trial start or when someone actually pays?,Asked,Slack,extra trigger
+Set up,S4,Designing events and properties,"Should we re-send user properties on every event, or only when they change?",Content,Drive,extra trigger
+Set up,S5,"Identity: identify, reset and cross-domain users",When should I call identify?,Content,"Drive, Notion, Website",yes
+Set up,S5,"Identity: identify, reset and cross-domain users",Should I use email or internal user ID as the distinct ID?,Content,Notion,yes
+Set up,S5,"Identity: identify, reset and cross-domain users",How do I keep one identity across my marketing site and app subdomain?,Content,Website,yes
+Set up,S5,"Identity: identify, reset and cross-domain users",How do I stitch anonymous and logged-in users in PostHog?,Content,Website,yes
+Set up,S5,"Identity: identify, reset and cross-domain users",Before login we have no user ID. Should server events use the device ID?,Asked,Drive,yes
+Set up,S5,"Identity: identify, reset and cross-domain users","If we don't reset on logout, how does that affect user profiles?",Asked,Slack,yes
+Set up,S5,"Identity: identify, reset and cross-domain users",Can I match anonymous website sessions to known customers without a login?,Content,Website,extra trigger
+Set up,S5,"Identity: identify, reset and cross-domain users",Can we use GA4 cross-domain tracking instead of custom user ID stitching?,Asked,Slack,extra trigger
+Set up,S5,"Identity: identify, reset and cross-domain users","How do we make sure one person has one profile across the app, sign-in and other sites?",Asked,Slack,extra trigger
+Set up,S6,Client-side vs server-side tracking,Is server-side tracking better than client-side?,FAQ,Website,yes
+Set up,S6,Client-side vs server-side tracking,Should I send all my events server-side?,Content,Notion,yes
+Set up,S6,Client-side vs server-side tracking,Which events should fire from the server?,Asked,"Notion, Website",yes
+Set up,S6,Client-side vs server-side tracking,19% of paying users have no payment event. Should we send it from the server?,Asked,Slack,yes
+Set up,S6,Client-side vs server-side tracking,Does server-side tracking break attribution?,FAQ,Website,yes
+Set up,S6,Client-side vs server-side tracking,"Should we track high-volume server events, or will that blow our event volume?",Asked,Slack,yes
+Set up,S7,"Projects, environments and multiple platforms",We're launching a web version of our app. Same project or separate?,Asked,Slack,yes
+Set up,S7,"Projects, environments and multiple platforms","How do I unify iOS, Android and web tracking so platforms stop disagreeing?",Content,Website,yes
+Set up,S7,"Projects, environments and multiple platforms",Should a subdomain like a community site live in the same project?,Asked,Slack,yes
+Set up,S7,"Projects, environments and multiple platforms","Should dev, staging and production data be in separate projects?",Asked,Slack,yes
+Set up,S7,"Projects, environments and multiple platforms",Our events for different user types are in different projects. Can we bring them together?,Asked,Slack,yes
+Set up,S8,Capturing UTMs and campaign data correctly,What should utm_campaign contain: campaign name or campaign ID?,Content,Notion,yes
+Set up,S8,Capturing UTMs and campaign data correctly,What naming convention should we use for UTMs?,Content,"Drive, Website",yes
+Set up,S8,Capturing UTMs and campaign data correctly,"How do I capture UTMs, gclid and fbclid at signup and save them on the user profile?",Asked,"Slack, Website",yes
+Set up,S8,Capturing UTMs and campaign data correctly,"How do I tag ads so analytics, GA4 and the CRM agree on where a user came from?",Asked,Notion,yes
+Set up,S8,Capturing UTMs and campaign data correctly,Should Google Ads URLs carry UTMs at all when auto-tagging is on?,Asked,Slack,yes
+Set up,S8,Capturing UTMs and campaign data correctly,Are we passing UTMs through hidden form fields into the CRM?,Asked,Slack,yes
+Set up,S8,Capturing UTMs and campaign data correctly,"How should we tag bio links, DMs, QR codes and emails?",Content,Drive,extra trigger
+Set up,S8,Capturing UTMs and campaign data correctly,Offline conversion imports fail for long sales cycles. Is it click ID expiry?,Asked,Slack,extra trigger
+Set up,S9,Mobile app install attribution,"Do I need an MMP, or are UTMs enough?",Content,Notion,yes
+Set up,S9,Mobile app install attribution,Why can't I see which campaign brought a user who installed my app?,Asked,Notion,yes
+Set up,S9,Mobile app install attribution,Does the App Store or Play Store pass UTMs to my app?,Content,Notion,yes
+Set up,S9,Mobile app install attribution,How do I send AppsFlyer or Branch install source into Mixpanel?,Asked,"Drive, Notion",yes
+Set up,S9,Mobile app install attribution,How do I link a website visitor to the same person after they install the app?,Asked,"Drive, Notion",yes
+Set up,S9,Mobile app install attribution,How do I measure installs by influencer?,Asked,Drive,yes
+Set up,S10,"Warehouse, pipelines and data modelling",When should I add a data warehouse?,FAQ,"Notion, Website",yes
+Set up,S10,"Warehouse, pipelines and data modelling",When does dbt start to make sense?,FAQ,"Notion, Website",yes
+Set up,S10,"Warehouse, pipelines and data modelling","What are staging, intermediate and mart layers?",Content,"Notion, Website",yes
+Set up,S10,"Warehouse, pipelines and data modelling","Can the product analytics tool be our data lake, or do we need a warehouse?",Asked,"Slack, Website",yes
+Set up,S10,"Warehouse, pipelines and data modelling","How much does BigQuery cost, and how do I keep it down?",FAQ,Website,yes
+Set up,S10,"Warehouse, pipelines and data modelling",BigQuery or Snowflake?,FAQ,Website,extra trigger
+Set up,S10,"Warehouse, pipelines and data modelling","What grain should my customer, SKU and order tables have?",FAQ,Website,extra trigger
+Set up,S10,"Warehouse, pipelines and data modelling",Should we use product analytics or warehouse plus BI for backend data like transactions?,Asked,Drive,extra trigger
+Set up,S11,"Joining product, CRM, billing and ad data","How do I combine product, billing, CRM and ad data in one place?",Asked,"Drive, Website",yes
+Set up,S11,"Joining product, CRM, billing and ad data",What's the join key between marketing and product data?,FAQ,"Drive, Website",yes
+Set up,S11,"Joining product, CRM, billing and ad data",My CRM-to-product join returns almost nothing. Is my SQL wrong?,Asked,"Notion, Website",yes
+Set up,S11,"Joining product, CRM, billing and ad data",Should I sync CRM data into Mixpanel or query it in the warehouse?,Content,Notion,yes
+Set up,S11,"Joining product, CRM, billing and ad data","How do I get warehouse data into PostHog, Mixpanel or Amplitude?",Content,Website,yes
+Set up,S11,"Joining product, CRM, billing and ad data",How do I send ad spend into analytics without breaking my funnels?,Content,Website,extra trigger
+Set up,S11,"Joining product, CRM, billing and ad data",Can we push analytics cohorts or usage into the CRM and ad platforms?,Asked,"Slack, Website",extra trigger
+Set up,S11,"Joining product, CRM, billing and ad data",How do I upload past user data as user properties?,Asked,Slack,extra trigger
+Set up,S12,"Privacy, PII and consent",How do I track KYC drop-off without sending PII to my analytics tool?,Content,Website,yes
+Set up,S12,"Privacy, PII and consent",How can we do email attribution without sending PII into PostHog?,Asked,"Notion, Slack",yes
+Set up,S12,"Privacy, PII and consent",Do we need consent before sending hashed data?,FAQ,Website,yes
+Set up,S12,"Privacy, PII and consent",Is a hashed user ID enough in the warehouse instead of names and emails?,Asked,Slack,yes
+Set up,S12,"Privacy, PII and consent",A client needs data stored on an India server. How do we do this?,Asked,Slack,yes
+Set up,S12,"Privacy, PII and consent",Can we de-anonymize website visitors inside the analytics tool?,Asked,Slack,yes
+Set up,S13,Dashboards people actually use,Nobody understands my dashboard. How should I structure it?,Content,Notion,yes
+Set up,S13,Dashboards people actually use,"How do I build separate dashboards for founders, product and growth?",Content,Website,yes
+Set up,S13,Dashboards people actually use,How do I build a pirate funnel (AAARRR) dashboard?,Content,Website,yes
+Set up,S13,Dashboards people actually use,Can you build a basic signup dashboard from what we track now? This is urgent.,Asked,Slack,yes
+Set up,S13,Dashboards people actually use,Can we get a daily Slack or email digest of key account activity?,Asked,Slack,yes
+Set up,S13,Dashboards people actually use,What is the dashboard graveyard stage of analytics?,Content,Website,extra trigger
+Set up,S14,AI on your data: making answers trustworthy,Can I connect Claude or ChatGPT to Mixpanel and trust the answers?,Content,Notion,yes
+Set up,S14,AI on your data: making answers trustworthy,Why does AI give me a different activation rate every time I ask?,Content,Notion,yes
+Set up,S14,AI on your data: making answers trustworthy,What is a semantic layer and do I need one for AI?,Content,"Notion, Website",yes
+Set up,S14,AI on your data: making answers trustworthy,Can I point an AI agent straight at my raw database tables?,Content,Notion,yes
+Set up,S14,AI on your data: making answers trustworthy,I built a dashboard with AI and it doesn't match PostHog. Which one is wrong?,Asked,Notion,yes
+Set up,S14,AI on your data: making answers trustworthy,How do I make our product data AI-ready so an agent answers accurately?,Asked,"Drive, Website",yes
+Set up,S14,AI on your data: making answers trustworthy,Managed BigQuery MCP server or our own SQL tool for the agent?,Asked,"Notion, Slack, Website",extra trigger
+Set up,S15,"D2C data across own site, marketplaces and quick commerce","What data do Blinkit, Zepto and Swiggy Instamart actually give a D2C brand?",Content,Website,yes
+Set up,S15,"D2C data across own site, marketplaces and quick commerce","Can you build one customer view across my website, quick commerce and Amazon?",FAQ,Website,yes
+Set up,S15,"D2C data across own site, marketplaces and quick commerce",Why don't quick commerce numbers match my backend?,FAQ,Website,yes
+Set up,S15,"D2C data across own site, marketplaces and quick commerce",How do I normalise gross vs net revenue across channels?,Content,Website,yes
+Set up,S15,"D2C data across own site, marketplaces and quick commerce",What is a SKU mapping table?,FAQ,Website,yes
+Set up,S15,"D2C data across own site, marketplaces and quick commerce",How do I get Amazon sales data into BigQuery?,Content,Website,extra trigger
+Set up,S16,Testing tracking before and after launch,How do I check that the events my developers shipped are actually correct?,Content,"Notion, Website",yes
+Set up,S16,Testing tracking before and after launch,How do I test that identify is working?,Content,Notion,yes
+Set up,S16,Testing tracking before and after launch,My signup event fires from 10 places. Do I need to check all of them?,Content,Notion,yes
+Set up,S16,Testing tracking before and after launch,How do I validate every event and property before launch?,Content,Website,yes
+Set up,S16,Testing tracking before and after launch,How do I check that every funnel step has fewer users than the step before?,Content,Drive,yes
+Decide,X1,Which marketing channels actually work?,Which marketing channels bring good users versus bad ones?,Asked,"Drive, Notion",yes
+Decide,X1,Which marketing channels actually work?,I scaled ad spend 3x but signups didn't grow. Why?,Content,Notion,yes
+Decide,X1,Which marketing channels actually work?,Why do Meta and Google together claim more conversions than we actually got?,Content,"Notion, Website",yes
+Decide,X1,Which marketing channels actually work?,Should I use my own attribution as the source of truth and only take spend from ad platforms?,Asked,"Slack, Website",yes
+Decide,X1,Which marketing channels actually work?,"How should we measure first touch vs last touch, and does multi-touch matter for us?",Asked,"Slack, Website",yes
+Decide,X1,Which marketing channels actually work?,The CRM shows different attribution answers depending on the report. Which one do I trust?,Asked,Slack,yes
+Decide,X1,Which marketing channels actually work?,How do I calculate cost per retained user by acquisition channel?,Content,Website,extra trigger
+Decide,X1,Which marketing channels actually work?,Why is my cheapest channel probably my worst?,FAQ,Website,extra trigger
+Decide,X1,Which marketing channels actually work?,How do I measure fixed-fee sponsorships like podcasts and newsletters?,Asked,Notion,extra trigger
+Decide,X1,Which marketing channels actually work?,Are we too reliant on one acquisition channel?,Asked,Drive,extra trigger
+Decide,X1,Which marketing channels actually work?,Is traffic from ChatGPT and other AI tools higher quality than search traffic?,Content,Drive,extra trigger
+Decide,X2,Is my marketing incremental? (lift and holdout tests),What's the difference between attribution and incrementality?,FAQ,Website,yes
+Decide,X2,Is my marketing incremental? (lift and holdout tests),Is my branded search spend actually bringing new customers?,FAQ,"Notion, Website",yes
+Decide,X2,Is my marketing incremental? (lift and holdout tests),How do I run a geo holdout test for my ads?,FAQ,"Notion, Website",yes
+Decide,X2,Is my marketing incremental? (lift and holdout tests),"How long should an incrementality test run, and how big do I need to be?",Content,"Notion, Website",yes
+Decide,X2,Is my marketing incremental? (lift and holdout tests),Why is my reported ROAS 4x but my incremental ROAS only 1.7x?,Content,Website,yes
+Decide,X2,Is my marketing incremental? (lift and holdout tests),How do I measure influencer or offline campaigns?,Content,Notion,extra trigger
+Decide,X2,Is my marketing incremental? (lift and holdout tests),Should we run a $5k paid marketing test? What should it answer first?,Asked,Notion,extra trigger
+Decide,X3,Marketing mix modelling,What is marketing mix modelling?,FAQ,Website,yes
+Decide,X3,Marketing mix modelling,How much data do I need for MMM?,FAQ,"Notion, Website",yes
+Decide,X3,Marketing mix modelling,When should I use MMM instead of incrementality testing?,FAQ,Website,yes
+Decide,X3,Marketing mix modelling,Why does my MMM give weird results when all my channels move together?,FAQ,Website,yes
+Decide,X3,Marketing mix modelling,What are adstock and saturation?,FAQ,Website,yes
+Decide,X4,Running experiments,When do we have enough data to run experiments?,Content,Notion,yes
+Decide,X4,Running experiments,We don't have enough traffic for A/B tests. How do we experiment?,Content,Notion,yes
+Decide,X4,Running experiments,How do we test a new onboarding flow without mixing it into old analytics?,Asked,Slack,yes
+Decide,X4,Running experiments,How can I tell which user is in which arm of the experiment?,Asked,Slack,yes
+Decide,X4,Running experiments,How do I turn a retention finding into an experiment and re-baseline?,Content,Website,yes
+Decide,X4,Running experiments,How do I monitor experiments and on-page changes for SEO?,Asked,Public forums,yes
+Decide,X5,Cause or coincidence? Acting on a finding,Users who do X are 12x more likely to upgrade. Should we push everyone to do X?,Content,Notion,yes
+Decide,X5,Cause or coincidence? Acting on a finding,How do I test whether a behaviour actually causes conversion?,Content,Notion,yes
+Decide,X5,Cause or coincidence? Acting on a finding,I put more money into a channel and revenue went up. Did the channel cause it?,Content,Notion,yes
+Decide,X5,Cause or coincidence? Acting on a finding,Users told me about a problem in interviews. How do I know if it's worth fixing?,Content,Notion,yes
+Decide,X5,Cause or coincidence? Acting on a finding,How much data do I need before making data-driven decisions as an early-stage founder?,Content,Website,yes
+Decide,X5,Cause or coincidence? Acting on a finding,Is there a link between using one feature and doing another?,Asked,Slack,yes
+Decide,X6,"Who owns analytics, and who to hire",Should I hire a data analyst or a product analyst first?,Content,Notion,yes
+Decide,X6,"Who owns analytics, and who to hire",When is it too early to hire a full-time product analyst?,Content,Notion,yes
+Decide,X6,"Who owns analytics, and who to hire",Should I hire a full-time analyst or use an agency?,Content,Notion,yes
+Decide,X6,"Who owns analytics, and who to hire","Who should own analytics at a startup with under 1,000 signups a month?",Content,Notion,yes
+Decide,X6,"Who owns analytics, and who to hire","Who should own the tracking plan, a PM or a developer?",Content,"Notion, Website",yes
+Decide,X6,"Who owns analytics, and who to hire",How do we stop PMs and developers adding random events?,Asked,Drive,yes
+Decide,X6,"Who owns analytics, and who to hire",How do I turn analytics from a reporting function into a growth function?,Content,Website,extra trigger
+Decide,X6,"Who owns analytics, and who to hire",Our analyst reconciles revenue perfectly but can't tell me where users drop off. Why?,Content,Notion,extra trigger

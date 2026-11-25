@@ -1,0 +1,33 @@
+# Properties a wrapper adds to every event it sends (first audit, 2026-11-19).
+properties:
+  - name: source
+    type: string
+    example: client | server
+    values: [client, server]
+    set_when: >-
+      Pravix only. pravix/client/src/lib/analytics.ts adds source=client to every browser event;
+      pravix/server/services/mixpanelTracking.ts adds source=server to every server event. The site's
+      wrappers add nothing.
+    set_via: [client, server]
+  - name: environment
+    type: string
+    example: production | development
+    set_when: >-
+      Pravix only: the Vite mode in the browser (import.meta.env.MODE) and NODE_ENV on the server, on
+      every event.
+    set_via: [client, server]
+  - name: app_version
+    type: string
+    example: 3f9c2b1e8d7a6c5b4a3f2e1d0c9b8a7f6e5d4c3b
+    set_when: >-
+      Pravix server only, on every snake_case event: APP_VERSION, else VERCEL_GIT_COMMIT_SHA, else GIT_SHA,
+      else "unknown". The Title Case events it replaces carry it as appVersion until 2026-12-18.
+    set_via: server
+  - name: appVersion
+    type: string
+    example: 3f9c2b1e8d7a6c5b4a3f2e1d0c9b8a7f6e5d4c3b
+    status: deprecated
+    set_when: >-
+      Pravix server only, on every Title Case event (the deprecated names), until their dual-fire window
+      ends on 2026-12-18. Same value as app_version.
+    set_via: server

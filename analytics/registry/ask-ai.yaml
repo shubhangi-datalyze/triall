@@ -1,0 +1,361 @@
+events:
+  - name: ask_ai_question_submitted
+    section: Ask AI
+    description: >-
+      A visitor sends a question in the /ask chat: the Send button, Enter in the composer, or one of the starter
+      questions on an empty chat. Sent in the browser by submit(), after the question is trimmed and found non-empty
+      and before the request to /api/ask, so it counts every attempt, including questions the email gate then holds
+      (401), the limits refuse (429) and answers that fail. Not sent for an empty question or while an answer is still
+      streaming, and not sent again when a held question runs after the email gate.
+    question: How many questions do visitors ask each week, and how many of them are a conversation's first question?
+    track_via: client
+    properties:
+      - { name: question_length, type: numeric, example: "39 | 24 | 500", description: "Characters in the trimmed question (at most 500, the composer's maxLength); never the text" }
+      - { name: is_first_question, type: boolean, example: "true | false", description: "The active conversation had no turns before this question" }
+    fires_at:
+      - page: /ask
+        element: button "Send question"
+        trigger: click
+      - page: /ask
+        element: textbox "Ask about analytics, tracking, retention, attribution…" (Enter without Shift)
+        trigger: submit
+      - page: /ask
+        element: button "How do I set up Mixpanel the right way?" (a starter question on an empty chat)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Ask AI Question Submitted
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_question_submitted until dashboards move.
+    replaced_by: ask_ai_question_submitted
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of ask_ai_question_submitted, sent on the line before it from the same submit() call in the
+      /ask chat, with the same properties.
+    question: How many questions do visitors ask each week, and how many of them are a conversation's first question?
+    track_via: client
+    properties:
+      - { name: question_length, type: numeric, example: "39 | 24 | 500" }
+      - { name: is_first_question, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /ask
+        element: button "Send question"
+        trigger: click
+      - page: /ask
+        element: textbox "Ask about analytics, tracking, retention, attribution…" (Enter without Shift)
+        trigger: submit
+      - page: /ask
+        element: button "How do I set up Mixpanel the right way?" (a starter question on an empty chat)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ask_ai_quota_reached
+    section: Ask AI
+    description: >-
+      /api/ask answered 429 to a question: the global daily cap (daily_cap) or the per-IP cap (ip_cap) fired, or the
+      visitor's per-email quota is used up (quota_exhausted). Sent in the browser once the 429 body is read, after the
+      question's turn is removed and the limit notice is shown. Not sent for a 401 (the email gate) or any other error,
+      and the event does not say which of the three limits fired.
+    question: How often do visitors hit a question limit, and after how many questions in the conversation?
+    track_via: client
+    pair: ask_ai_question_submitted
+    properties:
+      - { name: questions_asked, type: numeric, example: "0 | 2", description: "Turns in the active conversation before this question (priorTurns); 0 for a question held by the email gate. Not the visitor's total questions" }
+    fires_at:
+      - page: /ask
+        element: button "Send question"
+        trigger: after_api
+        api: POST /api/ask
+        needs: [ask_session_cookie, a limit reached (daily_cap, ip_cap or quota_exhausted)]
+      - page: /ask
+        element: button "Ask my question" (the email gate, with a held question)
+        trigger: after_api
+        api: POST /api/ask
+        needs: [a limit reached (daily_cap, ip_cap or quota_exhausted)]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Ask AI Quota Reached
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_quota_reached until dashboards move.
+    replaced_by: ask_ai_quota_reached
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of ask_ai_quota_reached, sent on the line before it when /api/ask answers 429, with the
+      same property.
+    question: How often do visitors hit a question limit, and after how many questions in the conversation?
+    track_via: client
+    properties:
+      - { name: questions_asked, type: numeric, example: "0 | 2" }
+    fires_at:
+      - page: /ask
+        element: button "Send question"
+        trigger: after_api
+        api: POST /api/ask
+        needs: [ask_session_cookie, a limit reached (daily_cap, ip_cap or quota_exhausted)]
+      - page: /ask
+        element: button "Ask my question" (the email gate, with a held question)
+        trigger: after_api
+        api: POST /api/ask
+        needs: [a limit reached (daily_cap, ip_cap or quota_exhausted)]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ask_ai_refused
+    section: Ask AI
+    description: >-
+      The answer stream from /api/ask carried a refusal line: the gate found nothing good enough to answer from, or
+      the generated answer failed validation and was retracted (a late refusal replaces text already shown), or a
+      cached refusal was replayed. Sent in the browser when the refusal line is read, so it is not sent when the
+      visitor stops the answer or leaves before the line arrives. Not sent for an answer, a 401, a 429 or a server
+      error (the stream's error line).
+    question: How often does Ask AI refuse to answer, and for which reason?
+    track_via: client
+    pair: ask_ai_question_submitted
+    properties:
+      - { name: refusal_reason, type: string, example: below_threshold | insufficient_context | bad_citation, values: [no_results, not_calibrated, below_threshold, flat_gap, insufficient_context, bad_citation, ungrounded_figure], description: "The reason the server's gate (evaluateGate) or answer check (validateAnswer) gave" }
+    fires_at:
+      - page: /ask
+        element: button "Send question"
+        trigger: after_api
+        api: POST /api/ask
+        needs: [ask_session_cookie]
+      - page: /ask
+        element: button "Ask my question" (the email gate, with a held question)
+        trigger: after_api
+        api: POST /api/ask
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Ask AI Refused
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_refused until dashboards move.
+    replaced_by: ask_ai_refused
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of ask_ai_refused, sent on the line before it when the answer stream carries a refusal,
+      with the same property.
+    question: How often does Ask AI refuse to answer, and for which reason?
+    track_via: client
+    properties:
+      - { name: refusal_reason, type: string, example: below_threshold | insufficient_context | bad_citation, values: [no_results, not_calibrated, below_threshold, flat_gap, insufficient_context, bad_citation, ungrounded_figure] }
+    fires_at:
+      - page: /ask
+        element: button "Send question"
+        trigger: after_api
+        api: POST /api/ask
+        needs: [ask_session_cookie]
+      - page: /ask
+        element: button "Ask my question" (the email gate, with a held question)
+        trigger: after_api
+        api: POST /api/ask
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ask_ai_new_chat
+    section: Ask AI
+    description: >-
+      A visitor clicks New chat in the /ask sidebar or the "+" in the top bar while no answer is streaming. Sent in
+      the browser on the click, whether it creates a conversation or only reopens an existing empty one. Not sent
+      while an answer streams, and not sent when deleting the last chat starts a fresh one.
+    question: How often do visitors start a second conversation in Ask AI?
+    track_via: client
+    properties: []
+    fires_at:
+      - page: /ask
+        element: button "New chat" (the sidebar, "+ New chat")
+        trigger: click
+      - page: /ask
+        element: button "New chat" (the "+" in the top bar)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Ask AI New Chat
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_new_chat until dashboards move.
+    replaced_by: ask_ai_new_chat
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of ask_ai_new_chat, sent on the line before it from the same New chat click.
+    question: How often do visitors start a second conversation in Ask AI?
+    track_via: client
+    properties: []
+    fires_at:
+      - page: /ask
+        element: button "New chat" (the sidebar, "+ New chat")
+        trigger: click
+      - page: /ask
+        element: button "New chat" (the "+" in the top bar)
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ask_ai_email_submitted
+    section: Ask AI
+    description: >-
+      /api/ask/start's answer to the Ask AI email gate, sent from the route through trackServer after the response,
+      on the visitor's profile (the browser's own Mixpanel id when the form sent one, else users.mixpanel_id, else the email's visitor id). status=success when the address
+      passed the format check, the user row was upserted, the email went to email_submissions and the session
+      cookie was set. status=failed when the email is missing or malformed (invalid_email, 400; a blank email has
+      no profile, so nothing is sent) or the upsert failed (db_error, 500). An invalid JSON body sends nothing.
+    question: How many visitors give their email to Ask AI each week, how many did so to get a held question answered, and how many fail?
+    track_via: server
+    properties:
+      - { name: had_held_question, type: boolean, example: "true | false", description: "A question was waiting behind the gate (the chat posts it with the email after a 401 from /api/ask); false when the gate showed on arrival" }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: invalid_email | db_error, values: [invalid_email, db_error], only_when: status=failed }
+      - { name: email, type: string, example: reader@example.com, description: "The email given at the gate, trimmed and lower-cased; added by trackServer (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /ask
+        element: button "Ask my question" (the email gate, after a question was held)
+        trigger: server
+        api: POST /api/ask/start
+        needs: [no ask_session cookie]
+      - page: /ask
+        element: button "Start asking" (the email gate, shown on arrival)
+        trigger: server
+        api: POST /api/ask/start
+        needs: [no ask_session cookie]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "SEMANTICS: sent from /api/ask/start (server) instead of the browser, with status and failure_reason, so refused and failed gates are counted too (filter status=success for leads)" }
+  - name: Ask AI Email Submitted
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_email_submitted until dashboards move.
+    replaced_by: ask_ai_email_submitted
+    dual_fire_until: 2026-12-18
+    description: >-
+      The browser's Ask AI gate event, sent once /api/ask/start accepts the email, after rememberVisitor
+      identifies the browser. Not sent on a 400 or 500, or when the request fails. ask_ai_email_submitted, which
+      replaces it, is sent by the route itself since 20 Nov 2026; this one is sent until 2026-12-18.
+    question: How many visitors give their email to Ask AI each week, and how many did so to get a held question answered?
+    track_via: client
+    properties:
+      - { name: email, type: string, example: reader@example.com }
+      - { name: had_held_question, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /ask
+        element: button "Ask my question" (the email gate, after a question was held)
+        trigger: after_api
+        api: POST /api/ask/start
+        needs: [no ask_session cookie]
+      - page: /ask
+        element: button "Start asking" (the email gate, shown on arrival)
+        trigger: after_api
+        api: POST /api/ask/start
+        needs: [no ask_session cookie]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Description rewritten: ask_ai_email_submitted is now sent from /api/ask/start, so this is no longer its twin" }
+  - name: ask_ai_citation_clicked
+    section: Ask AI
+    description: >-
+      A visitor clicks a linked source in Ask AI: a source chip under a finished answer (only the sources the answer
+      cited), or the "Closest thing I have" link under a refusal. Sent in the browser on the click, as the link
+      navigates. Not sent for internal notes, which show unlinked as "from my notes", and the event does not say
+      which of the two placements was clicked.
+    question: Which of our posts and chapters do Ask AI answers send readers to, and of which kind?
+    track_via: client
+    properties:
+      - { name: source_type, type: string, example: ghost | playbook | linkedin, values: [ghost, playbook, linkedin], description: "The kind of source: a blog post (ghost), a playbook chapter or a LinkedIn post. gdoc sources have no URL and can't be clicked" }
+      - { name: source_url, type: string, example: "https://www.joindatalyze.com/playbook/<slug> | https://www.joindatalyze.com/blog/<slug>/ | https://www.linkedin.com/posts/<id>" }
+    fires_at:
+      - page: /ask
+        element: link "<source title>" (a source chip under a finished answer)
+        trigger: click
+        needs: [an answer that cites a linked source]
+      - page: /ask
+        element: link "<nearest source title>" (after "Closest thing I have:" under a refusal)
+        trigger: click
+        needs: [a refusal with a linked nearest source]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Ask AI Citation Clicked
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_citation_clicked until dashboards move.
+    replaced_by: ask_ai_citation_clicked
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of ask_ai_citation_clicked, sent beside it from the same source-link clicks, with the same
+      properties.
+    question: Which of our posts and chapters do Ask AI answers send readers to, and of which kind?
+    track_via: client
+    properties:
+      - { name: source_type, type: string, example: ghost | playbook | linkedin, values: [ghost, playbook, linkedin] }
+      - { name: source_url, type: string, example: "https://www.joindatalyze.com/playbook/<slug> | https://www.joindatalyze.com/blog/<slug>/ | https://www.linkedin.com/posts/<id>" }
+    fires_at:
+      - page: /ask
+        element: link "<source title>" (a source chip under a finished answer)
+        trigger: click
+        needs: [an answer that cites a linked source]
+      - page: /ask
+        element: link "<nearest source title>" (after "Closest thing I have:" under a refusal)
+        trigger: click
+        needs: [a refusal with a linked nearest source]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ask_ai_booking_clicked
+    section: Ask AI
+    description: >-
+      A visitor clicks "Book a call" in Ask AI, which opens /contact?source=ask: under a finished answer, under a
+      refusal, or in the limit notice after a 429. Sent in the browser on the click, before the contact page loads;
+      the booking itself is the contact page's events. after_refusal is true only under a refusal, so the answer and
+      the limit notice both send false.
+    question: How many Ask AI visitors go on to book a call, and do refusals send more of them than answers?
+    track_via: client
+    properties:
+      - { name: after_refusal, type: boolean, example: "true | false", description: "The link sat under a refusal; false under an answer and in the limit notice" }
+    fires_at:
+      - page: /ask
+        element: link "Book a call" (after "Want this applied to your stack?" under an answer)
+        trigger: click
+      - page: /ask
+        element: link "Book a call" (after "Want a straight answer on this?" under a refusal)
+        trigger: click
+      - page: /ask
+        element: link "Book a call" (after "Or skip ahead -" in the limit notice)
+        trigger: click
+        needs: [a 429 from /api/ask]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Ask AI Booking Clicked
+    section: Ask AI
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside ask_ai_booking_clicked until dashboards move.
+    replaced_by: ask_ai_booking_clicked
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of ask_ai_booking_clicked, sent on the line before it from the same "Book a call" click,
+      with the same property.
+    question: How many Ask AI visitors go on to book a call, and do refusals send more of them than answers?
+    track_via: client
+    properties:
+      - { name: after_refusal, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /ask
+        element: link "Book a call" (after "Want this applied to your stack?" under an answer)
+        trigger: click
+      - page: /ask
+        element: link "Book a call" (after "Want a straight answer on this?" under a refusal)
+        trigger: click
+      - page: /ask
+        element: link "Book a call" (after "Or skip ahead -" in the limit notice)
+        trigger: click
+        needs: [a 429 from /api/ask]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

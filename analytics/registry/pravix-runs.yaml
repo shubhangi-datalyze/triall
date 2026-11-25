@@ -1,0 +1,569 @@
+events:
+  - name: run_started
+    section: Pravix runs and detectors
+    description: >-
+      Pravix created a new run record for a setup and is about to execute it. Sent from the Pravix server
+      right after storage.createRunSafe returns a new run: for a manual run in POST /api/v1/setups/:setupId/run,
+      on the person who clicked; for a scheduled run in the Pub/Sub schedule handler, on the account owner.
+      Not sent when the run is refused (run_blocked), when an Idempotency-Key replay returns the existing run,
+      when a scheduled trigger is skipped or is a duplicate delivery, or (scheduled) when the account owner
+      can't be found.
+    question: How many runs start each day, manual versus scheduled, for which accounts and setups?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: trigger_type, type: string, example: scheduled | manual, values: [manual, scheduled] }
+      - { name: scheduled_at, type: datetime, example: "2026-11-18T06:00:00.000Z", only_when: trigger_type=scheduled }
+    fires_at:
+      - page: /setups
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run" (on a setup's card)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, setup status active, no active run on the account, billing allows a run]
+      - page: /setups/[setupId]
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run Now" (Quick Actions)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, setup status active, no active run on the account, billing allows a run]
+      - element: the setup's schedule (Cloud Scheduler publishes to Pub/Sub)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/schedule
+        needs: [active setup with a schedule, no active run on the account, account owner exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Run Started
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Renamed to snake_case run_started on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: run_started
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of run_started, sent beside it from the same two places (manual run route and
+      scheduled trigger handler), on the same distinct_id. Carries no account id.
+    question: How many runs start each day, manual versus scheduled, for which setups?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: "Events & Property Validation | Daily Audit | Posthog Alerts" }
+      - { name: triggerType, type: string, example: scheduled | manual, values: [manual, scheduled] }
+      - { name: scheduledAt, type: datetime, example: "2026-11-18T06:00:00.000Z", only_when: triggerType=scheduled }
+    fires_at:
+      - page: /setups
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run" (on a setup's card)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, setup status active, no active run on the account, billing allows a run]
+      - page: /setups/[setupId]
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run Now" (Quick Actions)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, setup status active, no active run on the account, billing allows a run]
+      - element: the setup's schedule (Cloud Scheduler publishes to Pub/Sub)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/schedule
+        needs: [active setup with a schedule, no active run on the account, account owner exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: run_completed
+    section: Pravix runs and detectors
+    description: >-
+      A run reached a terminal status on the Pravix server. status=success when the cloud function's
+      completion message finalizes the run (tryFinalizeRun wins); status=failed with failure_reason naming
+      the phase when the run is marked failed: initialization, pre_processing, batch_submission or finalizing
+      in the orchestrator, pre_processing or batch_submission in the preprocess handler, raw_export when a
+      day-slice chunk exhausts its retries, detector_execution when the completion message says failed.
+      Sent once per run: a late or duplicate completion that loses tryFinalizeRun sends nothing. Not sent for
+      a run that completes with no detectors configured, a run the reaper reclaims (run_reaped), or a
+      cancelled run.
+    question: How many runs finish each day, how many fail and in which phase, and how many alerts do they find?
+    track_via: server
+    pair: run_started
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: detector_execution | raw_export | pre_processing, values: [initialization, pre_processing, batch_submission, finalizing, raw_export, detector_execution], only_when: status=failed }
+      - { name: chunk_date, type: string, example: "2026-11-17", only_when: failure_reason=raw_export }
+      - { name: aggregated_status, type: string, example: alert | ok | skipped, values: [ok, alert, skipped], only_when: the cloud function reported the detector batch (status=success or failure_reason=detector_execution) }
+      - { name: detector_count, type: numeric, example: "5", only_when: the cloud function reported the detector batch (status=success or failure_reason=detector_execution) }
+      - { name: alert_count, type: numeric, example: "2", only_when: the cloud function reported the detector batch (status=success or failure_reason=detector_execution) }
+      - { name: passed_count, type: numeric, example: "3", only_when: the cloud function reported the detector batch (status=success or failure_reason=detector_execution) }
+      - { name: failed_count, type: numeric, example: "0", only_when: the cloud function reported the detector batch (status=success or failure_reason=detector_execution) }
+      - { name: skipped_count, type: numeric, example: "1", only_when: the cloud function reported the detector batch (status=success or failure_reason=detector_execution) }
+      - { name: failed_detectors, type: array, example: "[event_count_spike]", only_when: failure_reason=detector_execution }
+      - { name: duration_ms, type: numeric, example: "184000", description: "Run startedAt to the completion's finishedAt", only_when: "the run began running (its startedAt was written) before it ended; on a failure before the completion message, it is startedAt to the moment of failure" }
+      - { name: trigger_type, type: string, example: scheduled | manual, values: [manual, scheduled] }
+    fires_at:
+      - element: the cloud function's completion message
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started, the setup creator's user exists]
+      - element: the orchestrator's failure path, after a manual or scheduled start
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [a run started, pre-processing or batch submission threw]
+      - element: a preprocess or day-slice chunk result (preprocess_failed, chunk_failed, dispatch failure)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started in chunked or deferred mode]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-23, ref: "branch verify/paths-and-sheet (verification V1)", change: "trigger_type and duration_ms now sent on every failure path; aggregated_status and duration_ms added on failure_reason=detector_execution. aggregated_status gets the detector-batch only_when, duration_ms an only_when for runs that never started" }
+  - name: Run Completed
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Folded into run_completed with status on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: run_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of run_completed with status=success: sent beside it when the completion message
+      finalizes a run, on the setup creator's distinct_id. Not sent when the setup creator's user can't be found.
+    question: How many runs complete each day and how many alerts do they find?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: "Events & Property Validation | Daily Audit" }
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: status, type: string, example: completed, values: [completed] }
+      - { name: aggregatedStatus, type: string, example: alert | ok | skipped, values: [ok, alert, skipped] }
+      - { name: detectorCount, type: numeric, example: "5" }
+      - { name: alerts, type: numeric, example: "2" }
+      - { name: passed, type: numeric, example: "3" }
+      - { name: failed, type: numeric, example: "0" }
+      - { name: skipped, type: numeric, example: "1" }
+      - { name: durationMs, type: numeric, example: "184000" }
+      - { name: triggerType, type: string, example: scheduled | manual, values: [manual, scheduled] }
+    fires_at:
+      - element: the cloud function's completion message
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started, the setup creator's user exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Run Failed
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Folded into run_completed with status=failed on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: run_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of run_completed with status=failed, sent beside it from the same six failure
+      paths. The detector_execution path sends on the setup creator with setup name and counts; the others
+      go through trackForAccount (account owner) with accountId and the raw error text.
+    question: How many runs fail each day, and in which phase?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: status, type: string, example: failed, values: [failed] }
+      - { name: failurePhase, type: string, example: detector_execution | raw_export, values: [initialization, pre_processing, batch_submission, finalizing, raw_export, detector_execution] }
+      - { name: errorMessage, type: string, example: "Setup 0abe1551-7cad-47c2-833e-a9ae52a19a0a not found" }
+      - { name: chunkDate, type: string, example: "2026-11-17", only_when: failurePhase=raw_export }
+      - { name: setupName, type: string, example: Daily Audit }
+      - { name: failedDetectors, type: array, example: "[event_count_spike]", only_when: failurePhase=detector_execution }
+      - { name: detectorCount, type: numeric, example: "5", only_when: failurePhase=detector_execution }
+      - { name: alerts, type: numeric, example: "1", only_when: failurePhase=detector_execution }
+      - { name: passed, type: numeric, example: "3", only_when: failurePhase=detector_execution }
+      - { name: failed, type: numeric, example: "1", only_when: failurePhase=detector_execution }
+      - { name: skipped, type: numeric, example: "0", only_when: failurePhase=detector_execution }
+      - { name: triggerType, type: string, example: scheduled | manual, values: [manual, scheduled] }
+    fires_at:
+      - element: the cloud function's completion message (status failed)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started, the setup creator's user exists]
+      - element: the orchestrator's failure path, after a manual or scheduled start
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [a run started, pre-processing or batch submission threw]
+      - element: a preprocess or day-slice chunk result (preprocess_failed, chunk_failed, dispatch failure)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started in chunked or deferred mode]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: run_blocked
+    section: Pravix runs and detectors
+    description: >-
+      A manual run request was refused before a run record was created. Sent from POST
+      /api/v1/setups/:setupId/run, on the person who clicked, when the setup isn't active
+      (reason=setup_not_active) or the account's run permission check says no (billing_upgrade_required when
+      the refusal carries a billing status, else active_run_exists), just before the 400 or 409. Not sent when
+      the race-free insert itself refuses (createRunSafe conflict), when the client's own billing check opens
+      the upgrade modal without calling the API, or for scheduled triggers that are skipped.
+    question: How often are people stopped from running a check, and is it the billing wall or a run already in progress?
+    track_via: server
+    properties:
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: reason, type: string, example: active_run_exists | billing_upgrade_required, values: [setup_not_active, billing_upgrade_required, active_run_exists] }
+      - { name: billing_status, type: string, example: free_quota_exhausted | balance_exhausted | payment_failed, only_when: reason=billing_upgrade_required }
+      - { name: active_run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992, only_when: reason=active_run_exists }
+      - { name: trigger_type, type: string, example: manual, values: [manual] }
+    fires_at:
+      - page: /setups
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run" (on a setup's card)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, the setup is paused, another run is active, or billing refuses the run]
+      - page: /setups/[setupId]
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run Now" (Quick Actions)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, the setup is paused, another run is active, or billing refuses the run]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Run Blocked
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Renamed to snake_case run_blocked on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: run_blocked
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of run_blocked, sent beside it from the same two refusals in the manual run route.
+      Also carries the setup name and the permission check's message (detail).
+    question: How often are people stopped from running a check, and why?
+    track_via: server
+    properties:
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: Daily Audit }
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: reason, type: string, example: active_run_exists | billing_upgrade_required, values: [setup_not_active, billing_upgrade_required, active_run_exists] }
+      - { name: billingStatus, type: string, example: free_quota_exhausted | balance_exhausted, only_when: reason=billing_upgrade_required }
+      - { name: detail, type: string, example: "Another run is already running for this account. Cancel the existing run to start a new one.", only_when: reason=billing_upgrade_required|active_run_exists }
+      - { name: activeRunId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992, only_when: reason=active_run_exists }
+      - { name: triggerType, type: string, example: manual, values: [manual] }
+    fires_at:
+      - page: /setups
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run" (on a setup's card)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, the setup is paused, another run is active, or billing refuses the run]
+      - page: /setups/[setupId]
+        from: The Pravix app at app.joindatalyze.com/pravix (the router's base path)
+        element: button "Run Now" (Quick Actions)
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [signed_in, the setup is paused, another run is active, or billing refuses the run]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: run_reaped
+    section: Pravix runs and detectors
+    description: >-
+      The stuck-run reconciler (Cloud Scheduler, every 15 minutes, POST /api/v1/internal/runs/reap) failed
+      a pending or running run older than the cutoff. One event per reclaimed run, sent on the account owner
+      after storage.reapStuckRuns flips it to failed; a run whose completion lands first isn't reaped and
+      sends nothing. The run also gets no run_completed.
+    question: How many runs get stuck and reclaimed, at which phase, and which detectors never reported?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: missing_detectors, type: array, example: "[event_count_spike, event_property_stopped_flowing]" }
+      - { name: expected_detectors, type: array, example: "[event_count_spike, event_property_stopped_flowing]" }
+      - { name: reported_detectors, type: array, example: "[event_property_null_percentage_increased]" }
+      - { name: stuck_phase, type: string, example: after_batch_submitted | before_batch_submitted, values: [after_batch_submitted, before_batch_submitted] }
+      - { name: batch_submitted_at, type: datetime, example: "2026-11-18T06:02:11.000Z", only_when: stuck_phase=after_batch_submitted }
+      - { name: minutes_stuck, type: numeric, example: "30", description: "The reaper's cutoff in minutes (stuckAfterMinutes), not how long this run was stuck" }
+    fires_at:
+      - element: the dataguard-runs-reaper Cloud Scheduler job
+        trigger: server
+        api: POST /api/v1/internal/runs/reap
+        needs: [a pending or running run older than the cutoff]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Run Reaped
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Renamed to snake_case run_reaped on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: run_reaped
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of run_reaped, sent beside it for every run the reconciler reclaims, on the account owner.
+    question: How many runs get stuck and reclaimed, and at which phase?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: missingDetectors, type: array, example: "[event_count_spike]" }
+      - { name: expectedDetectors, type: array, example: "[event_count_spike, event_property_stopped_flowing]" }
+      - { name: reportedDetectors, type: array, example: "[event_property_stopped_flowing]" }
+      - { name: stuckPhase, type: string, example: after_batch_submitted | before_batch_submitted, values: [after_batch_submitted, before_batch_submitted] }
+      - { name: batchSubmittedAt, type: datetime, example: "2026-11-18T06:02:11.000Z", only_when: stuckPhase=after_batch_submitted }
+      - { name: minutesStuck, type: numeric, example: "30" }
+    fires_at:
+      - element: the dataguard-runs-reaper Cloud Scheduler job
+        trigger: server
+        api: POST /api/v1/internal/runs/reap
+        needs: [a pending or running run older than the cutoff]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: run_preprocessing_completed
+    section: Pravix runs and detectors
+    description: >-
+      A run's pre-processing finished and the detector batch is next. mode=inline when the orchestrator ran
+      pre-processing in the request (after the succeeded stage log); mode=chunked when the last day-slice
+      chunk reports and the barrier closes (after the dispatch claim is won). Sent on the account owner.
+      Not sent when pre-processing fails (run_completed status=failed), while chunks are still in flight, or
+      when the preprocess job reports no analyzable events and dispatches detectors directly.
+    question: How long does a run's data take to land, how much data is loaded per run, and inline or chunked?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: mode, type: string, example: chunked | inline, values: [inline, chunked] }
+      - { name: use_case_count, type: numeric, example: "5" }
+      - { name: max_lookback_days, type: numeric, example: "30" }
+      - { name: chunk_count, type: numeric, example: "31", only_when: mode=chunked }
+      - { name: total_events_loaded, type: numeric, example: "184220", only_when: mode=chunked }
+      - { name: profile_chunk_count, type: numeric, example: "1", only_when: mode=chunked }
+      - { name: total_profiles_loaded, type: numeric, example: "5120", only_when: mode=chunked }
+    fires_at:
+      - element: the last day-slice chunk result (barrier closes)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started in chunked mode]
+      - element: the orchestrator after inline pre-processing, following a manual or scheduled start
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [a run started in inline mode]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-23, ref: "branch verify/paths-and-sheet (verification V2)", change: "use_case_count and max_lookback_days now sent on mode=chunked too, from the setup's use cases loaded at the barrier" }
+  - name: Run Preprocessing Completed
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Renamed to snake_case run_preprocessing_completed on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: run_preprocessing_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of run_preprocessing_completed, sent beside it on the account owner. The inline call
+      sends no mode; the chunked call sends mode=chunked.
+    question: How much data is loaded per run, inline or chunked?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: Daily Audit }
+      - { name: mode, type: string, example: chunked, values: [chunked], only_when: "the chunked path (the deprecated inline call sends none; run_preprocessing_completed sends mode on both paths)" }
+      - { name: useCaseCount, type: numeric, example: "5" }
+      - { name: maxLookbackDays, type: numeric, example: "30" }
+      - { name: chunkCount, type: numeric, example: "31", only_when: mode=chunked }
+      - { name: totalEventsLoaded, type: numeric, example: "184220", only_when: mode=chunked }
+      - { name: profileChunkCount, type: numeric, example: "1", only_when: mode=chunked }
+      - { name: totalProfilesLoaded, type: numeric, example: "5120", only_when: mode=chunked }
+    fires_at:
+      - element: the last day-slice chunk result (barrier closes)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started in chunked mode]
+      - element: the orchestrator after inline pre-processing, following a manual or scheduled start
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [a run started in inline mode]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: detector_batch_submitted
+    section: Pravix runs and detectors
+    description: >-
+      The Pravix server published a run's detector batch job to the cloud function (after enqueueBatchJobs
+      resolves), from the inline path or after the chunk barrier. One per run, on the account owner. Not sent
+      when no valid detectors are configured or the publish throws (then run_completed status=failed,
+      failure_reason=batch_submission).
+    question: How many detector batches are sent to the cloud function, with how many detectors, and how many come back?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: job_id, type: string, example: "a3e8a661-18b7-4a0e-94fc-1e65891a5cf3-5b48c62e-5484-4225-95d5-570d4cb45992-1763445731000" }
+      - { name: detector_count, type: numeric, example: "5 | 9" }
+      - { name: expected_detectors, type: array, example: "[event_count_spike, event_property_stopped_flowing, event_property_null_percentage_increased]" }
+      - { name: dataset_id, type: string, example: dataguard_runs }
+    fires_at:
+      - element: the orchestrator after pre-processing, following a manual or scheduled start
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [a run started, at least one valid detector]
+      - element: the last day-slice chunk result (barrier closes, then dispatch)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started in chunked mode, at least one valid detector]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Detector Batch Submitted
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Renamed to snake_case detector_batch_submitted on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: detector_batch_submitted
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of detector_batch_submitted, sent beside it after the batch job is published, on the account owner.
+    question: How many detector batches are sent, with how many detectors?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: jobId, type: string, example: "a3e8a661-18b7-4a0e-94fc-1e65891a5cf3-5b48c62e-5484-4225-95d5-570d4cb45992-1763445731000" }
+      - { name: detectorCount, type: numeric, example: "5 | 9" }
+      - { name: expectedDetectors, type: array, example: "[event_count_spike, event_property_stopped_flowing]" }
+      - { name: datasetId, type: string, example: dataguard_runs }
+    fires_at:
+      - element: the orchestrator after pre-processing, following a manual or scheduled start
+        trigger: server
+        api: POST /api/v1/setups/[setupId]/run
+        needs: [a run started, at least one valid detector]
+      - element: the last day-slice chunk result (barrier closes, then dispatch)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a run started in chunked mode, at least one valid detector]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: detector_completed
+    section: Pravix runs and detectors
+    description: >-
+      One detector's outcome in a run, sent by the completion handler for every detector in the cloud
+      function's completion message, after its report section is saved: status=success (with severity ok or
+      alert), failed, or skipped (with the skip reason). Sent on the setup creator's distinct_id. Not sent at
+      all when the setup creator's user can't be found, or when the setup or run is gone (the message is dropped).
+    question: Which detectors find alerts, fail or skip most often, and why?
+    track_via: server
+    properties:
+      - { name: run_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setup_id, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: account_id, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: use_case_key, type: string, example: event_count_spike | event_property_stopped_flowing | user_property_null_percentage_increased }
+      - { name: execution_time_ms, type: numeric, example: "4210" }
+      - { name: processed_events, type: numeric, example: "184220" }
+      - { name: trigger_type, type: string, example: scheduled | manual, values: [manual, scheduled] }
+      - { name: status, type: string, example: success | skipped | failed, values: [success, failed, skipped] }
+      - { name: failure_reason, type: string, example: detector_error, values: [detector_error], only_when: status=failed }
+      - { name: reason, type: string, example: insufficient-data | no-data | below-min-volume, values: [skip-flag, disabled, no-data, insufficient-data, below-min-volume, insufficient-baseline, skipped, other], only_when: status=skipped }
+      - { name: severity, type: string, example: ok | alert, values: [ok, alert], only_when: status=success }
+      - { name: alert, type: boolean, example: "false | true", only_when: status=success }
+    fires_at:
+      - element: the cloud function's completion message (one event per detector in it)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a detector batch submitted, the setup creator's user exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Detector Completed
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Folded into detector_completed with status=success on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: detector_completed
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of detector_completed status=success, sent beside it for each detector that ran to completion, on the setup creator.
+    question: Which detectors find alerts most often?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: Daily Audit }
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: useCaseKey, type: string, example: event_count_spike | event_property_stopped_flowing }
+      - { name: executionTimeMs, type: numeric, example: "4210" }
+      - { name: processedEvents, type: numeric, example: "184220" }
+      - { name: triggerType, type: string, example: scheduled | manual, values: [manual, scheduled] }
+      - { name: severity, type: string, example: ok | alert, values: [ok, alert] }
+      - { name: alert, type: boolean, example: "false | true" }
+    fires_at:
+      - element: the cloud function's completion message (one event per completed detector)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a detector batch submitted, the setup creator's user exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Detector Failed
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Folded into detector_completed with status=failed on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: detector_completed
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of detector_completed status=failed, sent beside it for each detector the cloud function reports failed, with the error's name and message.
+    question: Which detectors fail most often, and with what error?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: Daily Audit }
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: useCaseKey, type: string, example: event_count_spike }
+      - { name: executionTimeMs, type: numeric, example: "4210" }
+      - { name: processedEvents, type: numeric, example: "0" }
+      - { name: triggerType, type: string, example: scheduled | manual, values: [manual, scheduled] }
+      - { name: errorName, type: string, example: Error | TypeError }
+      - { name: errorMessage, type: string, example: "Query exceeded resource limits" }
+    fires_at:
+      - element: the cloud function's completion message (one event per failed detector)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a detector batch submitted, the setup creator's user exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Detector Skipped
+    section: Pravix runs and detectors
+    status: deprecated
+    deprecated_reason: Folded into detector_completed with status=skipped on 18 Nov 2026 (audit decision Q3); both are sent until the dual-fire date.
+    replaced_by: detector_completed
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of detector_completed status=skipped, sent beside it for each detector the cloud function skipped.
+    question: Which detectors skip most often, and why?
+    track_via: server
+    properties:
+      - { name: runId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: setupId, type: string, example: a3e8a661-18b7-4a0e-94fc-1e65891a5cf3 }
+      - { name: setupName, type: string, example: Daily Audit }
+      - { name: accountId, type: string, example: 719f7f5d-8de3-4ac0-be12-8f156cc8f00d }
+      - { name: useCaseKey, type: string, example: user_property_null_percentage_increased }
+      - { name: executionTimeMs, type: numeric, example: "120" }
+      - { name: processedEvents, type: numeric, example: "0" }
+      - { name: triggerType, type: string, example: scheduled | manual, values: [manual, scheduled] }
+      - { name: reason, type: string, example: unknown, description: "Meant to be the skip reason; the code reads a field the completion never has, so it falls back to unknown" }
+    fires_at:
+      - element: the cloud function's completion message (one event per skipped detector)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [a detector batch submitted, the setup creator's user exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

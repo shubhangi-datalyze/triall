@@ -1,0 +1,537 @@
+events:
+  - name: connection_created
+    section: Pravix connections and data settings
+    description: >-
+      POST /api/v1/connections saved a new Mixpanel or PostHog connection for the account (status pending,
+      not yet verified). Sent from the Pravix server right after storage.createConnection resolves, before the
+      201 response. Not sent when the request is rejected (an unsupported source or region, missing project id,
+      invalid credentials, or the account already has its one connection) or when the insert fails; those
+      requests send nothing. Editing a connection (PUT) does not send it.
+    question: How many accounts connect an analytics source each week, which source and region do they pick, and how many go on to verify it?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: connection_source, type: string, example: mixpanel | posthog, values: [mixpanel, posthog] }
+      - { name: project_id, type: string, example: "2317312", description: "The analytics tool's project id the person typed" }
+      - { name: region, type: string, example: us | eu | india, values: [us, eu, india] }
+    fires_at:
+      - page: /connections
+        element: button "Connect & Verify" (the new-connection form)
+        trigger: server
+        api: POST /api/v1/connections
+        needs: [signed_in, no_existing_connection]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Connection Created
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; source overwrote the server's source super property.
+    replaced_by: connection_created
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of connection_created, sent beside it from the same line until 2026-12-18.
+      Its source property (mixpanel or posthog) overwrites the wrapper's source=server.
+    question: How many accounts connect an analytics source each week?
+    track_via: server
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: source, type: string, example: mixpanel | posthog, values: [mixpanel, posthog] }
+      - { name: projectId, type: string, example: "2317312" }
+      - { name: region, type: string, example: us | eu | india, values: [us, eu, india] }
+    fires_at:
+      - page: /connections
+        element: button "Connect & Verify" (the new-connection form)
+        trigger: server
+        api: POST /api/v1/connections
+        needs: [signed_in, no_existing_connection]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: connection_deleted
+    section: Pravix connections and data settings
+    description: >-
+      DELETE /api/v1/connections/:connectionId removed the account's connection. Sent from the Pravix server
+      after storage.deleteConnection resolves, before the 204. Not sent for a missing connection (404) or another
+      account's (403). The Connections page has no delete button today (its handleDelete is never rendered),
+      so only a direct API call reaches it.
+    question: How many accounts remove their analytics connection, and which source were they on?
+    track_via: server
+    properties:
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: connection_source, type: string, example: mixpanel | posthog, values: [mixpanel, posthog] }
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+    fires_at:
+      - page: /connections
+        element: none (no button calls handleDelete; send DELETE /api/v1/connections/[connectionId] directly)
+        trigger: server
+        api: DELETE /api/v1/connections/[connectionId]
+        needs: [signed_in, connection_exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Connection Deleted
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; source overwrote the server's source super property.
+    replaced_by: connection_deleted
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of connection_deleted, sent beside it from the same handler until 2026-12-18.
+      Its source property overwrites the wrapper's source=server.
+    question: How many accounts remove their analytics connection?
+    track_via: server
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: source, type: string, example: mixpanel | posthog, values: [mixpanel, posthog] }
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+    fires_at:
+      - page: /connections
+        element: none (no button calls handleDelete; send DELETE /api/v1/connections/[connectionId] directly)
+        trigger: server
+        api: DELETE /api/v1/connections/[connectionId]
+        needs: [signed_in, connection_exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: connection_verified
+    section: Pravix connections and data settings
+    description: >-
+      POST /api/v1/connections/:connectionId/verify tested the connection against Mixpanel or PostHog. Sent
+      from the Pravix server once per verify request: status=success after the connection is marked verified
+      (the schema sync then starts after the response); status=failed when the test returns false
+      (unexpected_result) or the analytics API throws a ServiceError (upstream_error), after the connection is
+      marked failed. Not sent for an unknown or another account's connection (404), or when a non-ServiceError
+      makes the route answer 500.
+    question: What share of new connections verify, on which source and region, and why do the rest fail?
+    track_via: server
+    properties:
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: connection_source, type: string, example: mixpanel | posthog, values: [mixpanel, posthog] }
+      - { name: project_id, type: string, example: "2317312" }
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: upstream_error | unexpected_result, values: [unexpected_result, upstream_error], only_when: status=failed }
+      - { name: error_code, type: numeric, example: "401 | 403 | 429 | 502", description: "The HTTP status the route answers with, mapped from the analytics API's status (502 when it has none)", only_when: status=failed }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (a pending connection)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, connection_status=pending]
+      - page: /connection-status/[id]
+        element: button "Retry Verification" (a failed connection)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, connection_status=failed]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Connection Verified
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026, with the failures folded in as status=failed.
+    replaced_by: connection_verified
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case success twin of connection_verified (status=success), sent beside it after the
+      connection is marked verified, until 2026-12-18. Failures went to Connection Verification Failed.
+    question: How many connections verify?
+    track_via: server
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: projectId, type: string, example: "2317312" }
+      - { name: status, type: string, example: verified, values: [verified] }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (a pending connection)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, connection_status=pending]
+      - page: /connection-status/[id]
+        element: button "Retry Verification" (a failed connection)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, connection_status=failed]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Connection Verification Failed
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Folded into connection_verified as status=failed on 18 Nov 2026.
+    replaced_by: connection_verified
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case failure twin of connection_verified (status=failed), sent on both failure branches of the
+      verify route until 2026-12-18. errorMessage is the friendly message the route shows; source overwrites the
+      wrapper's source=server.
+    question: How many connection verifications fail, and why?
+    track_via: server
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: source, type: string, example: mixpanel | posthog, values: [mixpanel, posthog] }
+      - { name: projectId, type: string, example: "2317312" }
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: errorCode, type: numeric, example: "401 | 403 | 429 | 502" }
+      - { name: errorMessage, type: string, example: "We could not verify your analytics connection. Please review your credentials and try again." }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (a pending connection)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, connection_status=pending]
+      - page: /connection-status/[id]
+        element: button "Retry Verification" (a failed connection)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, connection_status=failed]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: schema_sync_started
+    section: Pravix connections and data settings
+    description: >-
+      A schema sync of the connection's recent events and properties began, after its sync row was written as
+      running. Sent from the Pravix server inside syncRecentSchemaInline (mode=inline) or startChunkedSync
+      (mode=chunked), with the account owner as the person. Not sent when the connection is missing or the
+      account has no owner. A sync starts after a successful verification (trigger_type=verification) or from
+      Run Sync on Data Settings (trigger_type=manual).
+    question: How many schema syncs start, from verification or a manual Run Sync, and how many finish?
+    track_via: server
+    pair: schema_sync_completed
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: project_id, type: string, example: "2317312" }
+      - { name: lookback_days, type: numeric, example: "3" }
+      - { name: trigger_type, type: string, example: verification | manual, values: [verification, manual, system] }
+      - { name: mode, type: string, example: chunked | inline, values: [inline, chunked] }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (the sync starts after the verify response)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, verification_succeeds]
+      - page: /data-settings
+        element: button "Run Sync"
+        trigger: server
+        api: POST /api/v1/data-settings/sync
+        needs: [signed_in, connection_status=verified]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Schema Sync Started
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026.
+    replaced_by: schema_sync_started
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of schema_sync_started, sent beside it until 2026-12-18. The inline path sends no
+      mode; the chunked path sends mode=chunked. Sent through trackWithUser, so it carries no accountId.
+    question: How many schema syncs start?
+    track_via: server
+    pair: Schema Sync Completed
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: projectId, type: string, example: "2317312" }
+      - { name: lookbackDays, type: numeric, example: "3" }
+      - { name: triggerType, type: string, example: verification | manual, values: [verification, manual, system] }
+      - { name: mode, type: string, example: chunked, values: [chunked] }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (the sync starts after the verify response)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, verification_succeeds]
+      - page: /data-settings
+        element: button "Run Sync"
+        trigger: server
+        api: POST /api/v1/data-settings/sync
+        needs: [signed_in, connection_status=verified]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: schema_sync_completed
+    section: Pravix connections and data settings
+    description: >-
+      A schema sync reached its end. status=success once the catalog is saved and the sync row is marked
+      success: inline (syncRecentSchemaInline, also when no analyzable events were found) or chunked
+      (startChunkedSync with no events, or completeChunkedSync after every export chunk reported). status=failed
+      when the sync row is marked failed: an inline error (sync_error), a chunked error before the fan-out
+      (pre_barrier) or while building the catalog (post_barrier), an export chunk that exhausted its retries
+      (raw_export, from the Pub/Sub completion handler), or the 15-minute reaper finding it stuck (reaped). Not
+      sent when the chunked sync is still running, or when the sync failed before its row was written.
+    question: How many schema syncs finish, how many fail and at which phase, and how many events and properties do they find?
+    track_via: server
+    pair: schema_sync_started
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: project_id, type: string, example: "2317312" }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: sync_error | raw_export | reaped, values: [sync_error, pre_barrier, post_barrier, raw_export, reaped], only_when: status=failed }
+      - { name: events_discovered, type: numeric, example: "42 | 0", only_when: status=success }
+      - { name: user_properties_discovered, type: numeric, example: "18 | 0", only_when: status=success }
+      - { name: lookback_days, type: numeric, example: "3" }
+      - { name: trigger_type, type: string, example: verification | manual, values: [verification, manual, system] }
+      - { name: mode, type: string, example: chunked | inline, values: [inline, chunked] }
+      - { name: minutes_stuck, type: numeric, example: "15", only_when: failure_reason=reaped }
+      - { name: chunk_date, type: string, example: "2026-11-15", description: "The start date of the export day-slice that failed", only_when: failure_reason=raw_export }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (the sync runs after the verify response)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, verification_succeeds]
+      - page: /data-settings
+        element: button "Run Sync"
+        trigger: server
+        api: POST /api/v1/data-settings/sync
+        needs: [signed_in, connection_status=verified]
+      - page: /data-settings
+        element: none (the cloud worker's last export chunk reports; chunked mode)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [chunked_sync_running]
+      - page: /data-settings
+        element: none (Cloud Scheduler calls the reaper every 15 minutes)
+        trigger: server
+        api: POST /api/v1/internal/runs/reap
+        needs: [sync_stuck_running]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Schema Sync Completed
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026.
+    replaced_by: schema_sync_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case success twin of schema_sync_completed (status=success), sent beside it until 2026-12-18.
+      The paths sent through trackForAccount carry accountId; the inline events-found path (trackWithUser)
+      carries none. Failures went to Schema Sync Failed.
+    question: How many schema syncs succeed?
+    track_via: server
+    pair: Schema Sync Started
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: projectId, type: string, example: "2317312" }
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: status, type: string, example: success, values: [success] }
+      - { name: eventsDiscovered, type: numeric, example: "42 | 0" }
+      - { name: userPropertiesDiscovered, type: numeric, example: "18 | 0" }
+      - { name: lookbackDays, type: numeric, example: "3" }
+      - { name: triggerType, type: string, example: verification | manual, values: [verification, manual, system] }
+      - { name: mode, type: string, example: chunked, values: [chunked] }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (the sync runs after the verify response)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, verification_succeeds]
+      - page: /data-settings
+        element: button "Run Sync"
+        trigger: server
+        api: POST /api/v1/data-settings/sync
+        needs: [signed_in, connection_status=verified]
+      - page: /data-settings
+        element: none (the cloud worker's last export chunk reports; chunked mode)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [chunked_sync_running]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Schema Sync Failed
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Folded into schema_sync_completed as status=failed on 18 Nov 2026.
+    replaced_by: schema_sync_completed
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case failure twin of schema_sync_completed (status=failed), sent beside it on every failure
+      path until 2026-12-18. errorMessage is the raw error text; failurePhase is set only on the raw_export and
+      reaped paths.
+    question: How many schema syncs fail?
+    track_via: server
+    properties:
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: projectId, type: string, example: "2317312" }
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: errorMessage, type: string, example: "Reaped: sync stuck in running state | BigQuery project ID is not configured" }
+      - { name: failurePhase, type: string, example: raw_export | reaped, values: [raw_export, reaped] }
+      - { name: lookbackDays, type: numeric, example: "3" }
+      - { name: triggerType, type: string, example: verification | manual, values: [verification, manual, system] }
+      - { name: minutesStuck, type: numeric, example: "15", only_when: failurePhase=reaped }
+      - { name: chunkDate, type: string, example: "2026-11-15", only_when: failurePhase=raw_export }
+      - { name: mode, type: string, example: chunked, values: [chunked] }
+    fires_at:
+      - page: /connection-status/[id]
+        element: button "Verify Connection" (the sync runs after the verify response)
+        trigger: server
+        api: POST /api/v1/connections/[connectionId]/verify
+        needs: [signed_in, verification_succeeds]
+      - page: /data-settings
+        element: button "Run Sync"
+        trigger: server
+        api: POST /api/v1/data-settings/sync
+        needs: [signed_in, connection_status=verified]
+      - page: /data-settings
+        element: none (the cloud worker reports a failed export chunk, or the last chunk's catalog build fails)
+        trigger: server
+        api: POST /api/v1/internal/pubsub/completion
+        needs: [chunked_sync_running]
+      - page: /data-settings
+        element: none (Cloud Scheduler calls the reaper every 15 minutes)
+        trigger: server
+        api: POST /api/v1/internal/runs/reap
+        needs: [sync_stuck_running]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: data_settings_saved
+    section: Pravix connections and data settings
+    description: >-
+      PUT /api/v1/data-settings saved the person's include/exclude choices for the account's events, event
+      properties and user properties. Sent from the Pravix server after updateDataSettings resolves, before the
+      response. Data Settings only sends the rows that changed, and doesn't send the request when nothing
+      changed. The counts are of rows in this save; total_excluded counts the rows this save set to excluded,
+      not the account's total. Not sent when the save fails (500).
+    question: How often do accounts tune what Pravix monitors, and do they exclude more than they include?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: events_changed, type: numeric, example: "3 | 0" }
+      - { name: event_properties_changed, type: numeric, example: "5 | 0" }
+      - { name: user_properties_changed, type: numeric, example: "1 | 0" }
+      - { name: total_excluded, type: numeric, example: "4 | 0", description: "Rows in this save set to excluded" }
+    fires_at:
+      - page: /data-settings
+        element: button "Save Changes"
+        trigger: server
+        api: PUT /api/v1/data-settings
+        needs: [signed_in, settings_changed, no_sync_running]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Data Settings Saved
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026.
+    replaced_by: data_settings_saved
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of data_settings_saved, sent beside it from the same handler until 2026-12-18.
+    question: How often do accounts tune what Pravix monitors?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: eventsChanged, type: numeric, example: "3 | 0" }
+      - { name: eventPropsChanged, type: numeric, example: "5 | 0" }
+      - { name: userPropsChanged, type: numeric, example: "1 | 0" }
+      - { name: totalExcluded, type: numeric, example: "4 | 0" }
+    fires_at:
+      - page: /data-settings
+        element: button "Save Changes"
+        trigger: server
+        api: PUT /api/v1/data-settings
+        needs: [signed_in, settings_changed, no_sync_running]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: data_exclusion_toggled
+    section: Pravix connections and data settings
+    description: >-
+      POST /api/v1/data-settings/exclude excluded (excluded=true) or re-included (excluded=false, the Undo) one
+      event, a property on one event, a property on all events, or a user property, by name, from a detector's
+      report row. Sent from the Pravix server after excludeByName resolves. Not sent when validation rejects
+      the request (400) or the write fails (500). Toggles on the Data Settings page send data_settings_saved
+      instead.
+    question: Which alerts make people stop monitoring an event or property, and how often do they undo it?
+    track_via: server
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: scope, type: string, example: property_on_event | event, values: [event, property_on_event, property_all_events, user_property] }
+      - { name: event_name, type: string, example: Signup Completed, description: "The excluded event's name in the customer's analytics tool", only_when: scope is not user_property }
+      - { name: property_name, type: string, example: utm_source, only_when: scope=property_on_event|property_all_events|user_property }
+      - { name: excluded, type: boolean, example: "true | false" }
+      - { name: entry_point, type: string, example: report, values: [report] }
+    fires_at:
+      - page: /reports/[runId]/[detectorId]
+        element: button "Stop event" (the confirm dialog that the menu item "Stop the [event] event entirely" opens)
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, report_has_alert_row]
+      - page: /reports/[runId]/[detectorId]
+        element: menuitem "Stop <property> on this event"
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, alert_row_has_property]
+      - page: /reports/[runId]/[detectorId]
+        element: menuitem "Stop <property> on all events"
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, alert_row_has_property]
+      - page: /reports/[runId]/[detectorId]
+        element: menuitem "Stop the <property> user property"
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, alert_row_is_user_property]
+      - page: /reports/[runId]/[detectorId]
+        element: button "Undo" (after an exclusion)
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, exclusion_just_applied]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Data Exclusion Toggled
+    section: Pravix connections and data settings
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; source=report overwrote the server's source super property (now entry_point).
+    replaced_by: data_exclusion_toggled
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of data_exclusion_toggled, sent beside it until 2026-12-18. Its source=report
+      overwrites the wrapper's source=server.
+    question: Which alerts make people stop monitoring an event or property?
+    track_via: server
+    properties:
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: scope, type: string, example: property_on_event | event, values: [event, property_on_event, property_all_events, user_property] }
+      - { name: eventName, type: string, example: Signup Completed, only_when: scope is not user_property }
+      - { name: propertyName, type: string, example: utm_source, only_when: scope=property_on_event|property_all_events|user_property }
+      - { name: excluded, type: boolean, example: "true | false" }
+      - { name: source, type: string, example: report, values: [report] }
+    fires_at:
+      - page: /reports/[runId]/[detectorId]
+        element: button "Stop event" (the confirm dialog that the menu item "Stop the [event] event entirely" opens)
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, report_has_alert_row]
+      - page: /reports/[runId]/[detectorId]
+        element: menuitem "Stop <property> on this event"
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, alert_row_has_property]
+      - page: /reports/[runId]/[detectorId]
+        element: menuitem "Stop <property> on all events"
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, alert_row_has_property]
+      - page: /reports/[runId]/[detectorId]
+        element: menuitem "Stop the <property> user property"
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, alert_row_is_user_property]
+      - page: /reports/[runId]/[detectorId]
+        element: button "Undo" (after an exclusion)
+        trigger: server
+        api: POST /api/v1/data-settings/exclude
+        needs: [signed_in, exclusion_just_applied]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

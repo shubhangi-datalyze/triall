@@ -1,0 +1,113 @@
+# Profile properties, from the code (first audit, 2026-11-19).
+properties:
+  - name: $email
+    type: string
+    example: person@example.com
+    operation: set
+    set_via: [client, server]
+    set_when: >-
+      Site (browser): rememberVisitor sets it when it identifies an anonymous browser after a lead form
+      (set_once on a browser already identified), and identifyAccount sets it after every sign-in.
+      Pravix: the browser's identify after sign-up and sign-in, and the server on GET /api/auth/user
+      and when a Pravix user is first created.
+    source: the email the person typed, or users.email
+    question: Who is this lead or account, so sales can follow up?
+    pii: true
+  - name: $name
+    type: string
+    example: Priya Shah
+    operation: set
+    set_via: [client, server]
+    set_when: >-
+      Site: rememberVisitor when the form has a name (the contact form). Pravix: the browser's identify
+      after sign-up and sign-in, and the server on GET /api/auth/user.
+    source: the name typed on the contact form; Pravix users.display_name
+    question: Who is this lead, so sales can address them?
+    pii: true
+  - name: emails
+    type: array
+    example: "[\"person@example.com\", \"person@work.com\"]"
+    operation: append
+    set_via: client
+    set_when: Site only. Every rememberVisitor and identifyAccount call unions the email into the list.
+    source: the email the person typed, or users.email
+    question: Which addresses has this person given us across forms?
+    pii: true
+  - name: linked_profile_ids
+    type: array
+    example: "[\"9f2c4e6a8b0d1f3e5a7c9b1d3f5e7a9c2b4d6f8e0a1c3e5b7d9f1a3c5e7b9d1f\"]"
+    operation: append
+    set_via: client
+    set_when: >-
+      Site only. rememberVisitor adds the visitor id a form returned when the browser is already
+      identified with another id; identifyAccount adds the browser's earlier visitor id when the route says
+      linkBrowser.
+    source: lib/api/visitor-id.ts visitor ids
+    question: Which earlier visitor profiles belong to this person?
+  - name: first_email_source
+    type: string
+    example: call_booking | playbook_access | tool_download
+    values: [call_booking, playbook_access, playbook_signup, tool_download, blog_newsletter, ask_chat, account_signup]
+    operation: set_once
+    set_via: client
+    set_when: Site only. The first rememberVisitor or identifyAccount call on the profile (EmailSource in lib/mixpanel.ts).
+    source: the form that called rememberVisitor
+    question: Where did each lead first give us their email?
+  - name: emailNotifications
+    type: boolean
+    example: "true"
+    operation: set
+    set_via: client
+    set_when: Pravix only. The browser's identify after every sign-in (AuthContext pushUserToDataLayer).
+    source: Pravix users.email_notifications
+    question: How many Pravix users keep email alerts on?
+  - name: accountCreatedAt
+    type: datetime
+    example: 2026-11-17T12:10:32
+    operation: set
+    set_via: client
+    set_when: Pravix only. The browser's identify after every sign-in.
+    source: Pravix users.created_at
+    question: How long have active Pravix users had their account?
+  - name: signupIntent
+    type: string
+    example: app
+    operation: set
+    set_via: [client, server]
+    set_when: >-
+      Pravix only. The browser sets app after the email sign-up form; the server sets the user's
+      signup_intent (app when there is none) when the Pravix user is first created.
+    source: Pravix users.signup_intent
+    question: Which way into Pravix did each user sign up from?
+  - name: initial_utm_source
+    type: string
+    example: 99ways.io | Tech-Behemoths
+    operation: set_once
+    set_via: client
+    external: true
+    set_when: Set by the mixpanel-browser SDK itself on a profile's first identified visit with UTM parameters; no code here writes it.
+    question: Which campaign source first brought each person?
+  - name: initial_utm_medium
+    type: string
+    example: referral | Profile
+    operation: set_once
+    set_via: client
+    external: true
+    set_when: Set by the mixpanel-browser SDK itself; no code here writes it.
+    question: Which campaign medium first brought each person?
+  - name: initial_utm_campaign
+    type: string
+    example: viewprofile
+    operation: set_once
+    set_via: client
+    external: true
+    set_when: Set by the mixpanel-browser SDK itself; no code here writes it.
+    question: Which campaign first brought each person?
+  - name: initial_utm_content
+    type: string
+    example: /company/datalyze
+    operation: set_once
+    set_via: client
+    external: true
+    set_when: Set by the mixpanel-browser SDK itself; no code here writes it.
+    question: Which ad or link first brought each person?

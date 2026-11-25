@@ -1,0 +1,105 @@
+events:
+  # The Datalyze site's own accounts on app.joindatalyze.com: one Firebase sign-in for the Tracking Agent, the
+  # MCP and Pravix. sign_up and log_in are sent from the site's server through trackServer
+  # (lib/mixpanel-server.ts), after the response, only on Vercel production, on the account's users.mixpanel_id
+  # (else its email's visitor id), with the account's email added.
+  - name: sign_up
+    section: Accounts
+    description: >-
+      A new Datalyze account is created: the site's server inserts the users row on the account's first signed-in
+      request with a verified email (lib/account/require-user.ts sessionUser, when findOrCreateUserReporting
+      reports created). Sent from the server once per account, after the response, with the row's created_at as its
+      time and signup-<user id> as its insert id. Usually that first request is the sign-in form's own POST
+      /api/account/mixpanel-id, which saves the account's Mixpanel id before the event leaves; it can also be another
+      signed-in route (the MCP's authorize or usage routes, the Tracking Agent's GitHub token route). An email
+      sign-up that never clicks its verification link sends nothing: the Firebase user exists, but no request passes
+      the verified-email check. Not sent on later sign-ins (log_in), nor from local runs or previews.
+    question: How many Datalyze accounts are created each week, for which product, and with Google or email?
+    track_via: server
+    properties:
+      - { name: auth_method, type: string, example: google | email, values: [google, email], description: "Firebase's sign_in_provider: google.com is google, anything else (password) is email" }
+      - { name: signup_source, type: string, example: account_signup | tracking_agent_signup | mcp_signup | pravix_signup, values: [account_signup, tracking_agent_signup, mcp_signup, pravix_signup], description: "The product the account came from: the referring page or its next=, else the API it called (signupSource)" }
+      - { name: email, type: string, example: name@company.com, description: "The account's email, added by trackServer (.datalyze/context.md: email on every relevant event)" }
+    fires_at:
+      - page: /account/signup
+        element: button "Continue with Google", or the email form's button "Create account" and then the verification link
+        trigger: server
+        api: POST /api/account/mixpanel-id
+        needs: [a verified email new to Datalyze]
+      - page: /account/login
+        element: button "Continue with Google"
+        trigger: server
+        api: POST /api/account/mixpanel-id
+        needs: [a Google email new to Datalyze]
+      - page: /mcp/authorize
+        element: button "Continue with Google" or the email sign-in form on the consent page
+        trigger: server
+        api: POST /api/account/mixpanel-id
+        needs: [an AI client's authorization request, a verified email new to Datalyze]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: log_in
+    section: Accounts
+    description: >-
+      The sign-in form (components/account/auth-form.tsx on /account/login, /account/signup and the MCP consent page)
+      has a signed-in person with a verified email and asks POST /api/account/mixpanel-id for the account's Mixpanel
+      id. Sent from the server when that route answers with the id, after the response. That happens after a Google
+      or email sign-in, after a sign-up (so the first one comes next to sign_up), and also when someone already
+      signed in opens one of those pages and the form passes them straight through. Not sent where the browser skips
+      the call: a tab where Mixpanel doesn't run (a page that holds secrets, a tab holding a GitHub sign-in, a host
+      other than production). Not sent when the route answers 401 or 503, nor for Pravix's own sign-in.
+    question: How often do people come back and sign in to Datalyze, and with Google or email?
+    track_via: server
+    pair: sign_up
+    properties:
+      - { name: auth_method, type: string, example: google | email, values: [google, email], description: "Firebase's sign_in_provider of the token the request carried: google.com is google, else email" }
+      - { name: email, type: string, example: name@company.com, description: "The account's email, added by trackServer" }
+    fires_at:
+      - page: /account/login
+        element: button "Continue with Google", or the email form's button "Sign in"
+        trigger: server
+        api: POST /api/account/mixpanel-id
+        needs: [an account]
+      - page: /account/signup
+        element: button "Continue with Google", or button "Create account" and then the verification link
+        trigger: server
+        api: POST /api/account/mixpanel-id
+        needs: [a verified email]
+      - page: /mcp/authorize
+        element: button "Continue with Google" or the email sign-in form on the consent page
+        trigger: server
+        api: POST /api/account/mixpanel-id
+        needs: [an account, an AI client's authorization request]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: product_chosen
+    section: Accounts
+    description: >-
+      On "What do you want to start with?" (/welcome), the page an account that hasn't started a product is sent to
+      after sign-in (lib/account/home.ts homeFor), the person clicks a product card. Sent in the browser on the click,
+      by beacon, before the page goes to that product's setup; the cards are disabled until the sign-in is read and
+      after the first click, so once per visit. Nothing is stored, so an account that chose and never set anything up
+      is asked again on its next sign-in and can send it again. The choice, not that the product was set up.
+    question: Which product do new accounts choose to start with?
+    track_via: client
+    properties:
+      - { name: product, type: string, example: tracking_agent | mcp | pravix, values: [tracking_agent, mcp, pravix], description: "The card clicked; pravix (Data Alerting) is offered only when NEXT_PUBLIC_PRAVIX_IN_APP=1" }
+      - { name: source, type: string, example: welcome, values: [welcome] }
+    fires_at:
+      - page: /welcome
+        element: button "Tracking Agent" (the card, "Start")
+        trigger: click
+        needs: [signed_in, a verified email, no product started]
+      - page: /welcome
+        element: button "Datalyze MCP" (the card, "Start")
+        trigger: click
+        needs: [signed_in, a verified email, no product started]
+      - page: /welcome
+        element: button "Data Alerting" (the card, "Start")
+        trigger: click
+        needs: [signed_in, a verified email, no product started, flag:NEXT_PUBLIC_PRAVIX_IN_APP]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

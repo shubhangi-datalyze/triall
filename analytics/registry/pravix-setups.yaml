@@ -1,0 +1,432 @@
+events:
+  - name: setup_wizard_started
+    section: Pravix setups
+    description: >-
+      The setup wizard opened. Sent in the browser once when SetupWizard mounts (an effect with no
+      dependencies), on /setup-wizard (the onboarding route Connection Status's Continue to Setup opens),
+      /setups/new, or /setups/:setupId/edit. Not sent again on a step change or a re-render. is_onboarding is
+      true only on the /setup-wizard route, whatever the account's state; is_edit_mode is true on the edit route.
+    question: How many people open the setup wizard, during onboarding or later, and how many of them create a setup?
+    track_via: client
+    pair: setup_created
+    properties:
+      - { name: is_edit_mode, type: boolean, example: "false | true" }
+      - { name: is_onboarding, type: boolean, example: "true | false", description: "true on the /setup-wizard route only" }
+    fires_at:
+      - page: /setup-wizard
+        element: none (opens from button "Continue to Setup" on /connection-status/[id])
+        trigger: page_load
+        needs: [signed_in]
+      - page: /setups/new
+        element: none (opens from link "Create Setup" on /setups, or "Create" on the dashboard)
+        trigger: page_load
+        needs: [signed_in]
+      - page: /setups/[setupId]/edit
+        element: none (opens from button "Edit Setup" on /setups/[setupId])
+        trigger: page_load
+        needs: [signed_in, setup_exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Wizard Started
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026.
+    replaced_by: setup_wizard_started
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of setup_wizard_started, sent beside it from the same effect until 2026-12-18.
+    question: How many people open the setup wizard?
+    track_via: client
+    properties:
+      - { name: isEditMode, type: boolean, example: "false | true" }
+      - { name: isOnboarding, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /setup-wizard
+        element: none (opens from button "Continue to Setup" on /connection-status/[id])
+        trigger: page_load
+        needs: [signed_in]
+      - page: /setups/new
+        element: none (opens from link "Create Setup" on /setups, or "Create" on the dashboard)
+        trigger: page_load
+        needs: [signed_in]
+      - page: /setups/[setupId]/edit
+        element: none (opens from button "Edit Setup" on /setups/[setupId])
+        trigger: page_load
+        needs: [signed_in, setup_exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: setup_wizard_step_completed
+    section: Pravix setups
+    description: >-
+      The person clicked Next on step 1 (basic_info: name, connection, description) or step 2 (select_checks:
+      checks and analysis window) of the setup wizard. Sent in the browser in handleNext before the step
+      changes; Next is disabled on step 1 until a name and connection are set. Not sent for step 3 (schedule):
+      its button is Create Setup, which submits, and the server's setup_creation_started and setup_created
+      record it. Back sends nothing.
+    question: Where in the setup wizard do people drop off, during onboarding and after it?
+    track_via: client
+    properties:
+      - { name: step, type: string, example: basic_info | select_checks, values: [basic_info, select_checks] }
+      - { name: step_number, type: numeric, example: "1 | 2", values: [1, 2] }
+      - { name: is_edit_mode, type: boolean, example: "false | true" }
+      - { name: detector_count, type: numeric, example: "4 | 0", description: "Checks selected in the form when Next is clicked" }
+      - { name: schedule_frequency, type: string, example: manual | daily, values: [manual, daily, weekly, monthly, custom], description: "The schedule in the form when Next is clicked (manual for a new setup until step 3)" }
+    fires_at:
+      - page: /setup-wizard
+        element: 'button "Next: Select Checks"'
+        trigger: click
+        needs: [signed_in, name_and_connection_set]
+      - page: /setup-wizard
+        element: 'button "Next: Schedule"'
+        trigger: click
+        needs: [signed_in]
+      - page: /setups/new
+        element: 'button "Next: Select Checks"'
+        trigger: click
+        needs: [signed_in, name_and_connection_set]
+      - page: /setups/new
+        element: 'button "Next: Schedule"'
+        trigger: click
+        needs: [signed_in]
+      - page: /setups/[setupId]/edit
+        element: 'button "Next: Select Checks"'
+        trigger: click
+        needs: [signed_in, setup_exists]
+      - page: /setups/[setupId]/edit
+        element: 'button "Next: Schedule"'
+        trigger: click
+        needs: [signed_in, setup_exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Wizard Step Completed
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026.
+    replaced_by: setup_wizard_step_completed
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of setup_wizard_step_completed, sent beside it from handleNext until 2026-12-18.
+    question: Where in the setup wizard do people drop off?
+    track_via: client
+    properties:
+      - { name: stepNumber, type: numeric, example: "1 | 2", values: [1, 2] }
+      - { name: stepName, type: string, example: basic_info | select_checks, values: [basic_info, select_checks] }
+      - { name: isEditMode, type: boolean, example: "false | true" }
+      - { name: detectorCount, type: numeric, example: "4 | 0" }
+      - { name: scheduleFrequency, type: string, example: manual | daily, values: [manual, daily, weekly, monthly, custom] }
+    fires_at:
+      - page: /setup-wizard
+        element: 'button "Next: Select Checks"'
+        trigger: click
+        needs: [signed_in, name_and_connection_set]
+      - page: /setup-wizard
+        element: 'button "Next: Schedule"'
+        trigger: click
+        needs: [signed_in]
+      - page: /setups/new
+        element: 'button "Next: Select Checks"'
+        trigger: click
+        needs: [signed_in, name_and_connection_set]
+      - page: /setups/new
+        element: 'button "Next: Schedule"'
+        trigger: click
+        needs: [signed_in]
+      - page: /setups/[setupId]/edit
+        element: 'button "Next: Select Checks"'
+        trigger: click
+        needs: [signed_in, setup_exists]
+      - page: /setups/[setupId]/edit
+        element: 'button "Next: Schedule"'
+        trigger: click
+        needs: [signed_in, setup_exists]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: setup_creation_started
+    section: Pravix setups
+    description: >-
+      POST /api/v1/setups passed validation (a name and connection id, a connection the account owns) and is
+      about to create the setup. Sent from the Pravix server before storage.createSetup. Not sent for a
+      missing name or connection id (400), an unknown connection (404) or another account's (403).
+    question: How many setup creations reach the server, and how many of them end in a saved setup?
+    track_via: server
+    pair: setup_created
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: has_schedule, type: boolean, example: "true | false" }
+      - { name: detector_count, type: numeric, example: "4 | 1" }
+    fires_at:
+      - page: /setup-wizard
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+      - page: /setups/new
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Creation Started
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; setupName (text the person typed) was dropped.
+    replaced_by: setup_creation_started
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of setup_creation_started, sent beside it before the insert until 2026-12-18.
+    question: How many setup creations reach the server?
+    track_via: server
+    pair: Setup Created
+    properties:
+      - { name: setupName, type: string, example: Daily checks, description: "The setup name the person typed" }
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: hasSchedule, type: boolean, example: "true | false" }
+      - { name: detectorCount, type: numeric, example: "4 | 1" }
+    fires_at:
+      - page: /setup-wizard
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+      - page: /setups/new
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: setup_created
+    section: Pravix setups
+    description: >-
+      POST /api/v1/setups finished. status=success after the setup row, its checks and (when it has a cron)
+      its schedule are written; a scheduling error doesn't fail it. status=failed with failure_reason=server_error
+      when anything after validation throws (the route answers 500), which can be after the row was inserted.
+      Sent from the Pravix server. Validation rejections (400, 404, 403) send neither this nor
+      setup_creation_started. Edits send setup_updated.
+    question: How many setups are created each week, with how many checks and a schedule or not, and how many creations fail?
+    track_via: server
+    pair: setup_creation_started
+    properties:
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: setup_id, type: string, example: 7d2e9a40-1c3b-4f5e-8a6d-9b0c1e2f3a4b, only_when: status=success }
+      - { name: connection_id, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: has_schedule, type: boolean, example: "true | false" }
+      - { name: detector_count, type: numeric, example: "4 | 1" }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: server_error, values: [server_error], only_when: status=failed }
+    fires_at:
+      - page: /setup-wizard
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+      - page: /setups/new
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Created
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026, with failures folded in as status=failed.
+    replaced_by: setup_created
+    dual_fire_until: 2026-12-18
+    description: The Title Case success twin of setup_created (status=success), sent beside it until 2026-12-18.
+    question: How many setups are created each week?
+    track_via: server
+    pair: Setup Creation Started
+    properties:
+      - { name: setupId, type: string, example: 7d2e9a40-1c3b-4f5e-8a6d-9b0c1e2f3a4b }
+      - { name: setupName, type: string, example: Daily checks, description: "The setup name the person typed" }
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: hasSchedule, type: boolean, example: "true | false" }
+      - { name: detectorCount, type: numeric, example: "4 | 1" }
+    fires_at:
+      - page: /setup-wizard
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+      - page: /setups/new
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, verified_connection, detector_selected]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Creation Failed
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Folded into setup_created as status=failed on 18 Nov 2026.
+    replaced_by: setup_created
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case failure twin of setup_created (status=failed), sent from the create route's catch until
+      2026-12-18. errorMessage is the raw error text.
+    question: How many setup creations fail?
+    track_via: server
+    properties:
+      - { name: setupName, type: string, example: Daily checks, description: "The setup name the person typed" }
+      - { name: connectionId, type: string, example: 5b48c62e-5484-4225-95d5-570d4cb45992 }
+      - { name: errorMessage, type: string, example: "duplicate key value violates unique constraint" }
+    fires_at:
+      - page: /setup-wizard
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, server_error]
+      - page: /setups/new
+        element: button "Create Setup"
+        trigger: server
+        api: POST /api/v1/setups
+        needs: [signed_in, server_error]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: setup_updated
+    section: Pravix setups
+    description: >-
+      PUT /api/v1/setups/:setupId saved changes to a setup: an edit from the wizard's edit route, or Pause Setup
+      / Resume Setup on the setup's page (a status change). Sent from the Pravix server after the update, its
+      checks and any re-scheduling. fields_changed lists the fields the request included, not only the ones
+      whose value changed: a wizard edit always sends name, description, scheduleCron, scheduleTimezone and
+      includeWeekends, and its checks. Not sent for a missing setup (404), another account's (403) or a failed
+      write (500).
+    question: How often are setups edited, paused or resumed, and what changes?
+    track_via: server
+    properties:
+      - { name: setup_id, type: string, example: 7d2e9a40-1c3b-4f5e-8a6d-9b0c1e2f3a4b }
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: fields_changed, type: array, example: "[status] | [name, description, scheduleCron, scheduleTimezone, includeWeekends]" }
+      - { name: detectors_changed, type: boolean, example: "true | false", description: "true when the request included the checks (every wizard edit)" }
+      - { name: schedule_changed, type: boolean, example: "true | false", description: "true when the request included the cron, timezone or status" }
+    fires_at:
+      - page: /setups/[setupId]/edit
+        element: button "Create Setup" (the edit wizard's last step keeps this label)
+        trigger: server
+        api: PUT /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists]
+      - page: /setups/[setupId]
+        element: button "Pause Setup"
+        trigger: server
+        api: PUT /api/v1/setups/[setupId]
+        needs: [signed_in, setup_status=active]
+      - page: /setups/[setupId]
+        element: button "Resume Setup"
+        trigger: server
+        api: PUT /api/v1/setups/[setupId]
+        needs: [signed_in, setup_status=paused]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Updated
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; setupName was dropped.
+    replaced_by: setup_updated
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of setup_updated, sent beside it from the update route until 2026-12-18.
+    question: How often are setups edited, paused or resumed?
+    track_via: server
+    properties:
+      - { name: setupId, type: string, example: 7d2e9a40-1c3b-4f5e-8a6d-9b0c1e2f3a4b }
+      - { name: setupName, type: string, example: Daily checks, description: "The setup name the person typed" }
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: changedFields, type: array, example: "[status] | [name, description, scheduleCron, scheduleTimezone, includeWeekends]" }
+      - { name: detectorsChanged, type: boolean, example: "true | false" }
+      - { name: scheduleChanged, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /setups/[setupId]/edit
+        element: button "Create Setup" (the edit wizard's last step keeps this label)
+        trigger: server
+        api: PUT /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists]
+      - page: /setups/[setupId]
+        element: button "Pause Setup"
+        trigger: server
+        api: PUT /api/v1/setups/[setupId]
+        needs: [signed_in, setup_status=active]
+      - page: /setups/[setupId]
+        element: button "Resume Setup"
+        trigger: server
+        api: PUT /api/v1/setups/[setupId]
+        needs: [signed_in, setup_status=paused]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: setup_deleted
+    section: Pravix setups
+    description: >-
+      DELETE /api/v1/setups/:setupId deleted a setup, after unscheduling it when it had a cron. Sent from the
+      Pravix server after storage.deleteSetup resolves, before the 204. The delete buttons ask for confirmation
+      first; cancelling sends nothing. Not sent for a missing setup (404), another account's (403) or a failed
+      delete (500).
+    question: How many setups get deleted, how old are they, and were they scheduled?
+    track_via: server
+    properties:
+      - { name: setup_id, type: string, example: 7d2e9a40-1c3b-4f5e-8a6d-9b0c1e2f3a4b }
+      - { name: account_id, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: had_schedule, type: boolean, example: "true | false" }
+      - { name: age_in_days, type: numeric, example: "12 | 0" }
+    fires_at:
+      - page: /setups/[setupId]
+        element: button "Delete Setup"
+        trigger: server
+        api: DELETE /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists, confirmed]
+      - page: /setups
+        element: button "Delete" (a setup's row)
+        trigger: server
+        api: DELETE /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists, confirmed]
+      - page: /
+        element: button "Delete" (a setup's row on the dashboard)
+        trigger: server
+        api: DELETE /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists, confirmed]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Setup Deleted
+    section: Pravix setups
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; setupName was dropped.
+    replaced_by: setup_deleted
+    dual_fire_until: 2026-12-18
+    description: The Title Case twin of setup_deleted, sent beside it from the delete route until 2026-12-18.
+    question: How many setups get deleted?
+    track_via: server
+    properties:
+      - { name: setupId, type: string, example: 7d2e9a40-1c3b-4f5e-8a6d-9b0c1e2f3a4b }
+      - { name: setupName, type: string, example: Daily checks, description: "The setup name the person typed" }
+      - { name: accountId, type: string, example: 0b6f3c2e-8a41-4d7e-9f15-2c7a9e4b1d03 }
+      - { name: hadSchedule, type: boolean, example: "true | false" }
+      - { name: ageInDays, type: numeric, example: "12 | 0" }
+    fires_at:
+      - page: /setups/[setupId]
+        element: button "Delete Setup"
+        trigger: server
+        api: DELETE /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists, confirmed]
+      - page: /setups
+        element: button "Delete" (a setup's row)
+        trigger: server
+        api: DELETE /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists, confirmed]
+      - page: /
+        element: button "Delete" (a setup's row on the dashboard)
+        trigger: server
+        api: DELETE /api/v1/setups/[setupId]
+        needs: [signed_in, setup_exists, confirmed]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

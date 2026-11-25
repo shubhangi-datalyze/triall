@@ -1,0 +1,178 @@
+events:
+  - name: user_logged_in
+    section: Pravix accounts
+    description: >-
+      Sent by the Pravix server from GET /api/auth/user once the person's Pravix user row is found, right after
+      the profile is written to Mixpanel. Despite the name it is not a login: in the app-host build (production,
+      app.joindatalyze.com/pravix) the only caller is the Settings page, which loads /api/auth/user on mount and
+      again on window focus once the data is 30 seconds old, and after a notification preference is saved. The
+      legacy joinpravix.com build also calls it right after a password sign-in on /login. Not sent when the user
+      row is missing (404) or the request fails. Signing in through the shared Datalyze page sends nothing here;
+      the site's log_in covers that.
+    question: How many people open Pravix's Settings, and how many of them have email notifications on?
+    track_via: server
+    properties:
+      - { name: email, type: string, example: owner@example.com, description: "The user's email from the Pravix users row (the team sends email on relevant events, .datalyze/context.md)" }
+      - { name: has_email_notifications, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /pravix/settings
+        element: the Settings page (Account Information card) loading
+        trigger: server
+        api: GET /api/auth/user
+        needs: [signed_in]
+      - page: /login
+        element: button "Sign in" (legacy joinpravix.com build only)
+        trigger: server
+        api: GET /api/auth/user
+        needs: ["flag:VITE_SHARED_SIGNIN off"]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: User Logged In
+    section: Pravix accounts
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside user_logged_in until 2026-12-18.
+    replaced_by: user_logged_in
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of user_logged_in, sent from the same GET /api/auth/user handler on the line before it,
+      with the same moment and the old camelCase property names.
+    question: How many people open Pravix's Settings, and how many of them have email notifications on?
+    track_via: server
+    properties:
+      - { name: email, type: string, example: owner@example.com }
+      - { name: displayName, type: string, example: Ansh Agrawal | owner (the email's local part when no name was given) }
+      - { name: hasEmailNotifications, type: boolean, example: "true | false" }
+    fires_at:
+      - page: /pravix/settings
+        element: the Settings page (Account Information card) loading
+        trigger: server
+        api: GET /api/auth/user
+        needs: [signed_in]
+      - page: /login
+        element: button "Sign in" (legacy joinpravix.com build only)
+        trigger: server
+        api: GET /api/auth/user
+        needs: ["flag:VITE_SHARED_SIGNIN off"]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: user_logged_out
+    section: Pravix accounts
+    description: >-
+      Sent in the browser when a signed-in person clicks Log out in Pravix (the account menu in the app-host frame,
+      or Logout in the legacy navigation and sidebar), before the Mixpanel reset and before the page leaves for the
+      site's /account/signout. Not sent when the person signs out on the Datalyze site itself, or when Pravix signs
+      them out because the site's session ended.
+    question: How many Pravix users log out each week, and how soon after they logged in?
+    track_via: client
+    properties:
+      - { name: user_id, type: string, example: 7Yb2kQmZ1hS3pXr9TnV4cLw8eF02, description: "The Firebase uid, the same id as distinct_id" }
+    fires_at:
+      - page: /pravix
+        element: menuitem "Log out" (account menu, top right of the app frame)
+        trigger: click
+        needs: [signed_in]
+      - page: /
+        element: button "Logout" (top navigation, legacy joinpravix.com build only)
+        trigger: click
+        needs: [signed_in, "flag:VITE_SHARED_SIGNIN off"]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: User Logged Out
+    section: Pravix accounts
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside user_logged_out until 2026-12-18.
+    replaced_by: user_logged_out
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of user_logged_out, sent from the same logout handler on the line before it.
+    question: How many Pravix users log out each week, and how soon after they logged in?
+    track_via: client
+    properties:
+      - { name: userId, type: string, example: 7Yb2kQmZ1hS3pXr9TnV4cLw8eF02 }
+    fires_at:
+      - page: /pravix
+        element: menuitem "Log out" (account menu, top right of the app frame)
+        trigger: click
+        needs: [signed_in]
+      - page: /
+        element: button "Logout" (top navigation, legacy joinpravix.com build only)
+        trigger: click
+        needs: [signed_in, "flag:VITE_SHARED_SIGNIN off"]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: user_created
+    section: Pravix accounts
+    description: >-
+      Sent by the Pravix server once, when findOrCreatePravixUser writes a new Pravix user row for a Firebase uid
+      that has none. In production that is the first signed-in request after someone arrives from the shared
+      Datalyze sign-up or sign-in (authenticateToken provisions the user), so shared_sign_in is true; the legacy
+      build sends it from POST /api/v1/users after the /signup form. Not sent for a uid that already has a user,
+      and not sent when the email already belongs to another Pravix user (the request is refused with 409).
+    question: How many new Pravix users do we get each week, from which campaign and landing page?
+    track_via: server
+    properties:
+      - { name: email, type: string, example: owner@example.com }
+      - { name: signup_intent, type: string, example: app, description: "The funnel the person signed up from; no other funnel exists today, so the code sends app" }
+      - { name: shared_sign_in, type: boolean, example: "true | false", description: "true when the user came through the shared Datalyze sign-in (a request under /pravix)" }
+      - { name: utm_source, type: string, example: linkedin | google, only_when: the first visit carried utm_source }
+      - { name: utm_medium, type: string, example: social | cpc, only_when: the first visit carried utm_medium }
+      - { name: utm_campaign, type: string, example: pravix_launch, only_when: the first visit carried utm_campaign }
+      - { name: utm_term, type: string, example: data quality alerts, only_when: the first visit carried utm_term }
+      - { name: utm_content, type: string, example: hero_cta, only_when: the first visit carried utm_content }
+      - { name: referrer, type: string, example: "https://www.linkedin.com/", only_when: the first visit came from another site }
+      - { name: landing_path, type: string, example: /pravix | /pravix/setups, only_when: first-touch attribution was recorded }
+    fires_at:
+      - page: /pravix
+        element: the first page load after the shared Datalyze sign-up or sign-in (first signed-in request)
+        trigger: server
+        api: POST /api/v1/users
+        needs: [signed_in, no Pravix user for this uid yet]
+      - page: /signup
+        element: button "Create account" (legacy joinpravix.com build only)
+        trigger: server
+        api: POST /api/v1/users
+        needs: ["flag:VITE_SHARED_SIGNIN off"]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: User Created
+    section: Pravix accounts
+    status: deprecated
+    deprecated_reason: Renamed to snake_case on 18 Nov 2026; sent beside user_created until 2026-12-18.
+    replaced_by: user_created
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case twin of user_created, sent from findOrCreatePravixUser on the line before it, with the
+      attribution object spread in as it is stored (landingPath in camelCase).
+    question: How many new Pravix users do we get each week, from which campaign and landing page?
+    track_via: server
+    properties:
+      - { name: email, type: string, example: owner@example.com }
+      - { name: displayName, type: string, example: Ansh Agrawal | owner (the email's local part when no name was given) }
+      - { name: signupIntent, type: string, example: app }
+      - { name: sharedSignIn, type: boolean, example: "true | false" }
+      - { name: utm_source, type: string, example: linkedin | google, only_when: the first visit carried utm_source }
+      - { name: utm_medium, type: string, example: social | cpc, only_when: the first visit carried utm_medium }
+      - { name: utm_campaign, type: string, example: pravix_launch, only_when: the first visit carried utm_campaign }
+      - { name: utm_term, type: string, example: data quality alerts, only_when: the first visit carried utm_term }
+      - { name: utm_content, type: string, example: hero_cta, only_when: the first visit carried utm_content }
+      - { name: referrer, type: string, example: "https://www.linkedin.com/", only_when: the first visit came from another site }
+      - { name: landingPath, type: string, example: /pravix | /pravix/setups, only_when: first-touch attribution was recorded }
+    fires_at:
+      - page: /pravix
+        element: the first page load after the shared Datalyze sign-up or sign-in (first signed-in request)
+        trigger: server
+        api: POST /api/v1/users
+        needs: [signed_in, no Pravix user for this uid yet]
+      - page: /signup
+        element: button "Create account" (legacy joinpravix.com build only)
+        trigger: server
+        api: POST /api/v1/users
+        needs: ["flag:VITE_SHARED_SIGNIN off"]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

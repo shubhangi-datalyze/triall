@@ -1,0 +1,422 @@
+events:
+  - name: tool_email_submitted
+    section: Free tools
+    description: >-
+      /api/tool-downloads' answer to a free tool's email gate, sent from the route through trackServer after the
+      response, on the visitor's profile (the browser's own Mixpanel id when the form sent one, else users.mixpanel_id, else the email's visitor id): from the download form
+      on the downloadable tools' pages and from the Analytics Maturity Grader's gate. status=success when the
+      route stored the download row, recorded the email in email_submissions and answered 201. status=failed when
+      the email is missing or malformed (invalid_email, 400; a blank email has no profile, so nothing is sent) or
+      storing the row failed (db_error, 503). A request naming an unknown tool (400; the site's forms always name
+      a known one) and an invalid JSON body send nothing. Replaces Email Submitted, the browser's event, sent
+      beside it until 2026-12-18.
+    question: How many leads do the free tools capture each week, from which tool, and how many fail?
+    track_via: server
+    properties:
+      - { name: tool_id, type: string, example: "mixpanel-exporter | mixpanel-users-exporter | event-tracking-plan-generator | analytics-strategy-creator | analytics-maturity-grader", values: [mixpanel-exporter, mixpanel-users-exporter, event-tracking-plan-generator, analytics-strategy-creator, analytics-maturity-grader], description: "The tool's id from content/tools.json (lib/data/tool-config.ts)" }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: invalid_email | db_error, values: [invalid_email, db_error], only_when: status=failed }
+      - { name: email, type: string, example: you@company.com, description: "The email the visitor typed, trimmed and lower-cased; added by trackServer (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /tools/[toolId]
+        element: button "Download the tool" (the email form on the Mixpanel Event Exporter and Mixpanel Users Exporter pages)
+        trigger: server
+        api: POST /api/tool-downloads
+      - page: /tools/event-tracking-plan-generator
+        element: button "Download the tool"
+        trigger: server
+        api: POST /api/tool-downloads
+      - page: /tools/analytics-strategy-creator
+        element: button "Download the tool"
+        trigger: server
+        api: POST /api/tool-downloads
+      - page: /tools/analytics-maturity-grader
+        element: button "Grade my analytics" (the email gate before the quiz)
+        trigger: server
+        api: POST /api/tool-downloads
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "SEMANTICS: sent from /api/tool-downloads (server) instead of the browser, with status and failure_reason, so refused and failed submits are counted too (filter status=success for leads)" }
+  - name: Email Submitted
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: tool_email_submitted
+    dual_fire_until: 2026-12-18
+    description: >-
+      The browser's lead event for the free tools: sent from the download form and the Maturity Grader's gate once
+      /api/tool-downloads accepted the email (201), after rememberVisitor identifies the browser. Not sent when
+      the route rejects the email or the tool id (400), when storing the row fails (503), or when the request
+      fails. tool_email_submitted, which replaces it, is sent by the route itself since 20 Nov 2026; this one is
+      sent until 2026-12-18.
+    question: How many leads do the free tools capture each week, and from which tool?
+    track_via: client
+    properties:
+      - { name: tool_id, type: string, example: "mixpanel-exporter | mixpanel-users-exporter | event-tracking-plan-generator | analytics-strategy-creator | analytics-maturity-grader", values: [mixpanel-exporter, mixpanel-users-exporter, event-tracking-plan-generator, analytics-strategy-creator, analytics-maturity-grader] }
+      - { name: email, type: string, example: you@company.com }
+    fires_at:
+      - page: /tools/[toolId]
+        element: button "Download the tool" (the email form on the Mixpanel Event Exporter and Mixpanel Users Exporter pages)
+        trigger: after_api
+        api: POST /api/tool-downloads
+      - page: /tools/event-tracking-plan-generator
+        element: button "Download the tool"
+        trigger: after_api
+        api: POST /api/tool-downloads
+      - page: /tools/analytics-strategy-creator
+        element: button "Download the tool"
+        trigger: after_api
+        api: POST /api/tool-downloads
+      - page: /tools/analytics-maturity-grader
+        element: button "Grade my analytics" (the email gate before the quiz)
+        trigger: after_api
+        api: POST /api/tool-downloads
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Description rewritten: tool_email_submitted is now sent from /api/tool-downloads, so this is no longer its twin" }
+  - name: ab_calculator_result
+    section: Free tools
+    description: >-
+      The A/B test calculator's Check a result tab shows a verdict for numbers the visitor entered. Sent in the
+      browser 2 seconds after the verdict or one of the four result inputs (visitors and conversions for A and B)
+      last changed, so typing settles into one event. Only after the visitor's own input (a field, or Use this
+      plan): never for the page's worked example on load or for a shared link's values. Not sent while the inputs
+      are invalid (no verdict shown), and not when only confidence, sides or test details change without
+      changing the verdict. Replaces AB Calculator Result, sent beside it until 2026-12-18.
+    question: How many visitors check a real A/B result each week, and what verdicts do they get?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust] }
+      - { name: significant, type: boolean, example: "true | false" }
+      - { name: example, type: boolean, example: "false | true", description: "True when the four result inputs still hold the page's worked example (10,000/500 vs 10,000/560)" }
+      - { name: confidence, type: string, example: "95 | 90 | 99", description: "The confidence level in percent, sent as the text of the field (the selector offers 90, 95, 99; a shared link can carry another)" }
+      - { name: sided, type: string, example: two | one, values: [one, two] }
+      - { name: has_plan, type: boolean, example: "false | true", description: "True when the planned visitors per version field holds a number" }
+      - { name: failed_checks, type: array, example: "[] | [planned] | [split, duration]", description: "The ids of the data checks that failed or are on hold; each is split, planned, duration or conversions; empty when every check passes" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: textbox "Visitors" / "Conversions" for version A or B (the Check a result tab), 2 seconds after the last change
+        trigger: click
+        needs: [valid result inputs]
+        from: "Not a click on a button: type a new value into any of the four result inputs and wait 2 seconds; the verdict is computed in the browser, with no request."
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: AB Calculator Result
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: ab_calculator_result
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of ab_calculator_result: sent from the same timer, right before it, with the same
+      properties. Sent beside ab_calculator_result until 2026-12-18.
+    question: How many visitors check a real A/B result each week, and what verdicts do they get?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust] }
+      - { name: significant, type: boolean, example: "true | false" }
+      - { name: example, type: boolean, example: "false | true" }
+      - { name: confidence, type: string, example: "95 | 90 | 99" }
+      - { name: sided, type: string, example: two | one, values: [one, two] }
+      - { name: has_plan, type: boolean, example: "false | true" }
+      - { name: failed_checks, type: array, example: "[] | [planned] | [split, duration]" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: textbox "Visitors" / "Conversions" for version A or B (the Check a result tab), 2 seconds after the last change
+        trigger: click
+        needs: [valid result inputs]
+        from: "Not a click on a button: type a new value into any of the four result inputs and wait 2 seconds; the verdict is computed in the browser, with no request."
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ab_calculator_tab_switched
+    section: Free tools
+    description: >-
+      The visitor clicks the A/B test calculator's other tab (Check a result or Plan a test). Sent in the browser
+      on the click; not when the visitor clicks the tab already open, and not when a shared plan link opens the
+      Plan tab on load. Replaces AB Calculator Tab Switched, sent beside it until 2026-12-18.
+    question: How many calculator visitors move to planning a test rather than only checking a result?
+    track_via: client
+    properties:
+      - { name: tab, type: string, example: plan | check, values: [check, plan], description: "The tab the visitor switched to" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: radio "Plan a test"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: radio "Check a result"
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: AB Calculator Tab Switched
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: ab_calculator_tab_switched
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of ab_calculator_tab_switched: sent from the same click, right before it, with the same
+      property. Sent beside ab_calculator_tab_switched until 2026-12-18.
+    question: How many calculator visitors move to planning a test rather than only checking a result?
+    track_via: client
+    properties:
+      - { name: tab, type: string, example: plan | check, values: [check, plan] }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: radio "Plan a test"
+        trigger: click
+      - page: /tools/ab-test-calculator
+        element: radio "Check a result"
+        trigger: click
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ab_calculator_plan_used
+    section: Free tools
+    description: >-
+      On the Plan a test tab, the visitor clicks Use this plan to check the result: the planned visitors per version
+      are carried to Check a result and the tab switches. Sent in the browser on the click, only when the plan's
+      inputs give a sample size (the button does nothing otherwise). Replaces AB Calculator Plan Used, sent beside
+      it until 2026-12-18.
+    question: How many visitors who plan a test carry the plan over to check its result?
+    track_via: client
+    properties:
+      - { name: per_version, type: numeric, example: "31234", description: "Visitors needed per version" }
+      - { name: weeks, type: numeric, example: "7 | 1", only_when: "Weekly visitors holds a number above 0", description: "Weeks the test needs at the weekly visitors entered" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Use this plan to check the result" (the Plan a test tab)
+        trigger: click
+        needs: [valid plan inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: AB Calculator Plan Used
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: ab_calculator_plan_used
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of ab_calculator_plan_used: sent from the same click, right before it, with the same
+      properties. Sent beside ab_calculator_plan_used until 2026-12-18.
+    question: How many visitors who plan a test carry the plan over to check its result?
+    track_via: client
+    properties:
+      - { name: per_version, type: numeric, example: "31234" }
+      - { name: weeks, type: numeric, example: "7 | 1", only_when: "Weekly visitors holds a number above 0" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Use this plan to check the result" (the Plan a test tab)
+        trigger: click
+        needs: [valid plan inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ab_calculator_link_copied
+    section: Free tools
+    description: >-
+      The visitor clicks Copy link to this result under a verdict on the Check a result tab. Sent in the browser
+      after the clipboard write is tried, whether or not it succeeded (a failed write is swallowed and the event
+      still sends). The button shows only while a verdict is on screen. Replaces AB Calculator Link Copied, sent
+      beside it until 2026-12-18.
+    question: How many calculator results do visitors share, and with which verdict?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust] }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Copy link to this result"
+        trigger: click
+        needs: [valid result inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: AB Calculator Link Copied
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: ab_calculator_link_copied
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of ab_calculator_link_copied: sent from the same call in copyText, right before it, with
+      the same property. Sent beside ab_calculator_link_copied until 2026-12-18.
+    question: How many calculator results do visitors share, and with which verdict?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust] }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Copy link to this result"
+        trigger: click
+        needs: [valid result inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ab_calculator_plan_link_copied
+    section: Free tools
+    description: >-
+      The visitor clicks Copy plan link on the Plan a test tab. Sent in the browser after the clipboard write is
+      tried, whether or not it succeeded, and only when the plan's inputs give a sample size. Replaces AB
+      Calculator Plan Link Copied, sent beside it until 2026-12-18.
+    question: How many test plans do visitors share?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust], only_when: "the Check a result tab holds valid numbers", description: "The verdict on the Check a result tab at the moment the plan link is copied, not anything about the plan" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Copy plan link" (the Plan a test tab)
+        trigger: click
+        needs: [valid plan inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: AB Calculator Plan Link Copied
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: ab_calculator_plan_link_copied
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of ab_calculator_plan_link_copied: sent from the same call in copyText, right before it,
+      with the same property. Sent beside ab_calculator_plan_link_copied until 2026-12-18.
+    question: How many test plans do visitors share?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust], only_when: "the Check a result tab holds valid numbers" }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Copy plan link" (the Plan a test tab)
+        trigger: click
+        needs: [valid plan inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: ab_calculator_summary_copied
+    section: Free tools
+    description: >-
+      The visitor clicks Copy summary for Slack under a verdict on the Check a result tab. Sent in the browser
+      after the clipboard write is tried, whether or not it succeeded. The button shows only while a verdict is on
+      screen. Replaces AB Calculator Summary Copied, sent beside it until 2026-12-18.
+    question: How many calculator results do visitors take to their team, and with which verdict?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust] }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Copy summary for Slack"
+        trigger: click
+        needs: [valid result inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: AB Calculator Summary Copied
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: ab_calculator_summary_copied
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of ab_calculator_summary_copied: sent from the same call in copyText, right before it,
+      with the same property. Sent beside ab_calculator_summary_copied until 2026-12-18.
+    question: How many calculator results do visitors take to their team, and with which verdict?
+    track_via: client
+    properties:
+      - { name: verdict, type: string, example: ship | keepRunning | noDifference | keepA | dontTrust, values: [ship, keepRunning, noDifference, keepA, dontTrust] }
+    fires_at:
+      - page: /tools/ab-test-calculator
+        element: button "Copy summary for Slack"
+        trigger: click
+        needs: [valid result inputs]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: maturity_grader_submitted
+    section: Free tools
+    description: >-
+      The visitor clicks See my results after answering all ten questions of the Analytics Maturity Grader (the
+      quiz opens only after the email gate). The score is computed in the browser; the event is sent on the click,
+      before the results page opens. Not sent while any question is unanswered (the button is disabled). Replaces
+      Maturity Grader Submitted, sent beside it until 2026-12-18.
+    question: How many visitors who give their email finish the maturity quiz, and what grades do they get?
+    track_via: client
+    pair: tool_email_submitted
+    properties:
+      - { name: overall_score, type: numeric, example: "143 | 250 | 20", description: "Points out of 250 (ten questions, 2 to 25 points each)" }
+      - { name: overall_grade, type: string, example: B | C+ | A+, values: [A+, A, B+, B, C+, C, D, F] }
+    fires_at:
+      - page: /tools/analytics-maturity-grader
+        element: button "See my results" (after the email gate, every question answered)
+        trigger: click
+        needs: [email gate passed, all questions answered]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Maturity Grader Submitted
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: maturity_grader_submitted
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of maturity_grader_submitted: sent from the same click, right before it, with the same
+      properties. Sent beside maturity_grader_submitted until 2026-12-18.
+    question: How many visitors who give their email finish the maturity quiz, and what grades do they get?
+    track_via: client
+    properties:
+      - { name: overall_score, type: numeric, example: "143 | 250 | 20" }
+      - { name: overall_grade, type: string, example: B | C+ | A+, values: [A+, A, B+, B, C+, C, D, F] }
+    fires_at:
+      - page: /tools/analytics-maturity-grader
+        element: button "See my results" (after the email gate, every question answered)
+        trigger: click
+        needs: [email gate passed, all questions answered]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: maturity_scorecard_downloaded
+    section: Free tools
+    description: >-
+      The visitor clicks Download scorecard on the grader's results page and the browser saves the scorecard PNG.
+      Sent in the browser after html2canvas renders the image and the download link is clicked; not sent when
+      rendering fails (the error is swallowed). Replaces Maturity Scorecard Downloaded, sent beside it until 2026-12-18.
+    question: How many graded visitors take their scorecard away, and at which grades?
+    track_via: client
+    pair: maturity_grader_submitted
+    properties:
+      - { name: overall_grade, type: string, example: B | C+ | A+, values: [A+, A, B+, B, C+, C, D, F] }
+      - { name: overall_score, type: numeric, example: "143 | 250 | 20" }
+    fires_at:
+      - page: /tools/analytics-maturity-grader/results
+        element: button "Download scorecard"
+        trigger: click
+        needs: [quiz results in this tab's session]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+  - name: Maturity Scorecard Downloaded
+    section: Free tools
+    status: deprecated
+    deprecated_reason: Renamed to snake_case object_action in the 18 Nov 2026 rename
+    replaced_by: maturity_scorecard_downloaded
+    dual_fire_until: 2026-12-18
+    description: >-
+      The Title Case name of maturity_scorecard_downloaded: sent from the same handler, right before it, with the
+      same properties. Sent beside maturity_scorecard_downloaded until 2026-12-18.
+    question: How many graded visitors take their scorecard away, and at which grades?
+    track_via: client
+    properties:
+      - { name: overall_grade, type: string, example: B | C+ | A+, values: [A+, A, B+, B, C+, C, D, F] }
+      - { name: overall_score, type: numeric, example: "143 | 250 | 20" }
+    fires_at:
+      - page: /tools/analytics-maturity-grader/results
+        element: button "Download scorecard"
+        trigger: click
+        needs: [quiz results in this tab's session]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

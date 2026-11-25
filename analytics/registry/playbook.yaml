@@ -1,0 +1,438 @@
+events:
+  - name: playbook_hub_viewed
+    section: Playbook
+    description: >-
+      The playbook hub (/playbook) has mounted in the browser and the reader-hint cookie has been read. Sent once per
+      mount of the hub by PlaybookAnalytics, after useSignedIn resolves, so signed_in is known on the first event.
+      Not sent on chapter, part, glossary, download or progress pages, and not again on a re-render.
+    question: How many people open the playbook hub each week, signed in or not, and from which entry page?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification, only_when: "the event is sent from a chapter page (never on the hub: trackPlaybook sends it null)" }
+      - { name: part, type: string, example: trustworthy-data | foundations, only_when: "the event is sent from a chapter page (never on the hub: trackPlaybook sends it null)" }
+      - { name: signed_in, type: boolean, example: "false | true", description: "Read in the browser from the reader-hint cookie" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss", description: "The path this visit entered the playbook on, kept in session storage" }
+    fires_at:
+      - page: /playbook
+        element: the hub page itself
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: chapter_viewed
+    section: Playbook
+    description: >-
+      A chapter page (/playbook/[slug]) has mounted in the browser and the reader-hint cookie has been read. Sent once
+      per chapter page view by PlaybookAnalytics; moving to another chapter remounts the page and sends it again.
+      Not sent on the hub, part pages, the glossary or the kitchen-sink demo page.
+    question: Which chapters and parts do readers open, signed in or not, and where did their visit start?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification | creating-a-tracking-plan }
+      - { name: part, type: string, example: trustworthy-data | foundations | what-to-measure, values: [foundations, what-to-measure, trustworthy-data, your-data-stack, reading-the-data, acting-on-what-you-find] }
+      - { name: signed_in, type: boolean, example: "false | true" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+    fires_at:
+      - page: /playbook/[slug]
+        element: the chapter page itself
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: chapter_scrolled
+    section: Playbook
+    description: >-
+      A reader's scroll on a chapter page has passed 25, 50, 75 or 100% of the scrollable height. Sent in the browser
+      once per threshold per chapter page view, only forwards (scrolling back up and down again sends nothing), and
+      also on mount when the page loads already past a threshold. Not sent on pages too short to scroll.
+    question: How far into each chapter do readers get before they stop?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification }
+      - { name: part, type: string, example: trustworthy-data | foundations, values: [foundations, what-to-measure, trustworthy-data, your-data-stack, reading-the-data, acting-on-what-you-find] }
+      - { name: signed_in, type: boolean, example: "false | true" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+      - { name: depth, type: numeric, example: "25 | 50 | 75 | 100", values: [25, 50, 75, 100], description: "The scroll threshold reached, in percent of the scrollable height" }
+    fires_at:
+      - page: /playbook/[slug]
+        element: the chapter body, scrolled past each threshold
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: chapter_completed
+    section: Playbook
+    description: >-
+      A reader has scrolled past 85% of a chapter's scrollable height, which ProgressTracker counts as read. Sent in the
+      browser once, when the chapter flips to read; the read status is also written to localStorage (and to the account
+      when signed in), so a chapter already read in this browser does not send it again on a later visit. There is no
+      button: via is always scroll.
+    question: Which chapters do readers finish, and how many chapters does a reader finish before giving an email?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification }
+      - { name: part, type: string, example: trustworthy-data | foundations, values: [foundations, what-to-measure, trustworthy-data, your-data-stack, reading-the-data, acting-on-what-you-find] }
+      - { name: signed_in, type: boolean, example: "false | true" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+      - { name: via, type: string, example: scroll, values: [scroll] }
+    fires_at:
+      - page: /playbook/[slug]
+        element: the chapter body, scrolled past 85%
+        trigger: page_load
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: cta_viewed
+    section: Playbook
+    description: >-
+      One of the playbook's email asks was shown to a reader we have no email for. The chapter, sticky, progress-page
+      and download-page forms (CaptureForm) send it once per mount when at least half the form is on screen; the hub's
+      "Access course" gate (AccessForm) sends it when it mounts with no access cookie, without waiting for it to be on
+      screen. Not sent to readers who already gave an email or are signed in, because those forms don't render.
+    question: How many readers see each email ask (placement), and what share of them then submit it?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter }
+      - { name: part, type: string, example: trustworthy-data | foundations, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter }
+      - { name: signed_in, type: boolean, example: "false" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+      - { name: placement, type: string, example: chapter_end | sticky | hub, values: [chapter_pdf, chapter_end, sticky, second_chapter, progress_page, download_page, hub] }
+    fires_at:
+      - page: /playbook
+        element: form "Access course" (the email gate in the hub hero)
+        trigger: page_load
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: form "Send me the PDF" (the "Get this chapter as a PDF" box under the chapter header), half on screen
+        trigger: page_load
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: form "Send me the link" (the "Get the whole playbook" card at the end of the chapter), half on screen
+        trigger: page_load
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: form "Send me the link" in the bar "Save your progress as you read" (appears at 60% scroll; "Want this to remember where you are?" from the second chapter on, placement second_chapter)
+        trigger: page_load
+        needs: [no_email_given, sticky_not_dismissed_in_30_days]
+      - page: /playbook/my-progress
+        element: form "Send me the link" (signed out)
+        trigger: page_load
+        needs: [signed_out]
+      - page: /playbook/download
+        element: form "Send me the link" (signed out)
+        trigger: page_load
+        needs: [signed_out]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: cta_submitted
+    section: Playbook
+    description: >-
+      A reader submitted one of the playbook's email forms. Sent in the browser on submit, before the request to
+      /api/playbook/access (hub) or /api/playbook/subscribe (every other placement), so it counts every attempt,
+      including ones the route then rejects. Not sent again while a submit is in flight; sent again on a retry after an error.
+    question: How many readers try to give their email, from which ask, and how many of those attempts end in access or a magic link?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter }
+      - { name: part, type: string, example: trustworthy-data | foundations, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter }
+      - { name: signed_in, type: boolean, example: "false" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+      - { name: placement, type: string, example: hub | chapter_end | sticky, values: [chapter_pdf, chapter_end, sticky, second_chapter, progress_page, download_page, hub] }
+      - { name: email, type: string, example: reader@example.com, description: "The address as typed, trimmed and lower-cased, before the route validates it (the team sends email on lead events, .datalyze/context.md)" }
+    fires_at:
+      - page: /playbook
+        element: button "Access course"
+        trigger: submit
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the PDF" (the "Get this chapter as a PDF" box under the chapter header)
+        trigger: submit
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the link" (the "Get the whole playbook" card at the end of the chapter)
+        trigger: submit
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the link" in the bar "Save your progress as you read"
+        trigger: submit
+        needs: [no_email_given, sticky_not_dismissed_in_30_days]
+      - page: /playbook/my-progress
+        element: button "Send me the link" (signed out)
+        trigger: submit
+        needs: [signed_out]
+      - page: /playbook/download
+        element: button "Send me the link" (signed out)
+        trigger: submit
+        needs: [signed_out]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: course_accessed
+    section: Playbook
+    status: deprecated
+    deprecated_reason: "Sent from the browser on every OK, which the route gives to bots, rate-limited submits and failed lead saves too (audit F3); playbook_lead_captured, sent by the route with method=access and status, replaces it"
+    replaced_by: playbook_lead_captured
+    dual_fire_until: 2026-12-18
+    description: >-
+      The hub's "Access course" form was accepted: /api/playbook/access answered OK and set the access cookie. Sent in
+      the browser once the response is OK, after rememberVisitor identifies the browser, just before it navigates to
+      the chapter. The route answers OK on every well-formed email, including bot submits, rate-limited ones and ones
+      whose lead save failed, so this counts readers let in, not leads saved. Not sent on a 400 (bad email) or a
+      network error; those send nothing.
+    question: How many readers give their email at the hub to open the course, and which chapter were they trying to reach?
+    track_via: client
+    pair: cta_submitted
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss, only_when: "the event is sent from a chapter page (never: the hub form has no chapter, so trackPlaybook sends it null; target_chapter says where the reader is going)" }
+      - { name: part, type: string, example: trustworthy-data, only_when: "the event is sent from a chapter page (never: the hub form has no chapter, so trackPlaybook sends it null)" }
+      - { name: signed_in, type: boolean, example: "false" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+      - { name: placement, type: string, example: hub, values: [hub] }
+      - { name: email, type: string, example: reader@example.com, description: "The address as typed, trimmed and lower-cased" }
+      - { name: target_chapter, type: string, example: what-is-product-analytics | data-loss, description: "The chapter the reader is sent to: the gated chapter they clicked, else the first chapter" }
+    fires_at:
+      - page: /playbook
+        element: button "Access course"
+        trigger: after_api
+        api: POST /api/playbook/access
+        needs: [no_email_given]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Deprecated: replaced by playbook_lead_captured from the route; both sent until 2026-12-18" }
+
+  - name: magic_link_sent
+    section: Playbook
+    status: deprecated
+    deprecated_reason: "Sent from the browser on every OK, which the route gives to honeypot and too-fast submits too, and failures sent nothing (audit F3); playbook_lead_captured, sent by the route with method=magic_link and status, replaces it"
+    replaced_by: playbook_lead_captured
+    dual_fire_until: 2026-12-18
+    description: >-
+      /api/playbook/subscribe accepted a playbook email form (every placement but the hub). Sent in the browser once the
+      response is OK, after rememberVisitor identifies the browser. The route answers OK when it has queued the magic
+      link email, and also, without sending anything, to honeypot and too-fast submits; the email itself is sent after
+      the response and its failure is only logged. So this counts accepted requests, not delivered links. Not sent on
+      a 400, 429 or 503, or a network error; those send nothing.
+    question: How many readers ask for a sign-in link each week, from which ask and chapter?
+    track_via: client
+    pair: cta_submitted
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss | event-verification, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter }
+      - { name: part, type: string, example: trustworthy-data | foundations, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter }
+      - { name: signed_in, type: boolean, example: "false" }
+      - { name: entry_page, type: string, example: "/playbook | /playbook/data-loss" }
+      - { name: placement, type: string, example: chapter_end | sticky | progress_page, values: [chapter_pdf, chapter_end, sticky, second_chapter, progress_page, download_page] }
+      - { name: email, type: string, example: reader@example.com, description: "The address as typed, trimmed and lower-cased" }
+    fires_at:
+      - page: /playbook/[slug]
+        element: button "Send me the PDF" (the "Get this chapter as a PDF" box under the chapter header)
+        trigger: after_api
+        api: POST /api/playbook/subscribe
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the link" (the "Get the whole playbook" card at the end of the chapter)
+        trigger: after_api
+        api: POST /api/playbook/subscribe
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the link" in the bar "Save your progress as you read"
+        trigger: after_api
+        api: POST /api/playbook/subscribe
+        needs: [no_email_given, sticky_not_dismissed_in_30_days]
+      - page: /playbook/my-progress
+        element: button "Send me the link" (signed out)
+        trigger: after_api
+        api: POST /api/playbook/subscribe
+        needs: [signed_out]
+      - page: /playbook/download
+        element: button "Send me the link" (signed out)
+        trigger: after_api
+        api: POST /api/playbook/subscribe
+        needs: [signed_out]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Deprecated: replaced by playbook_lead_captured from the route; both sent until 2026-12-18" }
+
+  - name: playbook_lead_captured
+    section: Playbook
+    description: >-
+      A playbook email form's outcome, sent from its route through trackServer after the response, on the
+      reader's profile (the browser's own Mixpanel id when the form sent one, else users.mixpanel_id, else the email's visitor id). method=access: the hub's "Access course"
+      form (/api/playbook/access); status=success once the lead is saved (findOrCreateSubscriber, or only
+      email_submissions where the playbook database isn't configured), status=failed when the email is malformed
+      (invalid_email, 400), the per-IP limit is hit (rate_limited; the reader still gets in, but no lead is saved)
+      or the save throws (db_error; the reader still gets in). method=magic_link: every other playbook form
+      (/api/playbook/subscribe); status=success once the subscriber is saved and the sign-in link created, just
+      before the link is emailed after the response (a failed send is only logged), status=failed on a malformed
+      email (invalid_email, 400), the per-IP or per-email limit (rate_limited, 429) or a database error (db_error,
+      503). Nothing is sent for the routes' bot answers (the hidden honeypot filled, or a submit under 1.5 seconds
+      after the form rendered), a blank email (no profile), an invalid JSON body or the subscribe route's 503 when
+      sign-in isn't configured.
+    question: How many readers give the playbook their email each week, through which form and chapter, and how many fail?
+    track_via: server
+    pair: cta_submitted
+    properties:
+      - { name: method, type: string, example: access | magic_link, values: [access, magic_link], description: "access: the hub's Access course form; magic_link: a form that emails a sign-in link" }
+      - { name: placement, type: string, example: hub | chapter_end | sticky | progress_page, values: [hub, chapter_pdf, chapter_end, sticky, second_chapter, progress_page, download_page], description: "Which ask: hub for method=access; for magic_link, the CaptureForm placement it posts" }
+      - { name: chapter_slug, type: string, example: data-loss | event-verification, only_when: placement=chapter_pdf|chapter_end|sticky|second_chapter, description: "The chapter the form was on (the form's sourceSlug)" }
+      - { name: status, type: string, example: success | failed, values: [success, failed] }
+      - { name: failure_reason, type: string, example: invalid_email | rate_limited | db_error, values: [invalid_email, rate_limited, db_error], only_when: status=failed }
+      - { name: email, type: string, example: reader@example.com, description: "The address as typed, trimmed and lower-cased; added by trackServer" }
+    fires_at:
+      - page: /playbook
+        element: button "Access course"
+        trigger: server
+        api: POST /api/playbook/access
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the PDF" (the "Get this chapter as a PDF" box under the chapter header)
+        trigger: server
+        api: POST /api/playbook/subscribe
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the link" (the "Get the whole playbook" card at the end of the chapter)
+        trigger: server
+        api: POST /api/playbook/subscribe
+        needs: [no_email_given]
+      - page: /playbook/[slug]
+        element: button "Send me the link" in the bar "Save your progress as you read"
+        trigger: server
+        api: POST /api/playbook/subscribe
+        needs: [no_email_given, sticky_not_dismissed_in_30_days]
+      - page: /playbook/my-progress
+        element: button "Send me the link" (signed out)
+        trigger: server
+        api: POST /api/playbook/subscribe
+        needs: [signed_out]
+      - page: /playbook/download
+        element: button "Send me the link" (signed out)
+        trigger: server
+        api: POST /api/playbook/subscribe
+        needs: [signed_out]
+    changelog:
+      - { date: 2026-11-20, ref: "branch main (audit F3)", change: "Added: one server lead outcome for the playbook's access and magic-link forms, replacing course_accessed and magic_link_sent" }
+
+  - name: playbook_unlocked
+    section: Playbook
+    description: >-
+      A reader landed on their progress page from a magic link. /playbook/unlock spends the token, sets the session and
+      redirects to /playbook/my-progress?unlocked=1; the page, rendered signed in with that flag, sends this from the
+      browser once per mount. Not sent when the link is expired or used (the route redirects to /playbook/unlock/expired),
+      and sent again if the reader reloads or revisits the URL that still carries ?unlocked=1.
+    question: How many readers sign in through a magic link each week, and how long after asking for one?
+    track_via: client
+    pair: magic_link_sent
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss, only_when: "the event is sent from a chapter page (never: it fires on the progress page, so trackPlaybook sends it null)" }
+      - { name: part, type: string, example: trustworthy-data, only_when: "the event is sent from a chapter page (never: it fires on the progress page, so trackPlaybook sends it null)" }
+      - { name: signed_in, type: boolean, example: "true", values: [true] }
+      - { name: entry_page, type: string, example: "/playbook/my-progress" }
+    fires_at:
+      - page: /playbook/my-progress
+        element: the progress page, reached with ?unlocked=1 from the magic link
+        trigger: page_load
+        api: GET /playbook/unlock
+        needs: [signed_in, valid_magic_link]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: progress_page_viewed
+    section: Playbook
+    description: >-
+      The reader dashboard (/playbook/my-progress) has mounted in the browser and the reader-hint cookie has been read.
+      Sent once per mount by PlaybookAnalytics, signed in or out. Signed in, it carries how many chapters are read and
+      the share of the book; signed out the page shows the email ask instead and sends neither.
+    question: How often do readers come back to their progress page, and how far through the book are they when they do?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss, only_when: "the event is sent from a chapter page (never: trackPlaybook sends it null here)" }
+      - { name: part, type: string, example: trustworthy-data, only_when: "the event is sent from a chapter page (never: trackPlaybook sends it null here)" }
+      - { name: signed_in, type: boolean, example: "true | false" }
+      - { name: entry_page, type: string, example: "/playbook/my-progress | /playbook" }
+      - { name: chapters_read, type: numeric, example: "0 | 3 | 12", only_when: signed_in=true, description: "Chapters with status read on the account" }
+      - { name: percent, type: numeric, example: "0 | 11 | 43", only_when: signed_in=true, description: "chapters_read as a share of all chapters, rounded, 0 to 100" }
+    fires_at:
+      - page: /playbook/my-progress
+        element: the progress page itself (signed in)
+        trigger: page_load
+        needs: [signed_in]
+      - page: /playbook/my-progress
+        element: the progress page itself (signed out, with the email ask)
+        trigger: page_load
+        needs: [signed_out]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: pdf_downloaded
+    section: Playbook
+    description: >-
+      A signed-in reader clicked the playbook PDF link. Sent in the browser on the click, before the browser requests
+      /api/playbook/download/playbook-pdf, which checks the session and streams the file. Only download ids containing
+      "pdf" send this; the others send template_downloaded. Not sent when the file is opened another way (middle-click,
+      "Save link as", a copied link), and sent even if the route then redirects a reader whose session has ended.
+    question: How many readers take the whole playbook away as a PDF?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss, only_when: "the event is sent from a chapter page (never: download links are on the progress and download pages)" }
+      - { name: part, type: string, example: trustworthy-data, only_when: "the event is sent from a chapter page (never: download links are on the progress and download pages)" }
+      - { name: signed_in, type: boolean, example: "true", values: [true] }
+      - { name: entry_page, type: string, example: "/playbook/my-progress | /playbook/download" }
+      - { name: download_id, type: string, example: playbook-pdf, values: [playbook-pdf] }
+    fires_at:
+      - page: /playbook/my-progress
+        element: link "The playbook as a PDF"
+        trigger: click
+        needs: [signed_in, file_on_disk]
+      - page: /playbook/download
+        element: link "The playbook as a PDF"
+        trigger: click
+        needs: [signed_in, file_on_disk]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }
+
+  - name: template_downloaded
+    section: Playbook
+    description: >-
+      A signed-in reader clicked a template link (the tracking plan template or the UTM sheet). Sent in the browser on
+      the click, before the browser requests /api/playbook/download/[id], which checks the session and streams the file.
+      Not sent when the file is opened another way (middle-click, "Save link as", a copied link), and sent even if the
+      route then redirects a reader whose session has ended.
+    question: Which templates do readers take away to do the work themselves?
+    track_via: client
+    properties:
+      - { name: chapter_slug, type: string, example: data-loss, only_when: "the event is sent from a chapter page (never: download links are on the progress and download pages)" }
+      - { name: part, type: string, example: trustworthy-data, only_when: "the event is sent from a chapter page (never: download links are on the progress and download pages)" }
+      - { name: signed_in, type: boolean, example: "true", values: [true] }
+      - { name: entry_page, type: string, example: "/playbook/my-progress | /playbook/download" }
+      - { name: download_id, type: string, example: tracking-plan-template | utm-sheet, values: [tracking-plan-template, utm-sheet] }
+    fires_at:
+      - page: /playbook/my-progress
+        element: link "Tracking plan template"
+        trigger: click
+        needs: [signed_in, file_on_disk]
+      - page: /playbook/my-progress
+        element: link "UTM sheet"
+        trigger: click
+        needs: [signed_in, file_on_disk]
+      - page: /playbook/download
+        element: link "Tracking plan template"
+        trigger: click
+        needs: [signed_in, file_on_disk]
+      - page: /playbook/download
+        element: link "UTM sheet"
+        trigger: click
+        needs: [signed_in, file_on_disk]
+    changelog:
+      - { date: 2026-11-19, ref: audit, change: Added to the plan by the first audit }
+      - { date: 2026-11-19, ref: audit, change: "Where it fires, added" }

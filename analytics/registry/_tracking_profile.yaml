@@ -1,0 +1,78 @@
+version: 1
+tool: mixpanel
+stack:
+  - { path: ., language: typescript, framework: nextjs, sides: [client, server] }
+  - { path: pravix/client, language: typescript, framework: react-vite, sides: [client] }
+  - { path: pravix/server, language: typescript, framework: express, sides: [server] }
+sdks:
+  - { package: mixpanel-browser, side: client, init: lib/mixpanel.ts }
+  - { package: mixpanel-browser, side: client, init: pravix/client/src/lib/mixpanelDirect.ts }
+  - { package: "fetch to api.mixpanel.com/track (no SDK)", side: server, init: lib/mixpanel-server.ts }
+  - { package: mixpanel, side: server, init: pravix/server/services/mixpanelTracking.ts }
+wrappers:
+  - { path: lib/mixpanel.ts, side: client, import: "import { track } from '@/lib/mixpanel'" }
+  - { path: lib/mixpanel-server.ts, side: server, import: "import { trackServer } from '@/lib/mixpanel-server'" }
+  - { path: lib/playbook/analytics.ts, side: client, import: "import { trackPlaybook } from '@/lib/playbook/analytics'" }
+  - { path: pravix/client/src/lib/analytics.ts, side: client, import: "import { track, identify } from '@/lib/analytics'" }
+  - { path: pravix/client/src/lib/mixpanelDirect.ts, side: client }
+  - { path: pravix/client/src/lib/pageview.ts, side: client, import: "import { trackPageview } from '@/lib/pageview'" }
+  - { path: pravix/server/services/mixpanelTracking.ts, side: server, import: "import { mixpanelTracking } from './services/mixpanelTracking.js'" }
+  # Not a wrapper: Datalyze's own scanner test fixtures (fake apps with fake tracking). Listed here only so
+  # the scan doesn't read them as this product's tracking; nothing in it is ever sent.
+  - { path: tracking-agent/test/ }
+calls:
+  # The Datalyze site (www and app.joindatalyze.com), browser only.
+  - { callee: track, from: '@/lib/mixpanel', side: client,
+      example: "track('contact_form_submitted', funnelProps)", ref: app/contact/contact-form.tsx:181 }
+  - { callee: trackPlaybook, from: '@/lib/playbook/analytics', side: client, props_arg: 2,
+      adds: [chapter_slug, part, signed_in, entry_page],
+      example: "trackPlaybook('cta_submitted', { ...context, signedIn }, { placement, email: readerEmail })", ref: components/playbook/CaptureForm.tsx:94 }
+  - { callee: trackPageview, from: '@/lib/mixpanel', side: client,
+      adds: [page, current_domain, current_url_path, current_url_protocol, current_url_search, current_page_title],
+      example: "trackPageview(pageviewUrl(pathname, searchParams))", ref: app/_components/mixpanel-provider.tsx:25 }
+  - { kind: identify, callee: rememberVisitor, from: '@/lib/mixpanel', side: client,
+      example: "rememberVisitor({ visitorId: readVisitorId(data), email: leadEmail, name: trimmedName, source: 'call_booking' })", ref: app/contact/contact-form.tsx:211 }
+  - { kind: identify, callee: identifyAccount, from: '@/lib/mixpanel', side: client,
+      example: "identifyAccount({ mixpanelId: data.mixpanelId, email: data.email, linkBrowser: data.linkBrowser === true })", ref: lib/account/mixpanel-identity.ts:29 }
+  - { kind: reset, callee: resetIdentity, from: '@/lib/mixpanel', side: client,
+      example: "resetIdentity()", ref: lib/account/sign-out.ts:25 }
+  - { callee: trackServer, from: '@/lib/mixpanel-server', side: server, props_arg: 2, id_arg: 1, adds: [email],
+      example: "trackServer('checkout_started', user, { plan_id: planId, entry_point: checkoutEntryPoint(request) })", ref: app/api/account/checkout/route.ts:33 }
+  - { callee: trackServerNow, from: '@/lib/mixpanel-server', side: server, props_arg: 2, id_arg: 1, adds: [email],
+      example: "await trackServerNow('verify_run_ended', e.account, properties, { insertId: run })", ref: lib/tracking-agent/verify-runs/track.ts:84 }
+  # Pravix (pravix/), browser.
+  - { callee: track, from: '@/lib/analytics', side: client,
+      example: "track('setup_wizard_started', { is_edit_mode: isEditMode, is_onboarding: isOnboarding })", ref: pravix/client/src/pages/SetupWizard.tsx:122 }
+  - { callee: trackPageview, from: '@/lib/pageview', side: client,
+      adds: [page, current_domain, current_url_path, current_url_protocol, current_url_search, current_page_title],
+      example: "trackPageview()", ref: pravix/client/src/App.tsx:78 }
+  - { kind: identify, callee: identify, from: '@/lib/analytics', side: client,
+      example: "identify(user.uid, { $email: userData.email, $name: userData.displayName })", ref: pravix/client/src/contexts/AuthContext.tsx:70 }
+  - { kind: reset, callee: mixpanel.reset, side: client,
+      example: "window.mixpanel.reset()", ref: pravix/client/src/contexts/AuthContext.tsx:259 }
+  # Pravix (pravix/), server.
+  - { callee: mixpanelTracking.trackWithUser, side: server, name_arg: 1, props_arg: 2, id_arg: 0,
+      example: "mixpanelTracking.trackWithUser(req.user!.uid, 'connection_created', { ... })", ref: pravix/server/routes.ts:719 }
+  - { callee: mixpanelTracking.trackForAccount, side: server, name_arg: 1, props_arg: 2, adds: [account_id],
+      example: "mixpanelTracking.trackForAccount(sync.accountId, 'schema_sync_completed', { ... })", ref: pravix/server/routes.ts:465 }
+  - { kind: user_set, callee: mixpanelTracking.identify, side: server, props_arg: 1,
+      example: "mixpanelTracking.identify(req.user!.uid, { ... })", ref: pravix/server/routes.ts:557 }
+direct_sdk: fail
+paths:
+  server: [pravix/server/, app/api/]
+  client: [pravix/client/, components/]
+dynamic_names:
+  - { file: app/_components/mixpanel-provider.tsx, names: ['$mp_web_page_view'], why: "trackPageview(url) always sends $mp_web_page_view (lib/mixpanel.ts:153); its argument is the page URL, not the name" }
+  - { file: pravix/client/src/App.tsx, names: ['$mp_web_page_view'], why: "Pravix's trackPageview() (pravix/client/src/lib/pageview.ts, through mixpanelDirect.ts) always sends $mp_web_page_view on the app host" }
+sdk_exceptions:
+  - { file: app/contact/booked/tracker.tsx, pattern: "gtag\\('event'", reason: Google Ads conversion and GA4 generate_lead tags, not Mixpanel }
+notes:
+  - "lib/mixpanel.ts sends only from the production hosts (and localhost with NEXT_PUBLIC_MIXPANEL_SEND_LOCAL=1), and never on the secret-handling pages in lib/tracking-agent/sensitive-routes.ts or in a tab holding a GitHub sign-in."
+  - "lib/mixpanel.ts autocapture is on (clicks, inputs, scrolls, submits) with its page view off; trackPageview sends $mp_web_page_view instead."
+  - "rememberVisitor and identifyAccount (lib/mixpanel.ts) identify and write $email, $name, emails (union), linked_profile_ids (union) and first_email_source (set_once) on the profile."
+  - "trackServer (lib/mixpanel-server.ts) sends from the site's server after the response (next/server after), only on Vercel production, on the account's users.mixpanel_id (else its email's visitor id), and adds email to every event."
+  - "trackPlaybook adds chapter_slug, part, signed_in and entry_page to every playbook event."
+  - "Pravix's client wrapper also pushes every event to window.dataLayer for GTM; AuthContext pushes a userAuthenticated dataLayer event that only GTM reads."
+  - "tracking-agent/test/ is listed under wrappers only to keep Datalyze's scanner fixtures (fake apps) out of the scan; it sends nothing."
+  - "Pravix's server wrapper adds environment, appVersion (app_version on snake_case events) and source=server; trackForAccount adds accountId (account_id on snake_case events)."
+
